@@ -46,6 +46,7 @@ class Flight(models.Model):
     arrival_airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL, related_name = "arrival_airport")
     date_time = models.DateTimeField()
     date_created = models.DateTimeField(auto_now_add = True)
+    transition_aiports = models.ManyToManyField(TransitionAirport)
 
 class FlightDetail(models.Model):
 
