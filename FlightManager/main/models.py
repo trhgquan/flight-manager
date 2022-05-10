@@ -16,4 +16,49 @@ class Customer(models.Model):
         return self.name
 
 
+class Manager(Customer):
 
+    def __str__(self):
+        return self.name
+
+class Admin(Manager):
+
+    def __str__(self):
+        return self.name
+
+class TicketClass(models.Model):
+
+    name = models.CharField(max_length = 200, null = True)
+
+    def __str__(self):
+        return self.name
+
+class Ticket(models.Model):
+
+    customer = models.ForeignKey(Customer, null = True, on_delete = models.SET_NULL)
+    flight = models.ForeignKey(Flight, null = True, on_delete = models.SET_NULL)
+    ticket_class = models.ForeignKey(TicketClass, null = True, on_delete = models.SET_NULL)
+    price = models.IntegerField(null = True)
+    date_created = models.DateTimeField(auto_now_add = True)
+
+class Reservation(models.Model):
+
+    customer = models.ForeignKey(Customer, null = True, on_delete = models.SET_NULL)
+    flight = models.ForeignKey(Flight, null = True, on_delete = models.SET_NULL)
+    ticket_class = models.ForeignKey(TicketClass, null = True, on_delete = models.SET_NULL)
+    price = models.IntegerField(null = True)
+    date_booked = models.DateField()
+    date_created = models.DateTimeField(auto_now_add = True)
+
+class Airport(models.Model):
+
+    name = models.CharField(max_length = 200, null = True)
+
+    def __str__(self):
+        return self.name
+    
+class TransitionAirport(models.Model):
+
+    airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL)
+    transition_time =  models.IntegerField(null = True) #minutes
+    note = models.CharField(max_length = 200, null = True)
