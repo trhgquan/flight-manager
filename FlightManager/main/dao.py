@@ -66,6 +66,38 @@ class CustomerDAO:
         customers = Customer.objects.all()
         return customers
 
+class AirportDAO:
+
+    __init__(self):
+        #do nothing
+
+    #Save a airport
+    def create(self, airport: Airport) -> Airport:
+        airport.save()
+        return airport
+    
+    #Assume that before calling update(airport), we already found the airport to update
+    #   its informations
+    def update(self, airport: Airport) -> Airport:
+        airport.save()
+        return airport
+
+    #Delete a airport with the given id
+    def delete(self, id: int) -> int:
+        airport = Airport.objects.get(pk = id)
+        airport.delete()
+        return 0
+    
+    #Find a airport with the given id
+    def find(self, id: int) -> Airport:
+        airport = Airport.objects.get(pk = id)
+        return airport
+
+    #Find all the airports in the database
+    def findAll(self) -> QuerySet:
+        airports = Airport.objects.all()
+        return airports
+
 class TransitionAirportDAO:
 
     __init__(self):
