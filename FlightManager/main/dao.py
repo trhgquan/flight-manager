@@ -193,3 +193,35 @@ class ReservationDAO:
     def findAll(self) -> QuerySet:
         reservations = Reservation.objects.all()
         return reservations
+
+class FlightDAO:
+
+    __init__(self):
+        #do nothing
+
+    #Save a flight
+    def create(self, flight: Flight) -> Flight:
+        flight.save()
+        return flight
+    
+    #Assume that before calling update(flight), we already found the flight to update
+    #   its informations
+    def update(self, flight: Flight) -> Flight:
+        flight.save()
+        return flight
+
+    #Delete a flight with the given id
+    def delete(self, id: int) -> int:
+        flight = Flight.objects.get(pk = id)
+        flight.delete()
+        return 0
+    
+    #Find a flight with the given id
+    def find(self, id: int) -> Flight:
+        flight = Flight.objects.get(pk = id)
+        return flight
+
+    #Find all the flights in the database
+    def findAll(self) -> QuerySet:
+        flights = Flight.objects.all()
+        return flights
