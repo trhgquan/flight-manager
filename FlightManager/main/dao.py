@@ -30,7 +30,6 @@ class TicketClassDAO:
 
     #Find all the customers in the database
     def findAll(self) -> QuerySet:
-
         ticketClasses = TicketClass.objects.all()
         return ticketClasses
 
@@ -67,3 +66,34 @@ class CustomerDAO:
         customers = Customer.objects.all()
         return customers
 
+class TransitionAirportDAO:
+
+    __init__(self):
+        #do nothing
+
+    #Save a transition airport
+    def create(self, transitionAirport: TransitionAirport) -> TransitionAirport:
+        transitionAirport.save()
+        return transitionAirport
+    
+    #Assume that before calling update(transitionAirport), we already found the transition airport to update
+    #   its informations
+    def update(self, transitionAirport: TransitionAirport) -> TransitionAirport:
+        transitionAirport.save()
+        return transitionAirport
+
+    #Delete a transition airport with the given id
+    def delete(self, id: int) -> int:
+        transitionAirport = TransitionAirport.objects.get(pk = id)
+        transitionAirport.delete()
+        return 0
+    
+    #Find a transition airport with the given id
+    def find(self, id: int) -> TransitionAirport:
+        transitionAirport = TransitionAirport.objects.get(pk = id)
+        return transitionAirport
+
+    #Find all the transition airports in the database
+    def findAll(self) -> QuerySet:
+        transitionAirports = TransitionAirport.objects.all()
+        return transitionAirports
