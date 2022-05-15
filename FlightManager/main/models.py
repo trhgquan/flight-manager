@@ -69,15 +69,18 @@ class Ticket(models.Model):
     customer = models.ForeignKey(Customer, null = True, on_delete = models.SET_NULL)
     flight = models.ForeignKey(Flight, null = True, on_delete = models.SET_NULL)
     ticket_class = models.ForeignKey(TicketClass, null = True, on_delete = models.SET_NULL)
+
+    #name of the person own the ticket
+    name = models.CharField(max_length = 200, null = True)
+    phone = models.CharField(max_length = 200, null = True)
+    identity_code = models.CharField(max_length = 200, null = True)
+
+    is_booked = models.BooleanField(null = True, default = False)
     price = models.IntegerField(null = True)
     date_created = models.DateTimeField(auto_now_add = True)
 
 class Reservation(models.Model):
-
-    customer = models.ForeignKey(Customer, null = True, on_delete = models.SET_NULL)
-    flight = models.ForeignKey(Flight, null = True, on_delete = models.SET_NULL)
-    ticket_class = models.ForeignKey(TicketClass, null = True, on_delete = models.SET_NULL)
-    price = models.IntegerField(null = True)
+    ticket = models.OneToOneField(Ticket, null = True, blank = True, on_delete = models.CASCADE)
     date_booked = models.DateField()
     date_created = models.DateTimeField(auto_now_add = True)
 
@@ -86,8 +89,9 @@ class Policy(models.Model):
     name = models.CharField(max_length = 200, null = True)
     datatype = models.CharField(max_length = 200, null = True)
     value = models.IntegerField(null = True)
-    is_applied =models.BinaryField(null = True)
+    is_applied = models.BooleanField(null = True, default = False)
     date_created = models.DateTimeField(auto_now_add = True)
 
     def __str__(self):
         return self.name
+
