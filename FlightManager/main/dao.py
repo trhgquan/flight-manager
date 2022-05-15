@@ -148,7 +148,7 @@ class TicketDAO:
 
     #Delete a ticket with the given id
     def delete(self, id: int) -> int:
-        icket = Ticket.objects.get(pk = id)
+        ticket = Ticket.objects.get(pk = id)
         ticket.delete()
         return 0
     
@@ -161,3 +161,35 @@ class TicketDAO:
     def findAll(self) -> QuerySet:
         tickets = Ticket.objects.all()
         return tickets
+
+class ReservationDAO:
+
+    __init__(self):
+        #do nothing
+
+    #Save a reservation
+    def create(self, reservation: Reservation) -> Reservation:
+        reservation.save()
+        return reservation
+    
+    #Assume that before calling update(reservation), we already found the reservation to update
+    #   its informations
+    def update(self, reservation: Reservation) -> Reservation:
+        reservation.save()
+        return reservation
+
+    #Delete a reservation with the given id
+    def delete(self, id: int) -> int:
+        reservation = Reservation.objects.get(pk = id)
+        reservation.delete()
+        return 0
+    
+    #Find a reservation with the given id
+    def find(self, id: int) -> Reservation:
+        reservation = Reservation.objects.get(pk = id)
+        return reservation
+
+    #Find all the reservations in the database
+    def findAll(self) -> QuerySet:
+        reservations = Reservation.objects.all()
+        return reservations
