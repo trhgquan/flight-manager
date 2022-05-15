@@ -69,15 +69,17 @@ class Ticket(models.Model):
     customer = models.ForeignKey(Customer, null = True, on_delete = models.SET_NULL)
     flight = models.ForeignKey(Flight, null = True, on_delete = models.SET_NULL)
     ticket_class = models.ForeignKey(TicketClass, null = True, on_delete = models.SET_NULL)
+
+    #name of the person own the ticket
+    name = models.CharField(max_length = 200, null = True)
+    phone = models.CharField(max_length = 200, null = True)
+    identity_code = models.CharField(max_length = 200, null = True)
+
     price = models.IntegerField(null = True)
     date_created = models.DateTimeField(auto_now_add = True)
 
 class Reservation(models.Model):
-
-    customer = models.ForeignKey(Customer, null = True, on_delete = models.SET_NULL)
-    flight = models.ForeignKey(Flight, null = True, on_delete = models.SET_NULL)
-    ticket_class = models.ForeignKey(TicketClass, null = True, on_delete = models.SET_NULL)
-    price = models.IntegerField(null = True)
+    ticket = models.OneToOneField(Ticket, null = True, blank = True, on_delete = models.CASCADE)
     date_booked = models.DateField()
     date_created = models.DateTimeField(auto_now_add = True)
 
