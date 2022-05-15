@@ -75,6 +75,7 @@ class Ticket(models.Model):
     phone = models.CharField(max_length = 200, null = True)
     identity_code = models.CharField(max_length = 200, null = True)
 
+    is_booked = models.BooleanField(null = True, default = False)
     price = models.IntegerField(null = True)
     date_created = models.DateTimeField(auto_now_add = True)
 
@@ -88,8 +89,9 @@ class Policy(models.Model):
     name = models.CharField(max_length = 200, null = True)
     datatype = models.CharField(max_length = 200, null = True)
     value = models.IntegerField(null = True)
-    is_applied =models.BinaryField(null = True)
+    is_applied = models.BooleanField(null = True, default = False)
     date_created = models.DateTimeField(auto_now_add = True)
 
     def __str__(self):
         return self.name
+
