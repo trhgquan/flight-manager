@@ -112,3 +112,49 @@ class TicketService:
     
     def findAllTickets(self) -> list:
         return list(ticketDAO.findAll())
+
+class ReservationService:
+    
+    reservationDAO: ReservationDAO
+
+    def __init__(self):
+        reservationDAO = ReservationDAO()
+    
+    def createReservations(self, reservations: list) -> list:
+        
+        #Create each reservation
+        for reservation in reservations:
+            reservationDAO.create(reservation)
+
+        return reservations
+
+    
+    def updateReservation(self, reservations: list) -> list:
+
+        #Update  each reservation
+        for reservation in reservations:
+            reservationDAO.update(reservation)
+
+        return reservations
+
+    def deleteReservation(self, ids: list) -> int:
+
+        errorCode = 0
+
+        #Try to delete each reservation with the given id
+        for id in ids:
+
+            #Save the error code while deleting each reservation
+            ec = reservationDAO.delete(id)
+
+            #If there is any error => save it
+            if 0 != ec:
+                errorCode = ec
+
+        return errorCode
+    
+    def findReservationById(self, id: int) -> int:
+        return reservationDAO.find(id)
+    
+    def findAllReservations(self) -> list:
+        return list(reservationDAO.findAll())
