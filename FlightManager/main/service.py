@@ -1,5 +1,6 @@
 from dao import *
 from models import *
+from datetime import date, datatime
 
 class TicketClassService:
     
@@ -158,3 +159,84 @@ class ReservationService:
     
     def findAllReservations(self) -> list:
         return list(reservationDAO.findAll())
+
+class FlightService:
+    
+    flightDAO: FlightDAO
+
+    def __init__(self):
+        flightDAO = FlightDAO()
+    
+    def createFlight(self, flight: Flight) -> Flight:
+        return flightDAO.create(flight)
+    
+    def updateFlight(self, flight: Flight) -> Flight:
+        return flightDAO.update(flight)
+
+    def deleteFlight(self, id: int) -> int:
+        return flightDAO.delete(id)
+    
+    def findFlightById(self, id: int) -> int:
+        return flightDAO.find(id)
+    
+    def findAllFlights(self) -> list:
+        return list(flightDAO.findAll())
+
+    #Find a list of flights by the given criterias
+    def findFlightByCriterias(self, departureAirport: Airport, arrivalAirport: Airport, date_time: datetime, startDate: date, endDate: date) -> list:
+        
+        result: list()
+        flights = self.findAllFlights()
+
+        #Filtering the airports
+        for flight in flights:
+
+            #Flag to check if a flight is already add to optimizing
+            isAdd = False
+
+            #Filter by departure airport
+            if False == isAdd and departureAirport is not None: 
+                if flight.departure_airport_id == departureAirport.id:
+                    result.append(flight)
+                    isAdd = True
+
+            #Filter by arrival airport
+            if False == isAdd and arrivalAirport is not None: 
+                if flight.arrival_airport_id == arrivalAirport.id:
+                    result.append(flight)
+                    isAdd = True
+            
+            #Filter by datetime
+            if False == isAdd and date_time is not None: 
+                if flight.date_time == date_time
+                    result.append(flight)
+                    isAdd = True
+
+            #Filtering by range
+            date = flight.date_time.date()  #Get date from datetime of a flight
+            if False == isAdd and startDate is not None and endDate is not None:
+                if startDate <= date and date <= endDate:
+                    result.append(flight)
+                    isAdd = True
+
+            else:
+
+                #Filtering by start date
+                if False == isAdd and startDate is not None
+                    if startDate <= date:
+                        result.append(flight)
+                        isAdd = True
+
+                else:
+
+                    #Filtering by end date
+                    if False == isAdd and endDate is not None:
+                        if date <= endDate:
+                            result.append(flight)
+                            isAdd = True
+
+
+
+
+        return result
+        
