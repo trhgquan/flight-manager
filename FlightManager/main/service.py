@@ -116,6 +116,21 @@ class TicketService:
     def findAllTickets(self) -> list:
         return list(ticketDAO.findAll())
 
+    #Find all the not-booked ticket with the given ticket class from a flight
+    def findAvailableTicketFromFlight(self, flight: Flight, ticketClass: TicketClass) -> list:
+        
+        result = list()
+
+        #Get all the ticket from the flight
+        tickets = list(flight.ticket_set.all())
+
+        #Get the not booked ticket with the correct class
+        for ticket in tickets:
+            if not ticket.is_booked and ticket.ticket_class_id == ticketClass.id
+                result.append(ticket)
+
+        return result
+
 class ReservationService:
     
     reservationDAO: ReservationDAO
@@ -161,6 +176,11 @@ class ReservationService:
     
     def findAllReservations(self) -> list:
         return list(reservationDAO.findAll())
+
+    #Find all the reservations for the not-booked ticket with the given ticket class from a flight
+    def findAvailableReservationFromFlight(self, flight: Flight, ticketClass: TicketClass) -> list:
+        #TODO:
+
 
 class FlightService:
     
@@ -288,12 +308,29 @@ class ReportService:
         
         return wrappers
 
+class PolicyService:
+    
+    def __init__(self):
+        #do nothing
+
+    def isLateToBook(self) -> bool:
+        #TODO:
+
+        return False
+
+    def isLateToCancel(self) -> bool:
+        #TODO:
+
+        return False
+
 class CustomerService:
     
     customerDAO: CustomerDAO
+    policySerice: PolicyService
 
     def __init__(self):
         customerDAO = CustomerDAO()
+        policyService = PolicyService()
     
     def createCustomer(self, customer: Customer) -> Customer:
         return customerDAO.create(customer)
