@@ -44,4 +44,25 @@ class AirportService:
     
     def findAllAirports(self) -> list:
         return list(airportDAO.findAll())
+
+class TransitionAirportService:
     
+    transitionAirportDAO: TransitionAirportDAO
+
+    def __init__(self):
+        transitionAirportDAO = TransitionAirportDAO()
+    
+    def createTransitionAirport(self, transitionAirport: TransitionAirport) -> TransitionAirport:
+        return transitionAirportDAO.create(transitionAirport)
+    
+    def updateTransitionAirport(self, transitionAirport: TransitionAirport) -> TransitionAirport:
+        return transitionAirportDAO.update(transitionAirport)
+
+    def deleteTransitionAirport(self, id: int) -> int:
+        return transitionAirportDAO.delete(id)
+    
+    def findTransitionAirportById(self, id: int) -> int:
+        return transitionAirportDAO.find(id)
+    
+    def findAllTransitionAirports(self) -> list:
+        return list(transitionAirportDAO.findAll())
