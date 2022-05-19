@@ -400,9 +400,39 @@ class CustomerService:
 
         return reservation
 
+    #Cancel a flight booking
+    def cancel(self, reservation: Reservation) -> int
 
+        #Check if the current time is late to cancel the flight
+        if policyService.isLateToCancel():
+            return 1
+        
+        #Get the ticket from the reservation
+        ticket = reservation.ticket
 
-    
+        #Fill the reservation field
+        reservation.date_booked = None
+
+        #Fill the ticket field
+        ticket.is_booked = False
+        ticket.customer =  None
+        ticket.name = None
+        ticket.phone = None
+        ticket.identity_code = None
+
+        #Make the ticket and reservation become a list, to reuse the code
+        tickets = list()
+        reservations = list()
+        tickets.append(ticket)
+        reservations.append(reservation)
+
+        #Update the data in database
+        ticketService.updateTicket(tickets)
+        reservationService.updateReservations(reservations)
+
+        return 0
+
+        
 
 
 
