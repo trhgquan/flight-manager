@@ -42,7 +42,7 @@ class AirportService:
     def deleteAirport(self, id: int) -> int:
         return airportDAO.delete(id)
     
-    def findAiportById(self, id: int) -> int:
+    def findAirportById(self, id: int) -> int:
         return airportDAO.find(id)
     
     def findAllAirports(self) -> list:
@@ -287,6 +287,34 @@ class ReportService:
             wrappers.append(wrapper)
         
         return wrappers
+
+class CustomerService:
+    
+    customerDAO: CustomerDAO
+
+    def __init__(self):
+        customerDAO = CustomerDAO()
+    
+    def createCustomer(self, customer: Customer) -> Customer:
+        return customerDAO.create(customer)
+    
+    def updateCustomer(self, customer: Customer) -> Customer:
+        return customerDAO.update(customer)
+
+    def deleteCustomer(self, id: int) -> int:
+        return customerDAO.delete(id)
+    
+    def findCustomerById(self, id: int) -> int:
+        return customerDAO.find(id)
+    
+    def findAllCustomers(self) -> list:
+        return list(customerDAO.findAll())
+
+    #Book a ticket from a flight with a given ticket class
+    def book(self, flight: Flight, ticketClass: TicketClass) -> Reservation:
+
+
+    
 
 
 
