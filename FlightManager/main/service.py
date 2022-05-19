@@ -2,7 +2,7 @@ from dao import *
 from models import *
 from wrapper import FlightStatisticWrapper
 from datetime import date, datatime
-
+from random import random
 
 class TicketClassService:
     
@@ -86,7 +86,7 @@ class TicketService:
         return tickets
 
     
-    def updateTicket(self, tickets: list) -> list:
+    def updateTickets(self, tickets: list) -> list:
 
         #Update  each ticket
         for ticket in tickets:
@@ -94,7 +94,7 @@ class TicketService:
 
         return tickets
 
-    def deleteTicket(self, ids: list) -> int:
+    def deleteTickets(self, ids: list) -> int:
 
         errorCode = 0
 
@@ -117,7 +117,7 @@ class TicketService:
         return list(ticketDAO.findAll())
 
     #Find all the not-booked ticket with the given ticket class from a flight
-    def findAvailableTicketFromFlight(self, flight: Flight, ticketClass: TicketClass) -> list:
+    def findAvailableTicketsFromFlight(self, flight: Flight, ticketClass: TicketClass) -> list:
         
         result = list()
 
@@ -149,7 +149,7 @@ class ReservationService:
         return reservations
 
     
-    def updateReservation(self, reservations: list) -> list:
+    def updateReservations(self, reservations: list) -> list:
 
         #Update  each reservation
         for reservation in reservations:
@@ -157,7 +157,7 @@ class ReservationService:
 
         return reservations
 
-    def deleteReservation(self, ids: list) -> int:
+    def deleteReservations(self, ids: list) -> int:
 
         errorCode = 0
 
@@ -180,12 +180,12 @@ class ReservationService:
         return list(reservationDAO.findAll())
 
     #Find all the reservations for the not-booked ticket with the given ticket class from a flight
-    def findAvailableReservationFromFlight(self, flight: Flight, ticketClass: TicketClass) -> list:
+    def findAvailableReservationsFromFlight(self, flight: Flight, ticketClass: TicketClass) -> list:
         
         reservations = list()
 
         #Get the available tickets
-        tickets = ticketService.findAvailableTicketFromFlight(flight, ticketClass)
+        tickets = ticketService.findAvailableTicketsFromFlight(flight, ticketClass)
 
         #Get the reservation from the found tickets
         for ticket in tickets:
@@ -339,10 +339,15 @@ class CustomerService:
     
     customerDAO: CustomerDAO
     policySerice: PolicyService
+    reservationService: ReservationService
+    ticketService: TicketService
 
     def __init__(self):
         customerDAO = CustomerDAO()
         policyService = PolicyService()
+        reservationService = ReservationService()
+        ticketService = TicketService()
+
     
     def createCustomer(self, customer: Customer) -> Customer:
         return customerDAO.create(customer)
@@ -360,7 +365,41 @@ class CustomerService:
         return list(customerDAO.findAll())
 
     #Book a ticket from a flight with a given ticket class
-    def book(self, flight: Flight, ticketClass: TicketClass) -> Reservation:
+    def book(self, customer: Customer, flight: Flight, ticketClass: TicketClass, name: str, phone: str, identity_code: str) -> Reservation:
+
+        #Check if the current time is late to book the flight
+        if policyService.isLateToBook():
+            return None
+
+        #Get the all the reservations with the given ticket class in the flight 
+        reservations = reservationService.findAvailableReservationsFromFlight(flight, ticketClass)
+
+        #Choose the reservation randomizely
+        reservation = random.choices(reservations)
+        ticket = reservation.ticket
+
+        #Fill the reservation field
+        reservation.date_booked = date.today()
+
+        #Fill the ticket field
+        ticket.is_booked = True
+        ticket.customer = customer
+        ticket.name = name
+        ticket.phone = phone
+        ticket.identity_code = identity_code
+
+        #Make the ticket and reservation become a list, to reuse the code
+        tickets = list()
+        reservations = list()
+        tickets.append(ticket)
+        reservations.append(reservation)
+
+        #Update the data in database
+        ticketService.updateTicket(tickets)
+        reservationService.updateReservations(reservations)
+
+        return reservation
+
 
 
     
