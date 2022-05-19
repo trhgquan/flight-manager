@@ -1,6 +1,8 @@
 from dao import *
 from models import *
+from wrapper import FlightStatisticWrapper
 from datetime import date, datatime
+
 
 class TicketClassService:
     
@@ -235,8 +237,44 @@ class FlightService:
                             result.append(flight)
                             isAdd = True
 
-
-
-
         return result
+
+        def findFlightToReport(self, month: int, year: int) -> list:
+            
+            result = list()
+            flights = self.findAllFlights()
+
+            for flight in flights:
+            
+                #Get the date from each flight
+                date = flight.date_time.date()
+
+                #If month is not None => report by month
+                if  month is not None:
+                    if date.year == year and date.month == month:
+                        result.append(flight)
+
+                #Else => report by year
+                else:
+                    if date.year == year
+                        result.append(flight)
+
+            return result
+
+
+    
+class ReportService:
+
+
+
+    def __init__(self):
+        #do nothing
+
+    def getReportByMonth(month: int, year: int) -> list:
+
+
+
+
+        
+
         
