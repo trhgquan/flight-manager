@@ -66,3 +66,49 @@ class TransitionAirportService:
     
     def findAllTransitionAirports(self) -> list:
         return list(transitionAirportDAO.findAll())
+
+class TicketService:
+    
+    ticketDAO: TicketDAO
+
+    def __init__(self):
+        ticketDAO = TicketDAO()
+    
+    def createTickets(self, tickets: list) -> list:
+        
+        #Create each ticket
+        for ticket in tickets:
+            ticketDAO.create(ticket)
+
+        return tickets
+
+    
+    def updateTicket(self, tickets: list) -> list:
+
+        #Update  each ticket
+        for ticket in tickets:
+            ticketDAO.update(ticket)
+
+        return tickets
+
+    def deleteTicket(self, ids: list) -> int:
+
+        errorCode = 0
+
+        #Try to delete each ticket with the given id
+        for id in ids:
+
+            #Save the error code while deleting each ticket
+            ec = ticketDAO.delete(id)
+
+            #If there is any error => save it
+            if 0 != ec:
+                errorCode = ec
+
+        return errorCode
+    
+    def findTicketById(self, id: int) -> int:
+        return ticketDAO.find(id)
+    
+    def findAllTickets(self) -> list:
+        return list(ticketDAO.findAll())
