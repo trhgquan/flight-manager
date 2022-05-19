@@ -260,17 +260,36 @@ class FlightService:
                         result.append(flight)
 
             return result
-
-
     
 class ReportService:
 
-
+    flightService: FlightService
 
     def __init__(self):
-        #do nothing
+        flightSeervice = FlightService()
 
     def getReportByMonth(month: int, year: int) -> list:
+        wrappers = list()
+
+        flights = flightService.findFlightToReport(month, year)
+        for flight in flights:
+            wrapper = FlightStatisticWrapper(flight)
+            wrappers.append(wrapper)
+        
+        return wrappers
+    
+    def getReportByYear(year: int) -> list:
+         wrappers = list()
+
+        flights = flightService.findFlightToReport(None, year)
+        for flight in flights:
+            wrapper = FlightStatisticWrapper(flight)
+            wrappers.append(wrapper)
+        
+        return wrappers
+
+
+
 
 
 
