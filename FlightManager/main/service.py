@@ -134,9 +134,11 @@ class TicketService:
 class ReservationService:
     
     reservationDAO: ReservationDAO
+    ticketService: TicketService
 
     def __init__(self):
         reservationDAO = ReservationDAO()
+        ticketService: TicketService()
     
     def createReservations(self, reservations: list) -> list:
         
@@ -179,7 +181,17 @@ class ReservationService:
 
     #Find all the reservations for the not-booked ticket with the given ticket class from a flight
     def findAvailableReservationFromFlight(self, flight: Flight, ticketClass: TicketClass) -> list:
-        #TODO:
+        
+        reservations = list()
+
+        #Get the available tickets
+        tickets = ticketService.findAvailableTicketFromFlight(flight, ticketClass)
+
+        #Get the reservation from the found tickets
+        for ticket in tickets:
+            reservations.append(ticket.reservation)
+
+        return reservations
 
 
 class FlightService:

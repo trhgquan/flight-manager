@@ -80,7 +80,7 @@ class Ticket(models.Model):
     date_created = models.DateTimeField(auto_now_add = True)
 
 class Reservation(models.Model):
-    ticket = models.OneToOneField(Ticket, null = True, blank = True, on_delete = models.CASCADE)
+    ticket = models.OneToOneField(Ticket, null = True, blank = True, on_delete = models.CASCADE, primary_key=True)
     date_booked = models.DateField()
     date_created = models.DateTimeField(auto_now_add = True)
 
