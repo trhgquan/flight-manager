@@ -3,8 +3,9 @@ from django.db.models.query import QuerySet
 
 class TicketClassDAO:
 
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a ticket class 
     def create(self, ticketClass: TicketClass) -> TicketClass:
@@ -35,8 +36,9 @@ class TicketClassDAO:
 
 class CustomerDAO:
 
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a customer 
     def create(self, customer: Customer) -> Customer:
@@ -68,8 +70,9 @@ class CustomerDAO:
 
 class AirportDAO:
 
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a airport
     def create(self, airport: Airport) -> Airport:
@@ -100,8 +103,9 @@ class AirportDAO:
 
 class TransitionAirportDAO:
 
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a transition airport
     def create(self, transitionAirport: TransitionAirport) -> TransitionAirport:
@@ -132,8 +136,9 @@ class TransitionAirportDAO:
 
 class TicketDAO:
 
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a ticket
     def create(self, ticket: Ticket) -> Ticket:
@@ -164,8 +169,9 @@ class TicketDAO:
 
 class ReservationDAO:
 
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a reservation
     def create(self, reservation: Reservation) -> Reservation:
@@ -196,8 +202,9 @@ class ReservationDAO:
 
 class FlightDAO:
 
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a flight
     def create(self, flight: Flight) -> Flight:

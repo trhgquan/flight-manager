@@ -6,7 +6,7 @@ class FlightStatisticWrapper:
     __numberOfSeat: int
     __turnover: int
 
-    __init__(self, flight: Flight):
+    def __init__(self, flight: Flight):
         self.__flight = flight
         self.update()
 
