@@ -2,7 +2,6 @@ from models import *
 from django.db.models.query import QuerySet
 
 class TicketClassDAO:
-
     def __init__(self):
         #do nothing
         pass
@@ -35,7 +34,6 @@ class TicketClassDAO:
         return ticketClasses
 
 class CustomerDAO:
-
     def __init__(self):
         #do nothing
         pass
@@ -69,7 +67,6 @@ class CustomerDAO:
         return customers
 
 class AirportDAO:
-
     def __init__(self):
         #do nothing
         pass
@@ -102,7 +99,6 @@ class AirportDAO:
         return airports
 
 class TransitionAirportDAO:
-
     def __init__(self):
         #do nothing
         pass
@@ -135,7 +131,6 @@ class TransitionAirportDAO:
         return transitionAirports
 
 class TicketDAO:
-
     def __init__(self):
         #do nothing
         pass
@@ -168,7 +163,6 @@ class TicketDAO:
         return tickets
 
 class ReservationDAO:
-
     def __init__(self):
         #do nothing
         pass
@@ -201,7 +195,6 @@ class ReservationDAO:
         return reservations
 
 class FlightDAO:
-
     def __init__(self):
         #do nothing
         pass
