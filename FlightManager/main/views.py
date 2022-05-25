@@ -5,7 +5,14 @@ from django.http import HttpResponse
 
 # Authenticate
 def signup(request):
+    # More processing for POST method here.
+
     return render(request, 'accounts/signup.html')
+
+def login(request):
+    # More processing for POST method here.
+
+    return render(request, 'accounts/login.html')
 
 def home(request):
     return render(request, 'accounts/dashboard/dashboard.html')

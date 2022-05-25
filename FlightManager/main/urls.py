@@ -8,4 +8,5 @@ urlpatterns = [
 
     # Authentication
     path('signup/', views.signup),
+    path('login/', views.login),
 ]
