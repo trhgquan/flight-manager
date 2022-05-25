@@ -15,7 +15,6 @@ class Customer(models.Model):
     def __str__(self):
         return self.name
 
-
 class Manager(Customer):
     def __str__(self):
         return self.name

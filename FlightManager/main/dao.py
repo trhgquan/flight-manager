@@ -225,3 +225,21 @@ class FlightDAO:
     def findAll(self) -> QuerySet:
         flights = Flight.objects.all()
         return flights
+
+class PolicyDAO:
+    def __init__(self):
+        pass
+
+    def getPolicy(self, policy_name : str) -> Policy:
+        policy = Policy.objects.get(name = policy_name)
+        return policy
+    
+    def updatePolicy(self, policy_name, new_policy : Policy) -> Policy:
+        policy = Policy.objects.get(name = policy_name)
+        policy.name = new_policy.name
+        policy.datatype = new_policy.datatype
+        policy.value = new_policy.value
+        policy.is_applied = new_policy.is_applied
+
+        policy.save()
+        return policy
