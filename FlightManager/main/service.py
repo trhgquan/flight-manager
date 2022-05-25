@@ -319,7 +319,6 @@ class CustomerService:
         self.reservationService = ReservationService()
         self.ticketService = TicketService()
 
-    
     def createCustomer(self, customer: Customer) -> Customer:
         return self.customerDAO.create(customer)
     
