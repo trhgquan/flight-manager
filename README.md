@@ -18,14 +18,14 @@
 ## Tham khảo
 ### Backend
 ### Frontend
-[Trang chủ của Traveloka](https://www.traveloka.com)
+- [Trang chủ của Traveloka](https://www.traveloka.com)
 
 ## Môi trường cài đặt
-Hệ điều hành: Windows 7/8/10
-Ngôn ngữ lập trình: Python 3.x
-Framework sử dụng: Django
-Phiên bản framework: Django 4.0.3
-Database: PostgreSQL
+- Hệ điều hành: Windows 7/8/10
+- Ngôn ngữ lập trình: Python 3.x
+- Framework sử dụng: Django
+- Phiên bản framework: Django 4.0.3
+- Database: PostgreSQL
 
 ## Cài đặt
 ### Install required packages
