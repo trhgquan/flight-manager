@@ -27,6 +27,9 @@ def flights(request):
 def customer(request):
     return render(request, 'main/customer.html')
 
+def booking(request):
+    return render(request, 'main/booking.html')
+
 def report(request):
     # More HTTP POST processing here
 
