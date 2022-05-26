@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
+#from FlightManager.main.models import Flight
+from .models import *
+
 # Create your views here.
 
 # Authenticate
@@ -18,7 +21,9 @@ def home(request):
     return render(request, 'main/dashboard/dashboard.html')
 
 def flights(request):
-    return render(request, 'main/flights.html')
+	flights = Flight.objects.all()
+
+	return render(request, 'main/flights.html', {'flights' : flights})
 
 def customer(request):
     return render(request, 'main/customer.html')

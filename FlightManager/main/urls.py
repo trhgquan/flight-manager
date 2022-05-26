@@ -3,7 +3,11 @@ from . import views
 
 urlpatterns = [
     path('', views.home),
+
+    # Flight list
     path('flights/', views.flights),
+
+    
     path('customer/', views.customer),
 
     # Authentication
