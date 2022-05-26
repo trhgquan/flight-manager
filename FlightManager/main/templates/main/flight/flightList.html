@@ -22,13 +22,13 @@
                     <th></th>
                 </tr>
 
-                {% for i in flights %}
+                {% for flight in flights %}
                     <tr>
-                                <td>{{i}}</td>
-                                <td>{{i.departure_airport}}</td>
-                                <td>{{i.arrival_airport}}</td>
-                                <td>{{i.date_time}}</td>
-                                <td><a href="">Detail</a></td>
+                        <td>{{flight}}</td>
+                        <td>{{flight.departure_airport}}</td>
+                        <td>{{flight.arrival_airport}}</td>
+                        <td>{{flight.date_time}}</td>
+                        <td><a class="btn btn-sm btn-info" href="{% url 'flight_detail' flight.id %}">Detail</a></td>
                     </tr>
                 {% endfor %}
             </table> 
