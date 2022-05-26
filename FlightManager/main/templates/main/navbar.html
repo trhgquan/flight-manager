@@ -9,6 +9,8 @@
       <!-- Notice that we'll use a different navbar in authenticated / non-authenticated case -->
       {% comment %} {% if authenticated %} {% endcomment %}
       <li class='nav-item'>
+        <a class='nav-link' href='{% url "flight_list" %}'>Flight</a>
+      </li><li class='nav-item'>
         <a class='nav-link' href='{% url "auth.login" %}'>Login</a>
       </li>
       <li class='nav-item'>

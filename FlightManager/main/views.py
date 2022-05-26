@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
 #from FlightManager.main.models import Flight
 from .models import *
+from .forms import FlightForm
 
 # Create your views here.
 
@@ -28,6 +29,44 @@ def flightDetail(request, pk):
     detail = FlightDetail.objects.get(id=pk)
     context = {'detail' : detail}
     return render(request, 'main/flight/flightDetail.html', context)
+
+def flightCreate(request):
+    form = FlightForm()
+
+    if request.method == 'POST':
+        form = FlightForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+
+    context = {'form' : form}
+    return render(request, 'main/flight/flightForm.html', context)
+
+def flightUpdate(request, pk):
+    flight = Flight.objects.get(id=pk)
+    form = FlightForm(instance=flight)
+
+    if request.method == 'POST':
+        form = FlightForm(request.POST, instance=flight)
+        if form.is_valid():
+            form.save()
+            return redirect('/flight/list')
+    
+    context = {'form' : form}
+    return render(request, 'main/flight/flightForm.html', context)
+
+def flightDelete(request, pk):
+    flight = Flight.objects.get(id=pk)
+    
+    if request.method == 'POST':
+        flight.delete()
+        return redirect('/flight/list')
+
+    context = {'item' : flight}
+    return render(request, 'main/flight/flightDelete.html', context)
+
+
+
 
 
 def customer(request):

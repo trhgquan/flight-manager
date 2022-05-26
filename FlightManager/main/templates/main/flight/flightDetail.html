@@ -25,17 +25,16 @@
                     <th>Delete</th>
                 </tr>
 
-                <tr>
-                    <td>{{detail.flight.departure_airport}}</td>
-                    <td>{{detail.flight.arrival_airport}}</td>
-                    <td>{{detail.flight.date_time}}</td>
-                    <td>{{detail.flight_time}}</td>
-                    <td>{{detail.first_class_seat_size}}</td>
-                    <td>{{detail.second_class_seat_size}}</td>
-                    <td><a class="btn btn-sm btn-info" href="">Update</a></td>
-                    <td><a class="btn btn-sm btn-danger" href="">Delete</a></td>
-                </tr>
-                
+                    <tr>
+                        <td>{{detail.flight.departure_airport}}</td>
+                        <td>{{detail.flight.arrival_airport}}</td>
+                        <td>{{detail.flight.date_time}}</td>
+                        <td>{{detail.flight_time}}</td>
+                        <td>{{detail.first_class_seat_size}}</td>
+                        <td>{{detail.second_class_seat_size}}</td>
+                        <td><a class="btn btn-sm btn-info" href="{% url 'flight_update' detail.id %}">Update</a></td>
+                        <td><a class="btn btn-sm btn-danger" href="{% url 'flight_delete' detail.id %}">Delete</a></td>
+                    </tr>
             </table> 
         </div>
     </div>
