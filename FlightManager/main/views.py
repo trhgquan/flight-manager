@@ -20,10 +20,15 @@ def login(request):
 def home(request):
     return render(request, 'main/dashboard/dashboard.html')
 
-def flights(request):
+def flightList(request):
 	flights = Flight.objects.all()
+	return render(request, 'main/flight/flightList.html', {'flights' : flights})
 
-	return render(request, 'main/flights.html', {'flights' : flights})
+def flightDetail(request, pk):
+    detail = FlightDetail.objects.get(id=pk)
+    context = {'detail' : detail}
+    return render(request, 'main/flight/flightDetail.html', context)
+
 
 def customer(request):
     return render(request, 'main/customer.html')

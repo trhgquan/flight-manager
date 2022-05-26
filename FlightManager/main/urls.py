@@ -5,7 +5,8 @@ urlpatterns = [
     path('', views.home),
 
     # Flight list
-    path('flights/', views.flights),
+    path('flight/list/', views.flightList, name='flight_list'),
+    path('flight/detail/<str:pk>/', views.flightDetail, name='flight_detail'),
 
     
     path('customer/', views.customer),
