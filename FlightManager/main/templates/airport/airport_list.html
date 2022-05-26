@@ -1,0 +1,15 @@
+{% extends 'accounts/main.html' %}
+{% block content %}
+
+<ul class="list-group list-group-flush">
+    {% for airport in airports %}
+        <tr>
+            <li class="list-group-item">{{airport.name}}</li>
+        </tr>
+    {% endfor %}
+    
+  </ul>
+
+  
+
+{% endblock %}
