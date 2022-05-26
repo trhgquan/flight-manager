@@ -5,9 +5,6 @@ from datetime import date, datetime
 from random import random
 
 class TicketClassService:
-    
-    ticketClassDAO: TicketClassDAO
-
     def __init__(self):
         self.ticketClassDAO = TicketClassDAO()
     
@@ -27,9 +24,6 @@ class TicketClassService:
         return list(self.ticketClassDAO.findAll())
 
 class AirportService:
-    
-    airportDAO: AirportDAO
-
     def __init__(self):
         self.airportDAO = AirportDAO()
     
@@ -49,9 +43,6 @@ class AirportService:
         return list(self.airportDAO.findAll())
 
 class TransitionAirportService:
-    
-    transitionAirportDAO: TransitionAirportDAO
-
     def __init__(self):
         self.transitionAirportDAO = TransitionAirportDAO()
     
@@ -71,9 +62,6 @@ class TransitionAirportService:
         return list(self.transitionAirportDAO.findAll())
 
 class TicketService:
-    
-    ticketDAO: TicketDAO
-
     def __init__(self):
         self.ticketDAO = TicketDAO()
     
@@ -132,10 +120,6 @@ class TicketService:
         return result
 
 class ReservationService:
-    
-    reservationDAO: ReservationDAO
-    ticketService: TicketService
-
     def __init__(self):
         self.reservationDAO = ReservationDAO()
         self.ticketService = TicketService()
@@ -193,11 +177,7 @@ class ReservationService:
 
         return reservations
 
-
 class FlightService:
-    
-    flightDAO: FlightDAO
-
     def __init__(self):
         self.flightDAO = FlightDAO()
     
@@ -294,9 +274,6 @@ class FlightService:
         return result
     
 class ReportService:
-
-    flightService: FlightService
-
     def __init__(self):
         self.flightService = FlightService()
 
@@ -321,7 +298,6 @@ class ReportService:
         return wrappers
 
 class PolicyService:
-    
     def __init__(self):
         #do nothing
         pass
@@ -337,19 +313,12 @@ class PolicyService:
         return False
 
 class CustomerService:
-    
-    customerDAO: CustomerDAO
-    policySerice: PolicyService
-    reservationService: ReservationService
-    ticketService: TicketService
-
     def __init__(self):
         self.customerDAO = CustomerDAO()
         self.policyService = PolicyService()
         self.reservationService = ReservationService()
         self.ticketService = TicketService()
 
-    
     def createCustomer(self, customer: Customer) -> Customer:
         return self.customerDAO.create(customer)
     
@@ -432,15 +401,3 @@ class CustomerService:
         self.reservationService.updateReservations(reservations)
 
         return 0
-
-        
-
-
-
-
-
-
-
-        
-
-        
