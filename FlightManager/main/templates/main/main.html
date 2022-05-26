@@ -10,14 +10,12 @@
     <title>Dashboard</title>
 </head>
 <body>
-    {% include 'accounts/navbar.html' %}
-
+    {% include 'main/navbar.html' %}
+    
     {% block content %}
-
     {% endblock %}
 
-    <hr>
-    <h5>Our footer</h5>
+    {% include 'main/footer.html' %}
     
 </body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
