@@ -5,5 +5,8 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('flights/', views.flights, name='flights'),
     path('customer/', views.customer, name='customer'),
-    path('airport/list/', views.airport_list, name='airport_list')
+
+    # Airport
+    path('airport/list/', views.airport_list, name='airport_list'), 
+    path('airport/create/', views.createAirport, name='create_airport'),
 ]

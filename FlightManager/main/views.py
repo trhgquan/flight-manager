@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
+
+from .forms import AirportForm
 
 from .models import Airport
 
@@ -18,3 +20,14 @@ def airport_list(request):
     list = Airport.objects.all()
     print(list)
     return render(request, 'airport/airport_list.html', {'airports':list})
+
+def createAirport(request):
+    form = AirportForm()
+    if request.method == 'POST':
+        form = AirportForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/airport/list')
+
+    context = {'form': form}
+    return render(request, 'airport/airport_form.html', context)
