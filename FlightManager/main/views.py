@@ -9,7 +9,7 @@ from .models import Airport
 # Create your views here.
 
 def home(request):
-    return render(request, 'accounts/dashboard/dashboard.html')
+    return render(request, 'accounts/dashboard/dashboard.html', {'nbar': 'home'})
 
 def flights(request):
     return render(request, 'accounts/flights.html')
@@ -20,7 +20,7 @@ def customer(request):
 def airport_list(request):
     list = Airport.objects.all()
     print(list)
-    return render(request, 'airport/airport_list.html', {'airports':list})
+    return render(request, 'airport/airport_list.html', {'airports':list, 'nbar': 'airport_list'})
 
 def createAirport(request):
     form = AirportForm()
