@@ -2,9 +2,9 @@ from models import *
 from django.db.models.query import QuerySet
 
 class TicketClassDAO:
-
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a ticket class 
     def create(self, ticketClass: TicketClass) -> TicketClass:
@@ -34,9 +34,9 @@ class TicketClassDAO:
         return ticketClasses
 
 class CustomerDAO:
-
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a customer 
     def create(self, customer: Customer) -> Customer:
@@ -67,9 +67,9 @@ class CustomerDAO:
         return customers
 
 class AirportDAO:
-
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a airport
     def create(self, airport: Airport) -> Airport:
@@ -99,9 +99,9 @@ class AirportDAO:
         return airports
 
 class TransitionAirportDAO:
-
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a transition airport
     def create(self, transitionAirport: TransitionAirport) -> TransitionAirport:
@@ -131,9 +131,9 @@ class TransitionAirportDAO:
         return transitionAirports
 
 class TicketDAO:
-
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a ticket
     def create(self, ticket: Ticket) -> Ticket:
@@ -163,9 +163,9 @@ class TicketDAO:
         return tickets
 
 class ReservationDAO:
-
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a reservation
     def create(self, reservation: Reservation) -> Reservation:
@@ -195,9 +195,9 @@ class ReservationDAO:
         return reservations
 
 class FlightDAO:
-
-    __init__(self):
+    def __init__(self):
         #do nothing
+        pass
 
     #Save a flight
     def create(self, flight: Flight) -> Flight:
@@ -225,3 +225,21 @@ class FlightDAO:
     def findAll(self) -> QuerySet:
         flights = Flight.objects.all()
         return flights
+
+class PolicyDAO:
+    def __init__(self):
+        pass
+
+    def getPolicy(self, policy_name : str) -> Policy:
+        policy = Policy.objects.get(name = policy_name)
+        return policy
+    
+    def updatePolicy(self, policy_name, new_policy : Policy) -> Policy:
+        policy = Policy.objects.get(name = policy_name)
+        policy.name = new_policy.name
+        policy.datatype = new_policy.datatype
+        policy.value = new_policy.value
+        policy.is_applied = new_policy.is_applied
+
+        policy.save()
+        return policy

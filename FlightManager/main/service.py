@@ -1,87 +1,75 @@
 from dao import *
 from models import *
 from wrapper import FlightStatisticWrapper
-from datetime import date, datatime
+from datetime import date, datetime
 from random import random
 
 class TicketClassService:
-    
-    ticketClassDAO: TicketClassDAO
-
     def __init__(self):
-        ticketClassDAO = TicketClassDAO()
+        self.ticketClassDAO = TicketClassDAO()
     
     def createTicketClass(self, ticketClass: TicketClass) -> TicketClass:
-        return ticketClassDAO.create(ticketClass)
+        return self.ticketClassDAO.create(ticketClass)
     
     def updateTicketClass(self, ticketClass: TicketClass) -> TicketClass:
-        return ticketClassDAO.update(ticketClass)
+        return self.ticketClassDAO.update(ticketClass)
 
     def deleteTicketClass(self, id: int) -> int:
-        return ticketClassDAO.delete(id)
+        return self.ticketClassDAO.delete(id)
     
     def findTicketClassById(self, id: int) -> int:
-        return ticketClassDAO.find(id)
+        return self.ticketClassDAO.find(id)
     
     def findAllTicketClasses(self) -> list:
-        return list(ticketClassDAO.findAll())
+        return list(self.ticketClassDAO.findAll())
 
 class AirportService:
-    
-    airportDAO: AirportDAO
-
     def __init__(self):
-        airportDAO = AirportDAO()
+        self.airportDAO = AirportDAO()
     
     def createAirport(self, airport: Airport) -> Airport:
-        return airportDAO.create(airport)
+        return self.airportDAO.create(airport)
     
     def updateAirport(self, airport: Airport) -> Airport:
-        return airportDAO.update(airport)
+        return self.airportDAO.update(airport)
 
     def deleteAirport(self, id: int) -> int:
-        return airportDAO.delete(id)
+        return self.airportDAO.delete(id)
     
     def findAirportById(self, id: int) -> int:
-        return airportDAO.find(id)
+        return self.airportDAO.find(id)
     
     def findAllAirports(self) -> list:
-        return list(airportDAO.findAll())
+        return list(self.airportDAO.findAll())
 
 class TransitionAirportService:
-    
-    transitionAirportDAO: TransitionAirportDAO
-
     def __init__(self):
-        transitionAirportDAO = TransitionAirportDAO()
+        self.transitionAirportDAO = TransitionAirportDAO()
     
     def createTransitionAirport(self, transitionAirport: TransitionAirport) -> TransitionAirport:
-        return transitionAirportDAO.create(transitionAirport)
+        return self.transitionAirportDAO.create(transitionAirport)
     
     def updateTransitionAirport(self, transitionAirport: TransitionAirport) -> TransitionAirport:
-        return transitionAirportDAO.update(transitionAirport)
+        return self.transitionAirportDAO.update(transitionAirport)
 
     def deleteTransitionAirport(self, id: int) -> int:
-        return transitionAirportDAO.delete(id)
+        return self.transitionAirportDAO.delete(id)
     
     def findTransitionAirportById(self, id: int) -> int:
-        return transitionAirportDAO.find(id)
+        return self.transitionAirportDAO.find(id)
     
     def findAllTransitionAirports(self) -> list:
-        return list(transitionAirportDAO.findAll())
+        return list(self.transitionAirportDAO.findAll())
 
 class TicketService:
-    
-    ticketDAO: TicketDAO
-
     def __init__(self):
-        ticketDAO = TicketDAO()
+        self.ticketDAO = TicketDAO()
     
     def createTickets(self, tickets: list) -> list:
         
         #Create each ticket
         for ticket in tickets:
-            ticketDAO.create(ticket)
+            self.ticketDAO.create(ticket)
 
         return tickets
 
@@ -90,7 +78,7 @@ class TicketService:
 
         #Update  each ticket
         for ticket in tickets:
-            ticketDAO.update(ticket)
+            self.ticketDAO.update(ticket)
 
         return tickets
 
@@ -102,7 +90,7 @@ class TicketService:
         for id in ids:
 
             #Save the error code while deleting each ticket
-            ec = ticketDAO.delete(id)
+            ec = self.ticketDAO.delete(id)
 
             #If there is any error => save it
             if 0 != ec:
@@ -111,10 +99,10 @@ class TicketService:
         return errorCode
     
     def findTicketById(self, id: int) -> int:
-        return ticketDAO.find(id)
+        return self.ticketDAO.find(id)
     
     def findAllTickets(self) -> list:
-        return list(ticketDAO.findAll())
+        return list(self.ticketDAO.findAll())
 
     #Find all the not-booked ticket with the given ticket class from a flight
     def findAvailableTicketsFromFlight(self, flight: Flight, ticketClass: TicketClass) -> list:
@@ -126,25 +114,21 @@ class TicketService:
 
         #Get the not booked ticket with the correct class
         for ticket in tickets:
-            if not ticket.is_booked and ticket.ticket_class_id == ticketClass.id
+            if not ticket.is_booked and ticket.ticket_class_id == ticketClass.id:
                 result.append(ticket)
 
         return result
 
 class ReservationService:
-    
-    reservationDAO: ReservationDAO
-    ticketService: TicketService
-
     def __init__(self):
-        reservationDAO = ReservationDAO()
-        ticketService: TicketService()
+        self.reservationDAO = ReservationDAO()
+        self.ticketService = TicketService()
     
     def createReservations(self, reservations: list) -> list:
         
         #Create each reservation
         for reservation in reservations:
-            reservationDAO.create(reservation)
+            self.reservationDAO.create(reservation)
 
         return reservations
 
@@ -153,7 +137,7 @@ class ReservationService:
 
         #Update  each reservation
         for reservation in reservations:
-            reservationDAO.update(reservation)
+            self.reservationDAO.update(reservation)
 
         return reservations
 
@@ -165,7 +149,7 @@ class ReservationService:
         for id in ids:
 
             #Save the error code while deleting each reservation
-            ec = reservationDAO.delete(id)
+            ec = self.reservationDAO.delete(id)
 
             #If there is any error => save it
             if 0 != ec:
@@ -174,10 +158,10 @@ class ReservationService:
         return errorCode
     
     def findReservationById(self, id: int) -> int:
-        return reservationDAO.find(id)
+        return self.reservationDAO.find(id)
     
     def findAllReservations(self) -> list:
-        return list(reservationDAO.findAll())
+        return list(self.reservationDAO.findAll())
 
     #Find all the reservations for the not-booked ticket with the given ticket class from a flight
     def findAvailableReservationsFromFlight(self, flight: Flight, ticketClass: TicketClass) -> list:
@@ -185,7 +169,7 @@ class ReservationService:
         reservations = list()
 
         #Get the available tickets
-        tickets = ticketService.findAvailableTicketsFromFlight(flight, ticketClass)
+        tickets = self.ticketService.findAvailableTicketsFromFlight(flight, ticketClass)
 
         #Get the reservation from the found tickets
         for ticket in tickets:
@@ -193,28 +177,24 @@ class ReservationService:
 
         return reservations
 
-
 class FlightService:
-    
-    flightDAO: FlightDAO
-
     def __init__(self):
-        flightDAO = FlightDAO()
+        self.flightDAO = FlightDAO()
     
     def createFlight(self, flight: Flight) -> Flight:
-        return flightDAO.create(flight)
+        return self.flightDAO.create(flight)
     
     def updateFlight(self, flight: Flight) -> Flight:
-        return flightDAO.update(flight)
+        return self.flightDAO.update(flight)
 
     def deleteFlight(self, id: int) -> int:
-        return flightDAO.delete(id)
+        return self.flightDAO.delete(id)
     
     def findFlightById(self, id: int) -> int:
-        return flightDAO.find(id)
+        return self.flightDAO.find(id)
     
     def findAllFlights(self) -> list:
-        return list(flightDAO.findAll())
+        return list(self.flightDAO.findAll())
 
     #Find a list of flights by the given criterias
     def findFlightByCriterias(self, departureAirport: Airport, arrivalAirport: Airport, date_time: datetime, startDate: date, endDate: date) -> list:
@@ -242,7 +222,7 @@ class FlightService:
             
             #Filter by datetime
             if False == isAdd and date_time is not None: 
-                if flight.date_time == date_time
+                if flight.date_time == date_time:
                     result.append(flight)
                     isAdd = True
 
@@ -256,7 +236,7 @@ class FlightService:
             else:
 
                 #Filtering by start date
-                if False == isAdd and startDate is not None
+                if False == isAdd and startDate is not None:
                     if startDate <= date:
                         result.append(flight)
                         isAdd = True
@@ -269,51 +249,48 @@ class FlightService:
                             result.append(flight)
                             isAdd = True
 
-        return result
-
-        def findFlightToReport(self, month: int, year: int) -> list:
-            
-            result = list()
-            flights = self.findAllFlights()
-
-            for flight in flights:
-            
-                #Get the date from each flight
-                date = flight.date_time.date()
-
-                #If month is not None => report by month
-                if  month is not None:
-                    if date.year == year and date.month == month:
-                        result.append(flight)
-
-                #Else => report by year
-                else:
-                    if date.year == year
-                        result.append(flight)
-
             return result
+
+    def findFlightToReport(self, month: int, year: int) -> list:
+        
+        result = list()
+        flights = self.findAllFlights()
+
+        for flight in flights:
+        
+            #Get the date from each flight
+            date = flight.date_time.date()
+
+            #If month is not None => report by month
+            if  month is not None:
+                if date.year == year and date.month == month:
+                    result.append(flight)
+
+            #Else => report by year
+            else:
+                if date.year == year:
+                    result.append(flight)
+
+        return result
     
 class ReportService:
-
-    flightService: FlightService
-
     def __init__(self):
-        flightSeervice = FlightService()
+        self.flightService = FlightService()
 
-    def getReportByMonth(month: int, year: int) -> list:
+    def getReportByMonth(self, month: int, year: int) -> list:
         wrappers = list()
 
-        flights = flightService.findFlightToReport(month, year)
+        flights = self.flightService.findFlightToReport(month, year)
         for flight in flights:
             wrapper = FlightStatisticWrapper(flight)
             wrappers.append(wrapper)
         
         return wrappers
     
-    def getReportByYear(year: int) -> list:
-         wrappers = list()
+    def getReportByYear(self, year: int) -> list:
+        wrappers = list()
 
-        flights = flightService.findFlightToReport(None, year)
+        flights = self.flightService.findFlightToReport(None, year)
         for flight in flights:
             wrapper = FlightStatisticWrapper(flight)
             wrappers.append(wrapper)
@@ -321,9 +298,9 @@ class ReportService:
         return wrappers
 
 class PolicyService:
-    
     def __init__(self):
         #do nothing
+        pass
 
     def isLateToBook(self) -> bool:
         #TODO:
@@ -336,43 +313,36 @@ class PolicyService:
         return False
 
 class CustomerService:
-    
-    customerDAO: CustomerDAO
-    policySerice: PolicyService
-    reservationService: ReservationService
-    ticketService: TicketService
-
     def __init__(self):
-        customerDAO = CustomerDAO()
-        policyService = PolicyService()
-        reservationService = ReservationService()
-        ticketService = TicketService()
+        self.customerDAO = CustomerDAO()
+        self.policyService = PolicyService()
+        self.reservationService = ReservationService()
+        self.ticketService = TicketService()
 
-    
     def createCustomer(self, customer: Customer) -> Customer:
-        return customerDAO.create(customer)
+        return self.customerDAO.create(customer)
     
     def updateCustomer(self, customer: Customer) -> Customer:
-        return customerDAO.update(customer)
+        return self.customerDAO.update(customer)
 
     def deleteCustomer(self, id: int) -> int:
-        return customerDAO.delete(id)
+        return self.customerDAO.delete(id)
     
     def findCustomerById(self, id: int) -> int:
-        return customerDAO.find(id)
+        return self.customerDAO.find(id)
     
     def findAllCustomers(self) -> list:
-        return list(customerDAO.findAll())
+        return list(self.customerDAO.findAll())
 
     #Book a ticket from a flight with a given ticket class
     def book(self, customer: Customer, flight: Flight, ticketClass: TicketClass, name: str, phone: str, identity_code: str) -> Reservation:
 
         #Check if the current time is late to book the flight
-        if policyService.isLateToBook():
+        if self.policyService.isLateToBook():
             return None
 
         #Get the all the reservations with the given ticket class in the flight 
-        reservations = reservationService.findAvailableReservationsFromFlight(flight, ticketClass)
+        reservations = self.reservationService.findAvailableReservationsFromFlight(flight, ticketClass)
 
         #Choose the reservation randomizely
         reservation = random.choices(reservations)
@@ -395,16 +365,16 @@ class CustomerService:
         reservations.append(reservation)
 
         #Update the data in database
-        ticketService.updateTicket(tickets)
-        reservationService.updateReservations(reservations)
+        self.ticketService.updateTicket(tickets)
+        self.reservationService.updateReservations(reservations)
 
         return reservation
 
     #Cancel a flight booking
-    def cancel(self, reservation: Reservation) -> int
+    def cancel(self, reservation: Reservation) -> int:
 
         #Check if the current time is late to cancel the flight
-        if policyService.isLateToCancel():
+        if self.policyService.isLateToCancel():
             return 1
         
         #Get the ticket from the reservation
@@ -427,19 +397,7 @@ class CustomerService:
         reservations.append(reservation)
 
         #Update the data in database
-        ticketService.updateTicket(tickets)
-        reservationService.updateReservations(reservations)
+        self.ticketService.updateTicket(tickets)
+        self.reservationService.updateReservations(reservations)
 
         return 0
-
-        
-
-
-
-
-
-
-
-        
-
-        
