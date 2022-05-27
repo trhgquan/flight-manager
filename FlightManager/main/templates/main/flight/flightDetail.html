@@ -1,0 +1,46 @@
+{% extends 'main/main.html' %}
+{% block content %}
+
+<br>
+<style>
+    h1 {text-align: center;}
+    h1 {color: #AEF711}
+</style>
+
+<div class="row">
+    <div class="col-md">
+        <div class="card card-body">
+            <h1>Flight Detail</h1>
+        </div>
+        <div class="card card-body">
+            <table class="table">
+                <tr>
+                    <th>Departure</th>
+                    <th>Destination</th>
+                    <th>Date</th>
+                    <th>Flight Time</th>
+                    <th>First Class Seat</th>
+                    <th>Second Class Seat</th>
+                    <th>Update Detail</th>
+                    <th>Update Flight</th>
+                    <th>Delete</th>
+                </tr>
+                
+                <tr>
+                    <td>{{detail.flight.departure_airport}}</td>
+                    <td>{{detail.flight.arrival_airport}}</td>
+                    <td>{{detail.flight.date_time}}</td>
+                    <td>{{detail.flight_time}}</td>
+                    <td>{{detail.first_class_seat_size}}</td>
+                    <td>{{detail.second_class_seat_size}}</td>
+                    <td><a class="btn btn-sm btn-primary" href="{% url 'flight_detail_update' detail.id %}">Update</a></td>
+                    <td><a class="btn btn-sm btn-info" href="{% url 'flight_update' detail.id %}">Update</a></td>
+                    <td><a class="btn btn-sm btn-danger" href="{% url 'flight_delete' detail.id %}">Delete</a></td>
+                </tr>
+            </table> 
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

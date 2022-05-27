@@ -6,6 +6,9 @@
     </a>
     
     <ul class="nav navbar-nav">
+      <li class='nav-item'>
+        <a class='nav-link' href='{% url "flight_list" %}'>Flight</a>
+      </li>
       <li class="{% if nbar == 'home' %}nav-item active {% endif %}">
         <a class="nav-link" href="{% url 'home' %}">Dashboard</a>
       </li>
@@ -18,7 +21,6 @@
       <li class="nav-item">
         <a class="nav-link" href="#">Customer</a>
       </li>
-      
     </ul>
     </div>
   </nav>
