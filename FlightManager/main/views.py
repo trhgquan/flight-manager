@@ -1,22 +1,59 @@
+# Typical imports inside views.py
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
-#from FlightManager.main.models import Flight
+# For authentication
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+
+from .decorators import unauthenticated_user
+
+# For models
 from .models import *
 from .forms import *
 
 # Create your views here.
 
 # Authenticate
-def signup(request):
+@unauthenticated_user
+def auth_signup(request):
     # More processing for POST method here.
+
+    # Handling register request
+    # if request.method == 'POST':
+
 
     return render(request, 'main/signup.html')
 
-def login(request):
+@unauthenticated_user
+def auth_signin(request):
     # More processing for POST method here.
 
-    return render(request, 'main/login.html')
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username = username, password = password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.info(request, 'Username or Password is incorrect, please try again.')
+
+    form = LoginForm()
+
+    context = {
+        'form' : form,
+    }
+
+    return render(request, 'main/login.html', context)
+
+@login_required(login_url = 'auth.signin')
+def auth_logout(request):
+    logout(request)
+    return redirect('auth.signin')
 
 def home(request):
     return render(request, 'main/dashboard/dashboard.html')
