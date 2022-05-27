@@ -8,8 +8,10 @@
 			<form action="" method="POST">
 				{% csrf_token %}
 				{{form}}
-				
-				<input type="submit" name="Submit">
+				{{form2}}
+				<a class="btn btn-info" href="{% url 'flight_list' %}">Cancel</a>
+
+				<input class="btn btn-warning" type="submit" name="Confirm">
 			</form>
 		</div>
 	</div>

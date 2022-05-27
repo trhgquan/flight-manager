@@ -3,7 +3,7 @@ from django.http import HttpResponse
 
 #from FlightManager.main.models import Flight
 from .models import *
-from .forms import FlightForm
+from .forms import FlightDetailForm, FlightForm
 
 # Create your views here.
 
@@ -38,6 +38,20 @@ def flightCreate(request):
         if form.is_valid():
             form.save()
             return redirect('/')
+    
+    context = {'form' : form}
+
+    return render(request, 'main/flight/flightForm.html', context)
+
+
+def flightDetailCreate(request):
+    form = FlightDetailForm()
+
+    if request.method == 'POST':
+        form = FlightDetailForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
 
     context = {'form' : form}
     return render(request, 'main/flight/flightForm.html', context)
@@ -48,6 +62,19 @@ def flightUpdate(request, pk):
 
     if request.method == 'POST':
         form = FlightForm(request.POST, instance=flight)
+        if form.is_valid():
+            form.save()
+            return redirect('/flight/list')
+    
+    context = {'form' : form}
+    return render(request, 'main/flight/flightForm.html', context)
+
+def flightDetailUpdate(request, pk):
+    detail = FlightDetail.objects.get(id=pk)
+    form = FlightDetailForm(instance=detail)
+
+    if request.method == 'POST':
+        form = FlightDetailForm(request.POST, instance=detail)
         if form.is_valid():
             form.save()
             return redirect('/flight/list')
