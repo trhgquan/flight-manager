@@ -18,18 +18,48 @@ from .forms import *
 # Authenticate
 @unauthenticated_user
 def auth_signup(request):
-    # More processing for POST method here.
+    '''Controller for creating new User.
 
+    - with any methods differ than POST: render register page
+    - else: try to create a new User.
+
+    Notice that this will create a new User, with blank customer info.
+    Customer will fill out these infos later.
+    '''
     # Handling register request
-    # if request.method == 'POST':
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
 
+        if form.is_valid():
+            # I don't use the CustomerService here 
+            # since the user will update his informations himself.
+            form.save()
 
-    return render(request, 'main/signup.html')
+            username = form.cleaned_data.get('username')
+
+            messages.success(request, f'Successfully created an account {username}')
+           
+            return redirect('auth.signin')
+        else:
+            error_messages = ''.join(message for message in form.error_messages.keys())
+
+            messages.error(request, f'Failed to create new account: {error_messages}')
+
+    form = RegisterForm()
+
+    context = {
+        'form' : form
+    }
+
+    return render(request, 'main/signup.html', context)
 
 @unauthenticated_user
 def auth_signin(request):
-    # More processing for POST method here.
+    '''Controller for signing in
 
+    - with any methods differ than POST: render login page
+    - else: try to log user in.
+    '''
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -40,7 +70,7 @@ def auth_signin(request):
             login(request, user)
             return redirect('home')
         else:
-            messages.info(request, 'Username or Password is incorrect, please try again.')
+            messages.error(request, 'Username or Password is incorrect, please try again.')
 
     form = LoginForm()
 
@@ -52,7 +82,12 @@ def auth_signin(request):
 
 @login_required(login_url = 'auth.signin')
 def auth_logout(request):
+    '''Controller for logging out
+
+    - Requires user to log in.
+    '''
     logout(request)
+    messages.success(request, 'Successfully logged out, thanks!')
     return redirect('auth.signin')
 
 def home(request):

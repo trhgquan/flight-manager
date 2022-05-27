@@ -13,9 +13,6 @@ urlpatterns = [
     path('flight/detailcreate/', views.flightDetailCreate, name = 'flight_detail_create'),   #create detail
     path('flight/delete/<str:pk>', views.flightDelete, name = 'flight_delete'),
 
-    path('flights/', views.flights, name = 'flights'),
-    path('customer/', views.customer, name = 'customer'),
-
     # Airport
     path('airport/list/', views.airport_list, name = 'airport_list'), 
     path('airport/create/', views.createAirport, name = 'create_airport'),

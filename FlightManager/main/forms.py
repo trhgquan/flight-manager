@@ -5,7 +5,14 @@ from django import forms
 
 from .models import *
 
+# Authentication forms
 class LoginForm(AuthenticationForm):
+    '''Login form
+
+    Required fields:
+        - username
+        - password
+    '''
     username = forms.CharField(widget = forms.TextInput(
         attrs = {
             'class' : 'form-control',
@@ -18,11 +25,55 @@ class LoginForm(AuthenticationForm):
             'placeholder' : 'Your password',
         }
     ))
+
     class Meta:
         model = User,
         fields = [
             'username',
             'password'
+        ]
+
+class RegisterForm(UserCreationForm):
+    '''Register form
+
+    Required fields:
+        - username (unique)
+        - password1
+        - password2 (must match with password1)
+        - email (valid email)
+    '''
+    username = forms.CharField(widget = forms.TextInput(
+        attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Your username',
+        }
+    ))
+    email = forms.CharField(widget = forms.EmailInput(
+        attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Your email',
+        },
+    ))
+    password1 = forms.CharField(widget = forms.PasswordInput(
+        attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Your password',
+        },
+    ), label = 'Your password')
+    password2 = forms.CharField(widget = forms.PasswordInput(
+        attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Confirm your password',
+        }
+    ), label = 'Confirm your password')
+
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'email',
+            'password1',
+            'password2',
         ]
 
 class FlightForm(ModelForm):
