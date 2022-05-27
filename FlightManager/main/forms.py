@@ -16,3 +16,9 @@ class AirportForm(ModelForm):
     class Meta:
         model = Airport
         fields = '__all__'
+
+#customer
+class CustomerForm(ModelForm):
+    class Meta:
+        model = Customer
+        fields = '__all__'

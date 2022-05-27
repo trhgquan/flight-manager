@@ -1,0 +1,31 @@
+{% extends 'main/main.html' %}
+
+
+{% block content %}
+<br>
+
+	<div class="col-md-7"> <!-- 7 / 12 col-->
+		<h5>LIST CUSTOMERS</h5>
+		<hr>
+		<div class="card card-body">
+			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'create_customer' %}">Create Customer</a>
+			<table class="table table-sm">
+				<tr>
+					<th></th>
+					<th>Customer</th>
+					<th>Phone</th>
+
+					<tr>
+						<td><a class= "btn btn-sm btn-info" href="{% url 'customer_per' %}">View</a></td> 
+						<td> Lady Gaga </td>
+						<td> 113 </td>
+
+					<tr>
+					
+				</tr>
+
+			</table>
+		</div>
+	</div>
+
+{% endblock %}

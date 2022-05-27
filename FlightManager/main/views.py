@@ -96,7 +96,7 @@ def flights(request):
     return render(request, 'main/flights.html')
 
 def customer(request):
-    return render(request, 'main/customer.html')
+    return render(request, 'customer/customer_list.html')
 
 def booking(request):
     return render(request, 'main/booking.html')
@@ -144,3 +144,25 @@ def deleteAirport(request, pk):
 
 	context = {'item':airport}
 	return render(request, 'airport/delete.html', context)
+
+#customer
+def customerPer(request):
+	return render(request, 'customer/customer_per.html')
+
+def createCustomer(request):
+	form= CustomerForm()
+	if request.method=='POST':
+		form=CustomerForm(request.POST)
+		if form.is_valid():
+			form.save()
+			return redirect('/')
+
+	context = {'form':form}
+
+	return render(request,'customer/customer_form.html', context)
+
+def updateCustomer(request):
+	return render(request,'customer/customer_update.html')
+
+def deleteCustomer(request):
+	return render(request,'customer/customer_delete.html')
