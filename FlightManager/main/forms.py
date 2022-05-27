@@ -1,5 +1,6 @@
 from django.forms import ModelForm
-from .models import Flight, FlightDetail
+
+from .models import *
 
 class FlightForm(ModelForm):
     class Meta:
@@ -9,4 +10,9 @@ class FlightForm(ModelForm):
 class FlightDetailForm(ModelForm):
     class Meta:
         model = FlightDetail
+
+class AirportForm(ModelForm):
+    class Meta:
+        model = Airport
+
         fields = '__all__'

@@ -13,13 +13,21 @@ urlpatterns = [
     path('flight/detailcreate/', views.flightDetailCreate, name='flight_detail_create'),   #create detail
     path('flight/delete/<str:pk>', views.flightDelete, name='flight_delete'),
 
+    path('flights/', views.flights, name='flights'),
+    path('customer/', views.customer, name='customer'),
 
-
-    path('customer/', views.customer),
+    # Airport
+    path('airport/list/', views.airport_list, name='airport_list'), 
+    path('airport/create/', views.createAirport, name='create_airport'),
+    path('airport/update/<str:pk>/', views.updateAirport, name='update_airport'),
+    path('airport/delete/<str:pk>/', views.deleteAirport, name='delete_airport'),
 
     # Authentication
     path('signup/', views.signup, name='auth.signup'),
     path('login/', views.login, name='auth.login'),
+
+    # Booking
+    path('booking/', views.booking, name='booking'),
 
     # Report
     path('report/', views.report, name='report'),

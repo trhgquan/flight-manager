@@ -1,24 +1,26 @@
 {% load static %}
 
 <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark justify-content-between">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="{% url 'home' %}">
         <img src="{% static 'images/logo.png' %}" width="120" height="50" alt="Logo">
     </a>
     
     <ul class="nav navbar-nav">
-      <!-- Notice that we'll use a different navbar in authenticated / non-authenticated case -->
-      {% comment %} {% if authenticated %} {% endcomment %}
       <li class='nav-item'>
         <a class='nav-link' href='{% url "flight_list" %}'>Flight</a>
-      </li><li class='nav-item'>
-        <a class='nav-link' href='{% url "auth.login" %}'>Login</a>
       </li>
-      <li class='nav-item'>
-        <a class='nav-link' href='{% url "auth.signup" %}'>Sign up</a>
+      <li class="{% if nbar == 'home' %}nav-item active {% endif %}">
+        <a class="nav-link" href="{% url 'home' %}">Dashboard</a>
       </li>
-      {% comment %} {% else %} {% endcomment %}
-      {% comment %} authenticated case {% endcommend %}
-      {% comment %} {% endif %} {% endcomment %}
+      <li class="nav-item">
+        <a class="nav-link" href="#">Flights</a>
+      </li>
+      <li class="{% if nbar == 'airport_list' %}nav-item active {% endif %}">
+        <a class="nav-link" href="{% url 'airport_list' %}">Airport</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Customer</a>
+      </li>
     </ul>
     </div>
   </nav>
