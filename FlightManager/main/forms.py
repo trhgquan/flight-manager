@@ -10,9 +10,9 @@ class FlightForm(ModelForm):
 class FlightDetailForm(ModelForm):
     class Meta:
         model = FlightDetail
+        fields = '__all__'
 
 class AirportForm(ModelForm):
     class Meta:
         model = Airport
-
         fields = '__all__'
