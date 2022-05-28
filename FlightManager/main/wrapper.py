@@ -1,4 +1,4 @@
-from models import Flight
+from .models import Flight
 
 class FlightStatisticWrapper:
     __flight: Flight
