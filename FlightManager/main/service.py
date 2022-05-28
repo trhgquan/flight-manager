@@ -1,6 +1,6 @@
-from dao import *
-from models import *
-from wrapper import FlightStatisticWrapper
+from .dao import *
+from .models import *
+from .wrapper import FlightStatisticWrapper
 from datetime import date, datetime
 from random import random
 

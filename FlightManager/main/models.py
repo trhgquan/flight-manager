@@ -13,7 +13,9 @@ class Customer(models.Model):
     date_created = models.DateTimeField(auto_now_add = True)
 
     def __str__(self):
-        return self.name
+        if self.name is not None:
+            return self.name
+        return 'Unamed Customer'
 
 class Manager(Customer):
     def __str__(self):

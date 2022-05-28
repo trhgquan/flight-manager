@@ -1,0 +1,56 @@
+{% extends 'main/main.html' %}
+{% block content %}
+<br/>
+<div class='container'>
+    <div class='row'>
+        <div class='col-md-4'>
+            <div class='card card-body'>
+                <h5>Profile picture</h5>
+                <hr>
+                // profile goes here
+            </div>
+        </div>
+        <div class='col-md-8'>
+            <div class='card card-body'>
+                <h5 class='page-title'>Your profile</h5>
+                <hr>
+                <table class='table-sm'>
+                    <tr>
+                        <td>Name</td>
+                        <td>{{ customer.name }} ({{ user.username }})</td>
+                    </tr>
+                    <tr>
+                        <td>Phone</td>
+                        <td>{{ customer.phone }}</td>
+                    </tr>
+                    <tr>
+                        <td>ID</td>
+                        <td>{{ customer.identity_code }}</td>
+                    </tr>
+                </table>
+                <hr>
+                <a class='page-text' href='{% url "profile.update_information" %}'>Update your personal profile</a>
+            </div>
+            <br/>
+            <div class="card card-body">
+                <h5 class='page-title'>Credentials</h5>
+                
+                <hr/>
+                <table class="table-sm">
+                    <tr>
+                        <td>Email</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td>*****</td>
+                    </tr>
+                </table>
+                <hr>
+                <a class='page-text' href='{% url "profile.update_password" %}'>Update your password</a>
+            </div>
+        </div>
+    </div>
+</div>
+<br/>
+{% endblock %}

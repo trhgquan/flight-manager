@@ -1,0 +1,45 @@
+{% extends 'main/main.html' %}
+
+{% block content %}
+<div class='row'>
+    <div class='col'></div>
+    <div class='col'>
+        <center>
+            <h1 class='page-title'>Sign up</h1>
+            <p class='text-muted'>Create a new account and start your journey!</p>
+        </center>
+        <hr/>
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <p class="text-danger">You have some errors:</p>
+                <ul class="text-danger">
+                {% for obj, values in message.message.items %}
+                    {% for val in values  %}
+                        <li>{{ val.message }}</li>
+                    {% endfor %}
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endfor %}
+        <form method='POST'>
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <div class='form-group'>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="terms_and_conditions">
+                    <label for='terms_and_conditions'>I'm agreed to the Terms and Conditions</label>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <button type='submit' class='btn btn-lg btn-outline-success btn-block'>Sign up</button>
+                <p class='text-muted'>or, if you already have an account,</p>
+                <a class='btn btn-lg btn-outline-info btn-block' role='button' href='{% url "auth.signin" %}' >Sign in</a>
+            </div>
+        </form>
+    </div>
+    <div class='col'></div>
+</div>
+{% endblock %}
