@@ -5,6 +5,14 @@ body{
     background-color: #ebeff5;
 }
 
+.content {
+    margin-top: 30px;
+}
+
+footer {
+    margin-top: 30px;
+}
+
 
 #total-orders{
     background-color: #4cb4c7;
