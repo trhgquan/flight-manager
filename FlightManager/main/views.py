@@ -52,7 +52,7 @@ def auth_signup(request):
         'form' : form
     }
 
-    return render(request, 'main/signup.html', context)
+    return render(request, 'main/auth/signup.html', context)
 
 @unauthenticated_user
 def auth_signin(request):
@@ -79,7 +79,7 @@ def auth_signin(request):
         'form' : form,
     }
 
-    return render(request, 'main/login.html', context)
+    return render(request, 'main/auth/login.html', context)
 
 @login_required(login_url = 'auth.signin')
 def auth_logout(request):
@@ -141,6 +141,33 @@ def profile_update_information(request):
 
     return render(request, 'main/profile/update.html', context)
 
+@login_required(login_url = 'auth.signin')
+def profile_update_password(request):
+    '''Update user's password
+    '''
+    if request.method == 'POST':
+        # ChangePasswordForm requires user instance
+        form = ChangePasswordForm(request.user, request.POST)
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(request, 'Your password has been changed!')
+
+            return redirect('profile.update_password')
+        else:
+            errors_list = form.errors.as_data
+
+            messages.error(request, errors_list)
+
+    form = ChangePasswordForm(request.user)
+
+    context = {
+        'form' : form,
+    }
+
+    return render(request, 'main/auth/change_password.html', context)
+
 def flightList(request):
     flights = Flight.objects.all()
     return render(request, 'main/flight/flightList.html', {'flights' : flights})
@@ -162,7 +189,6 @@ def flightCreate(request):
     context = {'form' : form}
 
     return render(request, 'main/flight/flightForm.html', context)
-
 
 def flightDetailCreate(request):
     form = FlightDetailForm()

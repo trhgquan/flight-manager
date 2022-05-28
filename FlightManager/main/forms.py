@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django import forms
 
@@ -76,6 +76,30 @@ class RegisterForm(UserCreationForm):
             'password2',
         ]
 
+class ChangePasswordForm(PasswordChangeForm):
+    '''ChangePasswordForm
+
+    Required fields:
+    - old_password
+    - new_password1
+    - new_password2
+    '''
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['old_password'].widget = forms.PasswordInput(attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Your current password'
+        })
+        self.fields['new_password1'].widget = forms.PasswordInput(attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Your new password',
+        })
+        self.fields['new_password2'].widget = forms.PasswordInput(attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Confirm your new password',
+        })
+
 class FlightForm(ModelForm):
     class Meta:
         model = Flight
@@ -91,8 +115,14 @@ class AirportForm(ModelForm):
         model = Airport
         fields = '__all__'
 
-#customer
 class CustomerForm(ModelForm):
+    '''Customer Form
+
+    Required fields:
+    - name
+    - phone
+    - identity_code
+    '''
     class Meta:
         model = Customer
         fields = '__all__'

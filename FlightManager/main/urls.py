@@ -27,6 +27,7 @@ urlpatterns = [
     # Profile
     path('profile/', views.profile_view, name = 'profile.view'),
     path('profile/update', views.profile_update_information, name = 'profile.update_information'),
+    path('profile/update/password', views.profile_update_password, name= 'profile.update_password'),
 
     # Booking
     path('booking/', views.booking, name = 'booking'),

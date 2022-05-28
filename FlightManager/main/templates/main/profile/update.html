@@ -6,6 +6,7 @@
             <div class="col"></div>
             <div class='col'>
                 <h5 class='page-title'>Update your personal profile</h5>
+                <a href="{% url "profile.view" %}">Back to your profile</a>
                 <hr/>
                 {% for message in messages %}
                     {% if message.tags == 'error' %}
