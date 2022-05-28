@@ -9,7 +9,7 @@ class Customer(models.Model):
     name = models.CharField(max_length = 200, null = True)
     phone = models.CharField(max_length = 200, null = True)
     identity_code = models.CharField(max_length = 200, null = True)
-    profile_pic = models.ImageField(default = "logo.png", null = True, blank = True)
+    profile_pic = models.ImageField(default = "blank.jpg", null = True, blank = True)
     date_created = models.DateTimeField(auto_now_add = True)
 
     def __str__(self):

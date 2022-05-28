@@ -7,7 +7,11 @@
             <div class='card card-body'>
                 <h5>Profile picture</h5>
                 <hr>
-                // profile goes here
+                {% if request.user.customer.profile_pic.url is not None  %}
+                    <img class='img-thumbnail' src='{{ request.user.customer.profile_pic.url }}' />
+                {% else %}
+                    <p class="text-muted">No avatar</p>
+                {% endif %}
             </div>
         </div>
         <div class='col-md-8'>

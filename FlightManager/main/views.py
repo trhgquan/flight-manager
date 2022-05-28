@@ -37,9 +37,9 @@ def auth_signup(request):
             # Save user to database
             form.save()
 
-            user_instance = form.instance.username
+            username = form.cleaned_data.get('username')
 
-            messages.success(request, f'Successfully created an account {user_instance.username}')
+            messages.success(request, f'Successfully created an account {username}')
            
             return redirect('auth.signin')
         else:
@@ -117,7 +117,7 @@ def profile_update_information(request):
     customer = request.user.customer
 
     if request.method == 'POST':
-        form = CustomerForm(request.POST, instance = customer)
+        form = CustomerForm(request.POST, request.FILES, instance = customer)
 
         if form.is_valid():
             # Calling services to handle model update.
