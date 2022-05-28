@@ -11,7 +11,14 @@
         <hr/>
         {% for message in messages %}
             {% if message.tags == 'error' %}
-                <p class='text-danger'>{{ message }}</p>
+                <p class="text-danger">You have some errors:</p>
+                <ul class="text-danger">
+                {% for obj, values in message.message.items %}
+                    {% for val in values  %}
+                        <li>{{ val.message }}</li>
+                    {% endfor %}
+                {% endfor %}
+                </ul>
             {% endif %}
         {% endfor %}
         <form method='POST'>

@@ -34,19 +34,17 @@ def auth_signup(request):
         form = RegisterForm(request.POST)
 
         if form.is_valid():
-            # I don't use the CustomerService here 
-            # since the user will update his informations himself.
+            # Save user to database
             form.save()
 
-            username = form.cleaned_data.get('username')
+            user_instance = form.instance.username
 
-            messages.success(request, f'Successfully created an account {username}')
+            messages.success(request, f'Successfully created an account {user_instance.username}')
            
             return redirect('auth.signin')
         else:
-            error_messages = ''.join(message for message in form.error_messages.keys())
-
-            messages.error(request, f'Failed to create new account: {error_messages}')
+            error_list = form.errors.as_data
+            messages.error(request, error_list)
 
     form = RegisterForm()
 

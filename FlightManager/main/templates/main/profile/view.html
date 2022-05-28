@@ -3,25 +3,21 @@
 <br/>
 <div class='container'>
     <div class='row'>
-        <div class='col-md-5'>
+        <div class='col-md-4'>
             <div class='card card-body'>
                 <h5>Profile picture</h5>
                 <hr>
                 // profile goes here
             </div>
         </div>
-        <div class='col-md-7'>
+        <div class='col-md-8'>
             <div class='card card-body'>
-                <h5>Your profile</h5>
+                <h5 class='page-title'>Your profile</h5>
                 <hr>
                 <table class='table-sm'>
                     <tr>
                         <td>Name</td>
                         <td>{{ customer.name }} ({{ user.username }})</td>
-                    </tr>
-                    <tr>
-                        <td>Email</td>
-                        <td>{{ user.email }}</td>
                     </tr>
                     <tr>
                         <td>Phone</td>
@@ -32,10 +28,26 @@
                         <td>{{ customer.identity_code }}</td>
                     </tr>
                 </table>
-                <p class='text-muted'>Change your personal contact:</p>
-                <a class='btn btn-success' href='{% url "profile.update_information" %}'>Update your profile</a>
-                <p class='text-muted'>Or, update your credentials (e.g email, password):</p>
-                <a class='btn btn-danger' href='#'>Update your credentials</a>
+                <hr>
+                <a class='page-text' href='{% url "profile.update_information" %}'>Update your personal profile</a>
+            </div>
+            <br/>
+            <div class="card card-body">
+                <h5 class='page-title'>Credentials</h5>
+                
+                <hr/>
+                <table class="table-sm">
+                    <tr>
+                        <td>Email</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td>*****</td>
+                    </tr>
+                </table>
+                <hr>
+                <a class='page-text' href='#'>Update your credentials</a>
             </div>
         </div>
     </div>
