@@ -26,10 +26,11 @@
             <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Hello, {{ request.user }}
             </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <a class='dropdown-item' href="{% url 'profile.view' %}">Profile</a>
-                <a class='dropdown-item' href="{% url 'auth.signout' %}">Logout</a>
-            </div>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <li><a class='dropdown-item' href="{% url 'profile.view' %}">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class='dropdown-item' href="{% url 'auth.signout' %}">Logout</a></li>
+            </ul>
         </li>
         {% endif %}
     </ul>

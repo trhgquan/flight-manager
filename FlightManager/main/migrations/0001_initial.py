@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=200, null=True)),
                 ('phone', models.CharField(max_length=200, null=True)),
                 ('identity_code', models.CharField(max_length=200, null=True)),
-                ('profile_pic', models.ImageField(blank=True, default='logo.png', null=True, upload_to='')),
+                ('profile_pic', models.ImageField(blank=True, default='blank.jpg', null=True, upload_to='')),
                 ('date_created', models.DateTimeField(auto_now_add=True)),
                 ('user', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
