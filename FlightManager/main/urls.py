@@ -24,6 +24,10 @@ urlpatterns = [
     path('login/', views.auth_signin, name = 'auth.signin'),
     path('logout/', views.auth_logout, name = 'auth.signout'),
 
+    # Profile
+    path('profile/', views.profile_view, name = 'profile.view'),
+    path('profile/update', views.profile_update_information, name = 'profile.update_information'),
+
     # Booking
     path('booking/', views.booking, name = 'booking'),
 

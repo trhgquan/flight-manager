@@ -1,0 +1,44 @@
+{% extends 'main/main.html' %}
+{% block content %}
+<br/>
+<div class='container'>
+    <div class='row'>
+        <div class='col-md-5'>
+            <div class='card card-body'>
+                <h5>Profile picture</h5>
+                <hr>
+                // profile goes here
+            </div>
+        </div>
+        <div class='col-md-7'>
+            <div class='card card-body'>
+                <h5>Your profile</h5>
+                <hr>
+                <table class='table-sm'>
+                    <tr>
+                        <td>Name</td>
+                        <td>{{ customer.name }} ({{ user.username }})</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <td>Phone</td>
+                        <td>{{ customer.phone }}</td>
+                    </tr>
+                    <tr>
+                        <td>ID</td>
+                        <td>{{ customer.identity_code }}</td>
+                    </tr>
+                </table>
+                <p class='text-muted'>Change your personal contact:</p>
+                <a class='btn btn-success' href='{% url "profile.update_information" %}'>Update your profile</a>
+                <p class='text-muted'>Or, update your credentials (e.g email, password):</p>
+                <a class='btn btn-danger' href='#'>Update your credentials</a>
+            </div>
+        </div>
+    </div>
+</div>
+<br/>
+{% endblock %}

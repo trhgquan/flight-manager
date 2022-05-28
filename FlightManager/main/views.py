@@ -13,6 +13,9 @@ from .decorators import unauthenticated_user
 from .models import *
 from .forms import *
 
+# Services
+from .service import *
+
 # Create your views here.
 
 # Authenticate
@@ -91,11 +94,58 @@ def auth_logout(request):
     return redirect('auth.signin')
 
 def home(request):
+    '''Home, aka Dashboard
+    '''
     return render(request, 'main/dashboard/dashboard.html')
 
+@login_required(login_url = 'auth.signin')
+def profile_view(request):
+    '''User profile
+    '''
+
+    customer = request.user.customer
+
+    context = {
+        'customer' : customer,
+    }
+
+    return render(request, 'main/profile/view.html', context)
+
+@login_required(login_url = 'auth.signin')
+def profile_update_information(request):
+    '''Update user profile.
+    '''
+
+    customer = request.user.customer
+
+    if request.method == 'POST':
+        form = CustomerForm(request.POST, instance = customer)
+
+        if form.is_valid():
+            # Calling services to handle model update.
+            customer_service = CustomerService()
+
+            customer_service.updateCustomer(form.instance)
+
+            messages.success(request, 'Your changes are saved!')
+
+            return redirect('profile.update_information')
+        else:
+            error_messages = ''.join(message for message in form.error_messages.keys())
+
+            messages.error(request, f'Something went wrong: {error_messages}')
+
+    form = CustomerForm(instance = customer)
+
+    context = {
+        'customer_form' : form,
+    }
+
+    return render(request, 'main/profile/update.html', context)
+
 def flightList(request):
-	flights = Flight.objects.all()
-	return render(request, 'main/flight/flightList.html', {'flights' : flights})
+    flights = Flight.objects.all()
+    return render(request, 'main/flight/flightList.html', {'flights' : flights})
 
 def flightDetail(request, pk):
     detail = FlightDetail.objects.get(id=pk)
@@ -164,9 +214,6 @@ def flightDelete(request, pk):
     context = {'item' : flight}
     return render(request, 'main/flight/flightDelete.html', context)
 
-def flights(request):
-    return render(request, 'main/flights.html')
-
 def customer(request):
     return render(request, 'customer/customer_list.html')
 
@@ -196,45 +243,45 @@ def createAirport(request):
 
 def updateAirport(request, pk):
 
-	airport = Airport.objects.get(id=pk)
-	form = AirportForm(instance=airport)
+    airport = Airport.objects.get(id=pk)
+    form = AirportForm(instance=airport)
 
-	if request.method == 'POST':
-		form = AirportForm(request.POST, instance=airport)
-		if form.is_valid():
-			form.save()
-			return redirect('/airport/list')
+    if request.method == 'POST':
+        form = AirportForm(request.POST, instance=airport)
+        if form.is_valid():
+            form.save()
+            return redirect('/airport/list')
 
-	context = {'form':form}
-	return render(request, 'airport/airport_form.html', context)
+    context = {'form':form}
+    return render(request, 'airport/airport_form.html', context)
 
 def deleteAirport(request, pk):
-	airport = Airport.objects.get(id=pk)
-	if request.method == "POST":
-		airport.delete()
-		return redirect('/airport/list')
+    airport = Airport.objects.get(id=pk)
+    if request.method == "POST":
+        airport.delete()
+        return redirect('/airport/list')
 
-	context = {'item':airport}
-	return render(request, 'airport/delete.html', context)
+    context = {'item':airport}
+    return render(request, 'airport/delete.html', context)
 
 #customer
 def customerPer(request):
-	return render(request, 'customer/customer_per.html')
+    return render(request, 'customer/customer_per.html')
 
 def createCustomer(request):
-	form= CustomerForm()
-	if request.method=='POST':
-		form=CustomerForm(request.POST)
-		if form.is_valid():
-			form.save()
-			return redirect('/')
+    form= CustomerForm()
+    if request.method=='POST':
+        form=CustomerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
 
-	context = {'form':form}
+    context = {'form':form}
 
-	return render(request,'customer/customer_form.html', context)
+    return render(request,'customer/customer_form.html', context)
 
 def updateCustomer(request):
-	return render(request,'customer/customer_update.html')
+    return render(request,'customer/customer_update.html')
 
 def deleteCustomer(request):
-	return render(request,'customer/customer_delete.html')
+    return render(request,'customer/customer_delete.html')

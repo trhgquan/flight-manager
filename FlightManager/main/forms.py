@@ -96,3 +96,18 @@ class CustomerForm(ModelForm):
     class Meta:
         model = Customer
         fields = '__all__'
+        exclude = [
+            'user',
+        ]
+    
+        widgets = {
+            'name' : forms.TextInput(attrs = {
+                'class' : 'form-control'
+            }),
+            'phone' : forms.TextInput(attrs = {
+                'class' : 'form-control'
+            }),
+            'identity_code' : forms.TextInput(attrs = {
+                'class' : 'form-control'
+            }),
+        }
