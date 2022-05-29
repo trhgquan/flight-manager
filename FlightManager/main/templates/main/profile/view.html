@@ -1,4 +1,10 @@
 {% extends 'main/main.html' %}
+{% load static %}
+
+{% block title %}
+View Profile
+{% endblock %}
+
 {% block content %}
 <br/>
 <div class='container'>
@@ -8,9 +14,9 @@
                 <h5>Profile picture</h5>
                 <hr>
                 {% if request.user.customer.profile_pic.url is not None  %}
-                    <img class='img-thumbnail' src='{{ request.user.customer.profile_pic.url }}' />
+                    <img src="{{ request.user.customer.profile_pic.url }}" class="img-thumbnail"/>
                 {% else %}
-                    <p class="text-muted">No avatar</p>
+                    <img src="{% static 'upload/images/blank.jpg' %}" class="img-thumbnail"/>
                 {% endif %}
             </div>
         </div>

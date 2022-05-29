@@ -1,5 +1,9 @@
 {% extends 'main/main.html' %}
 
+{% block title %}
+Sign up
+{% endblock %}
+
 {% block content %}
 <div class='row'>
     <div class='col'></div>
@@ -9,22 +13,21 @@
             <p class='text-muted'>Create a new account and start your journey!</p>
         </center>
         <hr/>
-        {% for message in messages %}
-            {% if message.tags == 'error' %}
-                <p class="text-danger">You have some errors:</p>
-                <ul class="text-danger">
-                {% for obj, values in message.message.items %}
-                    {% for val in values  %}
-                        <li>{{ val.message }}</li>
-                    {% endfor %}
-                {% endfor %}
-                </ul>
-            {% endif %}
-        {% endfor %}
+
         <form method='POST'>
             {% csrf_token %}
 
-            {{ form.as_p }}
+            {% for field in form  %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    <ul class="text-danger">
+                    {% for error in field.errors  %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
 
             <div class='form-group'>
                 <div class="form-check">

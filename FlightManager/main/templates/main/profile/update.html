@@ -1,4 +1,9 @@
 {% extends 'main/main.html' %}
+
+{% block title %}
+Update Profile
+{% endblock %}
+
 {% block content %}
 <div class='container'>
     <div class='row'>
@@ -8,17 +13,24 @@
                 <h5 class='page-title'>Update your personal profile</h5>
                 <a href="{% url "profile.view" %}">Back to your profile</a>
                 <hr/>
-                {% for message in messages %}
-                    {% if message.tags == 'error' %}
-                        <p class="text-danger">{{ message }}</p>
-                    {% elif message.tags == 'success' %}
-                        <p class="text-success">{{ message }}</p>
-                    {% endif %}
+                {% if message.tags == 'success' %}
+                    <p class="text-success">{{ message }}</p>
+                {% endif %}
 
-                {% endfor %}
                 <form action='{% url "profile.update_information" %}' method='POST' enctype='multipart/form-data'>
                     {% csrf_token %}
-                    {{ customer_form.as_p }}
+                    
+                    {% for field in form %}
+                        <div class="form-group">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            <ul class="text-danger">
+                            {% for error in field.errors  %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
     
                     <div class='form-group'>
                         <button type='submit' class='btn btn-outline-success btn-lg'>Save</button>

@@ -20,14 +20,14 @@ urlpatterns = [
     path('airport/delete/<str:pk>/', views.deleteAirport, name = 'delete_airport'),
 
     # Authentication
-    path('register/', views.auth_signup, name = 'auth.signup'),
-    path('login/', views.auth_signin, name = 'auth.signin'),
+    path('register/', views.RegisterView.as_view(), name = 'auth.signup'),
+    path('login/', views.LoginView.as_view(), name = 'auth.signin'),
     path('logout/', views.auth_logout, name = 'auth.signout'),
 
     # Profile
     path('profile/', views.profile_view, name = 'profile.view'),
-    path('profile/update', views.profile_update_information, name = 'profile.update_information'),
-    path('profile/update/password', views.profile_update_password, name= 'profile.update_password'),
+    path('profile/update', views.UpdateProfileView.as_view(), name = 'profile.update_information'),
+    path('profile/update/password', views.UpdatePasswordView.as_view(), name= 'profile.update_password'),
 
     # Booking
     path('booking/', views.booking, name = 'booking'),

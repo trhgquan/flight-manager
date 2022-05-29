@@ -1,11 +1,13 @@
 # Typical imports inside views.py
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseGone
 
 # For authentication
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views import View
 
 from .decorators import unauthenticated_user
 
@@ -18,50 +20,47 @@ from .service import *
 
 # Create your views here.
 
-# Authenticate
-@unauthenticated_user
-def auth_signup(request):
-    '''Controller for creating new User.
-
-    - with any methods differ than POST: render register page
-    - else: try to create a new User.
-
-    Notice that this will create a new User, with blank customer info.
-    Customer will fill out these infos later.
+# Authentication views
+class LoginView(View):
+    '''Login View, expressed as an OOP class.
     '''
-    # Handling register request
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
 
-        if form.is_valid():
-            # Save user to database
-            form.save()
-
-            username = form.cleaned_data.get('username')
-
-            messages.success(request, f'Successfully created an account {username}')
-           
-            return redirect('auth.signin')
-        else:
-            error_list = form.errors.as_data
-            messages.error(request, error_list)
-
-    form = RegisterForm()
-
-    context = {
-        'form' : form
-    }
-
-    return render(request, 'main/auth/signup.html', context)
-
-@unauthenticated_user
-def auth_signin(request):
-    '''Controller for signing in
-
-    - with any methods differ than POST: render login page
-    - else: try to log user in.
+    '''HTML template for Login view.
     '''
-    if request.method == 'POST':
+    template_name = 'main/auth/login.html'
+
+    '''Form used for LoginView
+    '''
+    form_class = LoginForm
+
+    '''Where to redirect after a successful login.
+    '''
+    redirect_to_success = 'home'
+
+    '''Where to redirect if something went wrong.
+    '''
+    redirect_to_fails = 'auth.signin'
+
+    @method_decorator(unauthenticated_user)
+    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''Applies decorator to all methods inside this class
+        '''
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request : HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''Login screen, aka what the user see when accessing Login page.
+        '''
+        form = self.form_class
+
+        context = {
+            'form' : form
+        }
+
+        return render(request, self.template_name, context)
+    
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''Login processing (with POST)
+        '''
         username = request.POST.get('username')
         password = request.POST.get('password')
 
@@ -69,17 +68,66 @@ def auth_signin(request):
 
         if user is not None:
             login(request, user)
-            return redirect('home')
-        else:
-            messages.error(request, 'Username or Password is incorrect, please try again.')
 
-    form = LoginForm()
+            return redirect(self.redirect_to_success)
+    
+        messages.error(request, 'Username or Password is incorrect, please try again.')
 
-    context = {
-        'form' : form,
-    }
+        return redirect(self.redirect_to_fails)
 
-    return render(request, 'main/auth/login.html', context)
+class RegisterView(View):
+    '''Register View, expressed as an OOP class.
+    '''
+
+    '''HTML template for Sign up view
+    '''
+    template_name = 'main/auth/signup.html'
+
+    '''Form used for RegisterForm
+    '''
+    form_class = RegisterForm
+
+    '''Where to redirect to after a new account was created.
+    '''
+    redirect_to_success = 'auth.signin'
+
+    @method_decorator(unauthenticated_user)
+    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''Register screen aka what the user see when accessing Register route.
+        '''
+        form = self.form_class
+
+        context = {
+            'form' : form
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''Register processing (POST)
+        '''
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            # Save form data to a new User instance.
+            form.save()
+
+            username = form.cleaned_data.get('username')
+
+            messages.success(request, f'Successfully created {username}, now you can sign in!')
+
+            return redirect(self.redirect_to_success)
+        
+        # Form is not valid, return error message to the user.
+
+        context = {
+            'form' : form,
+        }
+
+        return render(request, self.template_name, context)
 
 @login_required(login_url = 'auth.signin')
 def auth_logout(request):
@@ -96,6 +144,7 @@ def home(request):
     '''
     return render(request, 'main/dashboard/dashboard.html')
 
+# Profile views
 @login_required(login_url = 'auth.signin')
 def profile_view(request):
     '''User profile
@@ -109,64 +158,114 @@ def profile_view(request):
 
     return render(request, 'main/profile/view.html', context)
 
-@login_required(login_url = 'auth.signin')
-def profile_update_information(request):
-    '''Update user profile.
+class UpdateProfileView(View):
+    '''UpdateProfileView, expressed as an OOP class.
     '''
 
-    customer = request.user.customer
+    '''HTML template for UpdateProfileView
+    '''
+    template_name = 'main/profile/update.html'
 
-    if request.method == 'POST':
-        form = CustomerForm(request.POST, request.FILES, instance = customer)
+    '''Form used for CustomerForm
+    '''
+    form_class = CustomerForm
+
+    '''Where to redirect to after profile updated successfully
+    '''
+    redirect_to_success = 'profile.update_information'
+
+    '''Where to redirect to when something went wrong.
+    '''
+    redirect_to_fails = 'profile.update_information'
+
+    def __init__(self) -> None:
+        '''Initialise - services goes here
+        '''
+        self.customer_service = CustomerService()
+
+    @method_decorator(login_required(login_url = 'auth.signin'))
+    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''Update Profile screen, aka what the user see when accessing Update Profile page.
+        '''
+        form = self.form_class(instance = request.user.customer)
+
+        context = {
+            'form' : form,
+        }
+
+        return render(request, self.template_name, context)
+    
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''UpdateProfile processing (POST)
+        '''
+        form = self.form_class(request.POST, request.FILES, instance = request.user.customer)
 
         if form.is_valid():
-            # Calling services to handle model update.
-            customer_service = CustomerService()
-
-            customer_service.updateCustomer(form.instance)
+            self.customer_service.updateCustomer(form.instance)
 
             messages.success(request, 'Your changes are saved!')
 
-            return redirect('profile.update_information')
-        else:
-            error_messages = ''.join(message for message in form.error_messages.keys())
+            return redirect(self.redirect_to_success)
 
-            messages.error(request, f'Something went wrong: {error_messages}')
+        # Return form with errors.
+        context = {
+            'form' : form,
+        }
 
-    form = CustomerForm(instance = customer)
+        return render(request, self.template_name, context)
 
-    context = {
-        'customer_form' : form,
-    }
-
-    return render(request, 'main/profile/update.html', context)
-
-@login_required(login_url = 'auth.signin')
-def profile_update_password(request):
-    '''Update user's password
+class UpdatePasswordView(View):
+    '''UpdatePasswordView, expressed as an OOP class.
     '''
-    if request.method == 'POST':
-        # ChangePasswordForm requires user instance
-        form = ChangePasswordForm(request.user, request.POST)
+
+    '''Form used in ChangePasswordView.
+    '''
+    form_class = ChangePasswordForm
+
+    '''HTML template for Change Password view.
+    '''
+    template_name = 'main/auth/change_password.html'
+
+    '''Where to redirects to after something went wrong.
+    '''
+    redirect_to_success = 'home'
+
+    @method_decorator(login_required(login_url = 'auth.signin'))
+    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''UpdatePassword screen aka what the user see when accessing UpdatePassword route.
+        '''
+        form = self.form_class(request.user)
+
+        context = {
+            'form' : form,
+        }
+
+        return render(request, self.template_name, context)
+    
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''UpdatePassword processing (POST)
+        '''
+        form = self.form_class(request.user, request.POST)
 
         if form.is_valid():
             form.save()
 
             messages.success(request, 'Your password has been changed!')
+        
+            # User will be automatically logged-out here,
+            return redirect(self.redirect_to_success)
+        
+        context = {
+            'form' : form,
+        }
 
-            return redirect('profile.update_password')
-        else:
-            errors_list = form.errors.as_data
-
-            messages.error(request, errors_list)
-
-    form = ChangePasswordForm(request.user)
-
-    context = {
-        'form' : form,
-    }
-
-    return render(request, 'main/auth/change_password.html', context)
+        return render(request, self.template_name, context)
 
 def flightList(request):
     flights = Flight.objects.all()

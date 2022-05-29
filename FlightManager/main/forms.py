@@ -132,12 +132,15 @@ class CustomerForm(ModelForm):
     
         widgets = {
             'name' : forms.TextInput(attrs = {
-                'class' : 'form-control'
+                'class' : 'form-control',
+                'placeholder' : 'Your name',
             }),
             'phone' : forms.TextInput(attrs = {
-                'class' : 'form-control'
+                'class' : 'form-control',
+                'placeholder' : 'Your phone',
             }),
             'identity_code' : forms.TextInput(attrs = {
-                'class' : 'form-control'
+                'class' : 'form-control',
+                'placeholder' : 'Your ID',
             }),
         }
