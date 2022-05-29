@@ -1,0 +1,37 @@
+{% extends 'main/main.html' %}
+
+{% block title %}
+Add a new Airport
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="card card-body">
+            <h5 class="page-title">Add a new Airport</h5>
+            <a href="{% url 'airport.list' %}">Back to Airport list</a>
+            <hr>
+            <form action="{% url 'airport.create' %}" method="POST">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        <ul class="text-danger">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-outline-success btn-lg">Create</button>
+                    <button type="reset" class="btn btn-outline-primary btn-lg">Reset</button>
+                </div>
+            </form>
+        </div>
+    </div>    
+</div>
+{% endblock %}

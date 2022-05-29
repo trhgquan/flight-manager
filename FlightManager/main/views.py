@@ -267,6 +267,45 @@ class UpdatePasswordView(View):
 
         return render(request, self.template_name, context)
 
+class CreateAirportView(View):
+    form_class = AirportForm
+
+    template_name = 'main/airport/form.html'
+
+    redirect_to_success = 'airport.list'
+
+    def __init__(self):
+        self.airport_service = AirportService()
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        form = self.form_class()
+
+        context = {
+            'form' : form
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            airport = self.airport_service.createAirport(form.instance)
+
+            messages.success(request, f'Added new airport {airport.name} successfully!')
+
+            return redirect(self.redirect_to_success)
+
+        context = {
+            'form' : form,
+        }
+
+        return render(request, self.template_name, context)
+
+class UpdateAirportView(CreateAirportView):
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        form = self.form_class()
+
 def flightList(request):
     flights = Flight.objects.all()
     return render(request, 'main/flight/flightList.html', {'flights' : flights})
@@ -348,10 +387,11 @@ def report(request):
 
     return render(request, 'main/report.html')
 
+
+
 def airport_list(request):
     list = Airport.objects.all()
-    print(list)
-    return render(request, 'airport/airport_list.html', {'airports':list, 'nbar': 'airport_list'})
+    return render(request, 'main/airport/list.html', {'airports':list, 'nbar': 'airport_list'})
 
 def createAirport(request):
     form = AirportForm()
@@ -362,7 +402,7 @@ def createAirport(request):
             return redirect('/airport/list')
 
     context = {'form': form}
-    return render(request, 'airport/airport_form.html', context)
+    return render(request, 'main/airport/add.html', context)
 
 def updateAirport(request, pk):
 
@@ -376,7 +416,7 @@ def updateAirport(request, pk):
             return redirect('/airport/list')
 
     context = {'form':form}
-    return render(request, 'airport/airport_form.html', context)
+    return render(request, 'main/airport/create.html', context)
 
 def deleteAirport(request, pk):
     airport = Airport.objects.get(id=pk)
@@ -385,7 +425,7 @@ def deleteAirport(request, pk):
         return redirect('/airport/list')
 
     context = {'item':airport}
-    return render(request, 'airport/delete.html', context)
+    return render(request, 'main/airport/delete.html', context)
 
 #customer
 def customerPer(request):
