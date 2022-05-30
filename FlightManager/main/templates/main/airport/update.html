@@ -1,17 +1,22 @@
 {% extends 'main/main.html' %}
 
 {% block title %}
-Add a new Airport
+Update Airport
 {% endblock title %}
 
 {% block content %}
 <div class="container">
     <div class="row">
         <div class="card card-body">
-            <h5 class="page-title">Add a new Airport</h5>
+            <h5 class="page-title">Update exisiting Airport</h5>
             <a href="{% url 'airport.list' %}">Back to Airport list</a>
             <hr>
-            <form action="{% url 'airport.create' %}" method="POST">
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <p class="text-success">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
+            <form action="{% url 'airport.update' id=airport.id %}" method="POST">
                 {% csrf_token %}
                 
                 {% for field in form %}
@@ -27,7 +32,7 @@ Add a new Airport
                 {% endfor %}
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-outline-success btn-lg">Create</button>
+                    <button type="submit" class="btn btn-outline-success btn-lg">Update</button>
                     <button type="reset" class="btn btn-outline-primary btn-lg">Reset</button>
                 </div>
             </form>

@@ -1,6 +1,7 @@
 # Typical imports inside views.py
+from django import dispatch
 from django.shortcuts import render, redirect
-from django.http import HttpRequest, HttpResponse, HttpResponseGone
+from django.http import Http404, HttpRequest, HttpResponse
 
 # For authentication
 from django.contrib import messages
@@ -8,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.generic import ListView
 
 from .decorators import unauthenticated_user
 
@@ -68,6 +70,10 @@ class LoginView(View):
 
         if user is not None:
             login(request, user)
+
+            # Decorator redirect
+            if request.GET.__contains__('next'):
+                return redirect(request.GET.__getitem__('next'))
 
             return redirect(self.redirect_to_success)
     
@@ -270,9 +276,13 @@ class UpdatePasswordView(View):
 class CreateAirportView(View):
     form_class = AirportForm
 
-    template_name = 'main/airport/form.html'
+    template_name = 'main/airport/create.html'
 
-    redirect_to_success = 'airport.list'
+    redirect_to_success = 'airport.update'
+
+    @method_decorator(login_required(login_url = 'auth.signin'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def __init__(self):
         self.airport_service = AirportService()
@@ -294,7 +304,7 @@ class CreateAirportView(View):
 
             messages.success(request, f'Added new airport {airport.name} successfully!')
 
-            return redirect(self.redirect_to_success)
+            return redirect(self.redirect_to_success, id = airport.id)
 
         context = {
             'form' : form,
@@ -303,8 +313,44 @@ class CreateAirportView(View):
         return render(request, self.template_name, context)
 
 class UpdateAirportView(CreateAirportView):
+    template_name = 'main/airport/update.html'
+
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        form = self.form_class()
+        try:
+            airport = self.airport_service.findAirportById(id = self.kwargs['id'])
+
+            form = self.form_class(instance = airport)
+
+            context = {
+                'form' : form,
+                'airport' : airport,
+            }
+
+            return render(request, self.template_name, context)
+        except Airport.DoesNotExist:
+            raise Http404('No Airport found')
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        airport = self.airport_service.findAirportById(id = self.kwargs['id'])
+
+        form = self.form_class(request.POST, instance = airport)
+
+        if form.is_valid():
+            print('This happened')
+            airport.name = form.cleaned_data.get('name')
+
+            new_airport = self.airport_service.updateAirport(airport)
+
+            messages.success(request, f'Airport {new_airport.name} updated')
+
+            return redirect(self.redirect_to_success, id = new_airport.id)
+
+        context = {
+            'form' : form,
+            'airport' : airport,
+        }
+
+        return render(request, self.template_name, context)
 
 def flightList(request):
     flights = Flight.objects.all()
