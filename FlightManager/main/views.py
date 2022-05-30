@@ -365,6 +365,33 @@ class UpdateAirportView(SuccessMessageMixin, UpdateView):
             'pk' : self.object.id
         })
 
+class DeleteAirportView(SuccessMessageMixin, DeleteView):
+    '''DeleteAirportView, expressed as an OOP class
+    '''
+
+    '''Model used in DeleteAirportView
+    '''
+    model = Airport
+
+    '''HTML template used in DeleteAirportView
+    '''
+    template_name = 'main/airport/delete.html'
+
+    '''Success message
+    '''
+    success_message = 'Airport removed.'
+
+    '''Where to redirects to after success
+    '''
+    success_url = 'airport.list'
+
+    @method_decorator(login_required(login_url = 'auth.signin'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_success_url(self) -> str:
+        return reverse(self.success_url)
+
 def flightList(request):
     flights = Flight.objects.all()
     return render(request, 'main/flight/flightList.html', {'flights' : flights})
@@ -445,19 +472,6 @@ def report(request):
     # More HTTP POST processing here
 
     return render(request, 'main/report.html')
-
-def airport_list(request):
-    list = Airport.objects.all()
-    return render(request, 'main/airport/list.html', {'airports':list, 'nbar': 'airport_list'})
-
-def deleteAirport(request, pk):
-    airport = Airport.objects.get(id=pk)
-    if request.method == "POST":
-        airport.delete()
-        return redirect('/airport/list')
-
-    context = {'item':airport}
-    return render(request, 'main/airport/delete.html', context)
 
 #customer
 def customerPer(request):

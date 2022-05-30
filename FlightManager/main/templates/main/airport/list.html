@@ -10,6 +10,11 @@ Airport List
         <div class="col-md-8">
             <div class="card card-body">
                 <h5 class="page-title">Airport list</h5>
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <p class="text-success">{{ message }}</p>
+                    {% endif %}
+                {% endfor %}
                 <table class="table table-sm">
                     <thead>
                         <th>Name</th>
@@ -45,8 +50,5 @@ Airport List
             <a class="btn btn-primary" href="{% url 'airport.create' %}">Add airport</a>
         </div>
     </div>
-</div>
-
-    
 </div>
 {% endblock %}

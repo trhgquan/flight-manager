@@ -17,7 +17,7 @@ urlpatterns = [
     path('airport/', views.ListAirportView.as_view(), name = 'airport.list'),
     path('airport/create/', views.CreateAirportView.as_view(), name = 'airport.create'),
     path('airport/update/<str:pk>/', views.UpdateAirportView.as_view(), name = 'airport.update'),
-    path('airport/delete/<str:pk>/', views.deleteAirport, name = 'airport.delete'),
+    path('airport/delete/<str:pk>/', views.DeleteAirportView.as_view(), name = 'airport.delete'),
 
     # Authentication
     path('register/', views.RegisterView.as_view(), name = 'auth.signup'),
