@@ -14,7 +14,6 @@ urlpatterns = [
     path('flight/delete/<str:pk>', views.flightDelete, name = 'flight_delete'),
 
     # Airport
-    # path('airport/', views.airport_list, name = 'airport.list'), 
     path('airport/', views.ListAirportView.as_view(), name = 'airport.list'),
     path('airport/create/', views.CreateAirportView.as_view(), name = 'airport.create'),
     path('airport/update/<str:id>/', views.UpdateAirportView.as_view(), name = 'airport.update'),
