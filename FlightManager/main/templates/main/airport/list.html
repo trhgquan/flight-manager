@@ -17,7 +17,7 @@ Airport List
                         <th>Action</th>
                     </thead>
                     <tbody>
-                        {% for airport in airports %}
+                        {% for airport in page_obj %}
                         <tr>
                             <td>{{ airport.id }}</td>
                             <td>{{ airport.name }}</td>
@@ -39,6 +39,8 @@ Airport List
                         {% endfor %}
                     </tbody>
                 </table>
+
+                {% include 'main/paginator.html' %}
             </div>
         </div>
         <div class="col-md-4">

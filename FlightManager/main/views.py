@@ -273,6 +273,16 @@ class UpdatePasswordView(View):
 
         return render(request, self.template_name, context)
 
+class ListAirportView(ListView):
+    model = Airport
+    paginate_by = 10
+
+    template_name = 'main/airport/list.html'
+
+    @method_decorator(login_required(login_url = 'auth.signin'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
 class CreateAirportView(View):
     '''CreateAirport view, expressed as an OOP class.
     '''

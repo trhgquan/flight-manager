@@ -32,6 +32,12 @@ class Airport(models.Model):
     def __str__(self):
         return self.name
     
+    class Meta:
+        '''Paginator requires explicitly ordering definition
+        in order to sort Airports correctly.
+        '''
+        ordering = ('-id',)
+    
 class TransitionAirport(models.Model):
     airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL)
     transition_time =  models.IntegerField(null = True) #minutes
