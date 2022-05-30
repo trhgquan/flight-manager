@@ -13,10 +13,11 @@ Update Profile
                 <h5 class='page-title'>Update your personal profile</h5>
                 <a href="{% url "profile.view" %}">Back to your profile</a>
                 <hr/>
-                {% if message.tags == 'success' %}
-                    <p class="text-success">{{ message }}</p>
-                {% endif %}
-
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <p class="text-success">{{ message }}</p>
+                    {% endif %}
+                {% endfor %}
                 <form action='{% url "profile.update_information" %}' method='POST' enctype='multipart/form-data'>
                     {% csrf_token %}
                     
