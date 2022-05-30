@@ -1,15 +1,23 @@
 # Typical imports inside views.py
 from django.shortcuts import render, redirect
-from django.http import HttpRequest, HttpResponse, HttpResponseGone
+from django.http import HttpRequest, HttpResponse
+
+# Messages
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 
 # For authentication
-from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.views import View
 
+# Decorators
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+from django.utils.decorators import method_decorator
 from .decorators import unauthenticated_user
+
+# For class-based view
+from django.views import View
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 # For models
 from .models import *
@@ -68,6 +76,10 @@ class LoginView(View):
 
         if user is not None:
             login(request, user)
+
+            # Decorator redirect
+            if request.GET.__contains__('next'):
+                return redirect(request.GET.__getitem__('next'))
 
             return redirect(self.redirect_to_success)
     
@@ -267,6 +279,119 @@ class UpdatePasswordView(View):
 
         return render(request, self.template_name, context)
 
+class ListAirportView(ListView):
+    '''ListAirport view, expressed as an OOP class.
+    '''
+
+    '''Model used in ListAirportView
+    '''
+    model = Airport
+
+    '''Maximum rows in a list.
+    '''
+    paginate_by = 10
+
+    '''HTML template used in ListAirportView
+    '''
+    template_name = 'main/airport/list.html'
+
+    @method_decorator(login_required(login_url = 'auth.signin'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class CreateAirportView(SuccessMessageMixin, CreateView):
+    '''CreateAirport view, expressed as an OOP class.
+    '''
+
+    '''Form used in this View.
+    '''
+    form_class = AirportForm
+
+    '''HTML template used in this View.
+    '''
+    template_name = 'main/airport/create.html'
+
+    '''Model used in CreateAirportView
+    '''
+    model = Airport
+
+    '''Success message
+    '''
+    success_message = 'Successfully created a new Airport!'
+    
+    '''Success url (where to redirects after success)
+    '''
+    success_url = 'airport.update'
+    
+    @method_decorator(login_required(login_url = 'auth.signin'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id
+        })
+
+class UpdateAirportView(SuccessMessageMixin, UpdateView):
+    '''UpdateAirportView, expressed as an OOP class.
+    '''
+
+    '''Model used in UpdateAirportView
+    '''
+    model = Airport
+
+    '''Form used in UpdateAirportView
+    '''
+    form_class = AirportForm
+
+    '''HTML template used in UpdateAirport.
+    '''
+    template_name = 'main/airport/update.html'
+
+    '''Success message
+    '''
+    success_message = 'Successfully updated Airport!'
+
+    '''Success url (where to redirects after success)
+    '''
+    success_url = 'airport.update'
+
+    @method_decorator(login_required(login_url = 'auth.signin'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id
+        })
+
+class DeleteAirportView(SuccessMessageMixin, DeleteView):
+    '''DeleteAirportView, expressed as an OOP class
+    '''
+
+    '''Model used in DeleteAirportView
+    '''
+    model = Airport
+
+    '''HTML template used in DeleteAirportView
+    '''
+    template_name = 'main/airport/delete.html'
+
+    '''Success message
+    '''
+    success_message = 'Airport removed.'
+
+    '''Where to redirects to after success
+    '''
+    success_url = 'airport.list'
+
+    @method_decorator(login_required(login_url = 'auth.signin'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_success_url(self) -> str:
+        return reverse(self.success_url)
+
 def flightList(request):
     flights = Flight.objects.all()
     return render(request, 'main/flight/flightList.html', {'flights' : flights})
@@ -347,45 +472,6 @@ def report(request):
     # More HTTP POST processing here
 
     return render(request, 'main/report.html')
-
-def airport_list(request):
-    list = Airport.objects.all()
-    print(list)
-    return render(request, 'airport/airport_list.html', {'airports':list, 'nbar': 'airport_list'})
-
-def createAirport(request):
-    form = AirportForm()
-    if request.method == 'POST':
-        form = AirportForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/airport/list')
-
-    context = {'form': form}
-    return render(request, 'airport/airport_form.html', context)
-
-def updateAirport(request, pk):
-
-    airport = Airport.objects.get(id=pk)
-    form = AirportForm(instance=airport)
-
-    if request.method == 'POST':
-        form = AirportForm(request.POST, instance=airport)
-        if form.is_valid():
-            form.save()
-            return redirect('/airport/list')
-
-    context = {'form':form}
-    return render(request, 'airport/airport_form.html', context)
-
-def deleteAirport(request, pk):
-    airport = Airport.objects.get(id=pk)
-    if request.method == "POST":
-        airport.delete()
-        return redirect('/airport/list')
-
-    context = {'item':airport}
-    return render(request, 'airport/delete.html', context)
 
 #customer
 def customerPer(request):

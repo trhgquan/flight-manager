@@ -1,0 +1,25 @@
+{% extends 'main/main.html' %}
+
+{% block title %}
+Remove Airport
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="card card-body">
+            <h5 class="page-title">Remove Airport</h5>
+            <hr>
+
+            <p>Are you sure you want to delete "{{ airport }}"?</p>
+            <p class="text-danger">Note: this action cannot be undo, so please careful with your decision.</p>
+
+            <form action="{% url 'airport.delete' pk=airport.id  %}" method="POST">
+                {% csrf_token %}
+                <a class="btn btn-warning btn-lg" href="{% url 'home' %}">Cancel</a>
+                <button type='submit' class="btn btn-danger btn-lg">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

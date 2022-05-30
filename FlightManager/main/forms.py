@@ -111,9 +111,21 @@ class FlightDetailForm(ModelForm):
         fields = '__all__'
 
 class AirportForm(ModelForm):
+    '''Airport Form
+
+    Required fields:
+    - name
+    '''
     class Meta:
         model = Airport
         fields = '__all__'
+
+        widgets = {
+            'name' : forms.TextInput(attrs = {
+                'class' : 'form-control',
+                'placeholder' : 'New Airport name'
+            }),
+        }
 
 class CustomerForm(ModelForm):
     '''Customer Form
