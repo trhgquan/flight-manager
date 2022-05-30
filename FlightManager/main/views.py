@@ -274,10 +274,19 @@ class UpdatePasswordView(View):
         return render(request, self.template_name, context)
 
 class CreateAirportView(View):
+    '''CreateAirport view, expressed as an OOP class.
+    '''
+
+    '''Form used in this View.
+    '''
     form_class = AirportForm
 
+    '''HTML template used in this View.
+    '''
     template_name = 'main/airport/create.html'
 
+    '''Where to redirects to after success.
+    '''
     redirect_to_success = 'airport.update'
 
     @method_decorator(login_required(login_url = 'auth.signin'))
@@ -285,9 +294,13 @@ class CreateAirportView(View):
         return super().dispatch(request, *args, **kwargs)
 
     def __init__(self):
+        '''Initialise services.
+        '''
         self.airport_service = AirportService()
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''CreateAirport interface, aka what the user see in CreateAirport route. 
+        '''
         form = self.form_class()
 
         context = {
@@ -297,6 +310,8 @@ class CreateAirportView(View):
         return render(request, self.template_name, context)
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''CreateAirport processing (POST)
+        '''
         form = self.form_class(request.POST)
 
         if form.is_valid():
@@ -313,9 +328,19 @@ class CreateAirportView(View):
         return render(request, self.template_name, context)
 
 class UpdateAirportView(CreateAirportView):
+    '''UpdateAirportView, expressed as an OOP class.
+
+    Basically this is CreateAirportView, but with a different template
+    to separate Create and Update route.
+    '''
+
+    '''HTML template used in UpdateAirport.
+    '''
     template_name = 'main/airport/update.html'
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''UpdateAirport interface, aka what the user see when access to UpdateAirport route.
+        '''
         try:
             airport = self.airport_service.findAirportById(id = self.kwargs['id'])
 
@@ -328,15 +353,18 @@ class UpdateAirportView(CreateAirportView):
 
             return render(request, self.template_name, context)
         except Airport.DoesNotExist:
+            '''Airport does not exist, throw 404 page.
+            '''
             raise Http404('No Airport found')
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        '''UpdateAirport processing (POST)
+        '''
         airport = self.airport_service.findAirportById(id = self.kwargs['id'])
 
         form = self.form_class(request.POST, instance = airport)
 
         if form.is_valid():
-            print('This happened')
             airport.name = form.cleaned_data.get('name')
 
             new_airport = self.airport_service.updateAirport(airport)
@@ -433,36 +461,9 @@ def report(request):
 
     return render(request, 'main/report.html')
 
-
-
 def airport_list(request):
     list = Airport.objects.all()
     return render(request, 'main/airport/list.html', {'airports':list, 'nbar': 'airport_list'})
-
-def createAirport(request):
-    form = AirportForm()
-    if request.method == 'POST':
-        form = AirportForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/airport/list')
-
-    context = {'form': form}
-    return render(request, 'main/airport/add.html', context)
-
-def updateAirport(request, pk):
-
-    airport = Airport.objects.get(id=pk)
-    form = AirportForm(instance=airport)
-
-    if request.method == 'POST':
-        form = AirportForm(request.POST, instance=airport)
-        if form.is_valid():
-            form.save()
-            return redirect('/airport/list')
-
-    context = {'form':form}
-    return render(request, 'main/airport/create.html', context)
 
 def deleteAirport(request, pk):
     airport = Airport.objects.get(id=pk)
