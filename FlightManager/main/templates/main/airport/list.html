@@ -12,14 +12,12 @@ Airport List
                 <h5 class="page-title">Airport list</h5>
                 <table class="table table-sm">
                     <thead>
-                        <th>ID</th>
                         <th>Name</th>
                         <th>Action</th>
                     </thead>
                     <tbody>
                         {% for airport in page_obj %}
                         <tr>
-                            <td>{{ airport.id }}</td>
                             <td>{{ airport.name }}</td>
                             <td>
                                 <a href="{% url 'airport.update' airport.id %}" class='btn btn-sm btn-warning'>

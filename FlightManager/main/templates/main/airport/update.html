@@ -16,7 +16,7 @@ Update Airport
                     <p class="text-success">{{ message }}</p>
                 {% endif %}
             {% endfor %}
-            <form action="{% url 'airport.update' id=airport.id %}" method="POST">
+            <form action="{% url 'airport.update' pk=airport.id %}" method="POST">
                 {% csrf_token %}
                 
                 {% for field in form %}

@@ -1,17 +1,23 @@
 # Typical imports inside views.py
-from django import dispatch
 from django.shortcuts import render, redirect
-from django.http import Http404, HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse
+
+# Messages
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 
 # For authentication
-from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.generic import ListView
 
+# Decorators
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+from django.utils.decorators import method_decorator
 from .decorators import unauthenticated_user
+
+# For class-based view
+from django.views import View
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 # For models
 from .models import *
@@ -274,16 +280,26 @@ class UpdatePasswordView(View):
         return render(request, self.template_name, context)
 
 class ListAirportView(ListView):
+    '''ListAirport view, expressed as an OOP class.
+    '''
+
+    '''Model used in ListAirportView
+    '''
     model = Airport
+
+    '''Maximum rows in a list.
+    '''
     paginate_by = 10
 
+    '''HTML template used in ListAirportView
+    '''
     template_name = 'main/airport/list.html'
 
     @method_decorator(login_required(login_url = 'auth.signin'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-class CreateAirportView(View):
+class CreateAirportView(SuccessMessageMixin, CreateView):
     '''CreateAirport view, expressed as an OOP class.
     '''
 
@@ -295,100 +311,59 @@ class CreateAirportView(View):
     '''
     template_name = 'main/airport/create.html'
 
-    '''Where to redirects to after success.
+    '''Model used in CreateAirportView
     '''
-    redirect_to_success = 'airport.update'
+    model = Airport
 
+    '''Success message
+    '''
+    success_message = 'Successfully created a new Airport!'
+    
+    '''Success url (where to redirects after success)
+    '''
+    success_url = 'airport.update'
+    
     @method_decorator(login_required(login_url = 'auth.signin'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-    def __init__(self):
-        '''Initialise services.
-        '''
-        self.airport_service = AirportService()
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id
+        })
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        '''CreateAirport interface, aka what the user see in CreateAirport route. 
-        '''
-        form = self.form_class()
-
-        context = {
-            'form' : form
-        }
-
-        return render(request, self.template_name, context)
-
-    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        '''CreateAirport processing (POST)
-        '''
-        form = self.form_class(request.POST)
-
-        if form.is_valid():
-            airport = self.airport_service.createAirport(form.instance)
-
-            messages.success(request, f'Added new airport {airport.name} successfully!')
-
-            return redirect(self.redirect_to_success, id = airport.id)
-
-        context = {
-            'form' : form,
-        }
-
-        return render(request, self.template_name, context)
-
-class UpdateAirportView(CreateAirportView):
+class UpdateAirportView(SuccessMessageMixin, UpdateView):
     '''UpdateAirportView, expressed as an OOP class.
-
-    Basically this is CreateAirportView, but with a different template
-    to separate Create and Update route.
     '''
+
+    '''Model used in UpdateAirportView
+    '''
+    model = Airport
+
+    '''Form used in UpdateAirportView
+    '''
+    form_class = AirportForm
 
     '''HTML template used in UpdateAirport.
     '''
     template_name = 'main/airport/update.html'
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        '''UpdateAirport interface, aka what the user see when access to UpdateAirport route.
-        '''
-        try:
-            airport = self.airport_service.findAirportById(id = self.kwargs['id'])
+    '''Success message
+    '''
+    success_message = 'Successfully updated Airport!'
 
-            form = self.form_class(instance = airport)
+    '''Success url (where to redirects after success)
+    '''
+    success_url = 'airport.update'
 
-            context = {
-                'form' : form,
-                'airport' : airport,
-            }
-
-            return render(request, self.template_name, context)
-        except Airport.DoesNotExist:
-            '''Airport does not exist, throw 404 page.
-            '''
-            raise Http404('No Airport found')
-
-    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        '''UpdateAirport processing (POST)
-        '''
-        airport = self.airport_service.findAirportById(id = self.kwargs['id'])
-
-        form = self.form_class(request.POST, instance = airport)
-
-        if form.is_valid():
-            airport.name = form.cleaned_data.get('name')
-
-            new_airport = self.airport_service.updateAirport(airport)
-
-            messages.success(request, f'Airport {new_airport.name} updated')
-
-            return redirect(self.redirect_to_success, id = new_airport.id)
-
-        context = {
-            'form' : form,
-            'airport' : airport,
-        }
-
-        return render(request, self.template_name, context)
+    @method_decorator(login_required(login_url = 'auth.signin'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id
+        })
 
 def flightList(request):
     flights = Flight.objects.all()
