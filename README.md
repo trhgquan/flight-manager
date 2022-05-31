@@ -24,7 +24,7 @@
 - Hệ điều hành: Windows 7/8/10
 - Ngôn ngữ lập trình: Python 3.x
 - Framework sử dụng: Django
-- Phiên bản framework: Django 4.0.3
+- Phiên bản framework: Django 4.0.4
 - Database: PostgreSQL
 
 ## Cài đặt

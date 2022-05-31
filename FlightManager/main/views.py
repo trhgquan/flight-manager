@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from .decorators import unauthenticated_user
+from django.views.decorators.http import require_http_methods
 
 # For class-based view
 from django.views import View
@@ -141,6 +142,7 @@ class RegisterView(View):
 
         return render(request, self.template_name, context)
 
+@require_http_methods(['POST'])
 @login_required(login_url = 'auth.signin')
 def auth_logout(request):
     '''Controller for logging out
