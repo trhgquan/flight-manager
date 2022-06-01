@@ -5,15 +5,17 @@ from django.http import HttpRequest, HttpResponse
 # Messages
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 # For authentication
 from django.contrib.auth import authenticate, login, logout
 
 # Decorators
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from .decorators import unauthenticated_user
+from django.views.decorators.http import require_http_methods
 
 # For class-based view
 from django.views import View
@@ -141,6 +143,7 @@ class RegisterView(View):
 
         return render(request, self.template_name, context)
 
+@require_http_methods(['POST'])
 @login_required(login_url = 'auth.signin')
 def auth_logout(request):
     '''Controller for logging out
@@ -279,9 +282,13 @@ class UpdatePasswordView(View):
 
         return render(request, self.template_name, context)
 
-class ListAirportView(ListView):
+class ListAirportView(PermissionRequiredMixin, ListView):
     '''ListAirport view, expressed as an OOP class.
     '''
+
+    '''Permissions required to access this view
+    '''
+    permission_required = 'main.view_airport'
 
     '''Model used in ListAirportView
     '''
@@ -299,9 +306,13 @@ class ListAirportView(ListView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-class CreateAirportView(SuccessMessageMixin, CreateView):
+class CreateAirportView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     '''CreateAirport view, expressed as an OOP class.
     '''
+
+    '''Permissions required to access this view
+    '''
+    permission_required = 'main.add_airport'
 
     '''Form used in this View.
     '''
@@ -332,9 +343,13 @@ class CreateAirportView(SuccessMessageMixin, CreateView):
             'pk' : self.object.id
         })
 
-class UpdateAirportView(SuccessMessageMixin, UpdateView):
+class UpdateAirportView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     '''UpdateAirportView, expressed as an OOP class.
     '''
+
+    '''Permissions required to access this view
+    '''
+    permission_required = 'main.change_airport'
 
     '''Model used in UpdateAirportView
     '''
@@ -368,6 +383,10 @@ class UpdateAirportView(SuccessMessageMixin, UpdateView):
 class DeleteAirportView(SuccessMessageMixin, DeleteView):
     '''DeleteAirportView, expressed as an OOP class
     '''
+
+    '''Permissions required to access this view
+    '''
+    permission_required = 'main.delete_airport'
 
     '''Model used in DeleteAirportView
     '''

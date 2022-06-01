@@ -1,0 +1,4 @@
+<form action="{% url 'auth.signout' %}" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="dropdown-item">Logout</button>
+</form>
