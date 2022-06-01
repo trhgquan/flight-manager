@@ -111,7 +111,12 @@ class FlightForm(ModelForm):
     '''
     class Meta:
         model = Flight
-        fields = '__all__'
+        fields = [
+            # '__all__'
+            'departure_airport',
+            'arrival_airport',
+            'date_time',
+        ]
 
         widgets = {
             'departure_airport' : forms.Select(attrs = {
@@ -126,14 +131,14 @@ class FlightForm(ModelForm):
             }),
         }
 
-    transition_airports = forms.ModelMultipleChoiceField(
-        queryset = Airport.objects.all(),
-        widget = forms.SelectMultiple(
-            attrs = {
-                'class' : 'form-control',
-            }
-        )
-    )
+    # transition_airports = forms.ModelMultipleChoiceField(
+    #     queryset = Airport.objects.all(),
+    #     widget = forms.SelectMultiple(
+    #         attrs = {
+    #             'class' : 'form-control',
+    #         }
+    #     )
+    # )
 
 class FlightDetailForm(ModelForm):
     class Meta:

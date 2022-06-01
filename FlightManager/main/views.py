@@ -19,7 +19,7 @@ from django.views.decorators.http import require_http_methods
 
 # For class-based view
 from django.views import View
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 # For models
 from .models import *
@@ -279,6 +279,8 @@ class UpdatePasswordView(LoginRequiredMixin, View):
 
         return render(request, self.template_name, context)
 
+# Airports
+
 class ListAirportView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     '''ListAirport view, expressed as an OOP class.
     '''
@@ -404,6 +406,8 @@ class DeleteAirportView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     def get_success_url(self) -> str:
         return reverse(self.success_url)
 
+# Flights
+
 class ListFlightView(ListView):
     '''ListFlightView, expressed as an OOP class.
     '''
@@ -420,7 +424,19 @@ class ListFlightView(ListView):
     '''
     paginate_by = 10
 
-class CreateFlightView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class DetailFlightView(DetailView):
+    '''DetailFlightView, expressed as an OOP class
+    '''
+
+    '''Model used in DetailFlightView
+    '''
+    model = Flight
+
+    '''HTML template used in DetailFlightView
+    '''
+    template_name = 'main/flight/detail.html'
+
+class CreateFlightView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     '''CreateFlightView, expressed as an OOP class.
     '''
 
@@ -440,26 +456,92 @@ class CreateFlightView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     '''
     template_name = 'main/flight/create.html'
 
+    '''Where to redirects to after success.
+    '''
+    success_url = 'flight.update'
+
+    '''Success message to be displayed
+    '''
+    success_message = 'Flight created successfully!'
+
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+    
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id
+        })
+
+class UpdateFlightView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+    '''UpdateFlightView, expressed as an OOP class
+    '''
+
+    '''Model used in UpdateFlightView
+    '''
+    model = Flight
+
+    '''Form used in UpdateFlightView
+    '''
+    form_class = FlightForm
+
+    '''HTML template used in UpdateFlightView
+    '''
+    template_name = 'main/flight/update.html'
+
+    '''Permission(s) required to access this view.
+    '''
+    permission_required = 'main.change_flight'
+
+    '''Where to redirects to after success.
+    '''
+    success_url = 'flight.update'
+
+    '''Success message to be displayed
+    '''
+    success_message = 'Flight updated successfully!'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id
+        })
+
+class DeleteFlightView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
+    '''DeleteFlightView, expressed as an OOP class.
+    '''
+
+    '''Model used in DeleteFlightView
+    '''
+    model = Flight
+
+    '''Permission required to access this view.
+    '''
+    permission_required = 'main.delete_flight'
+
+    '''HTML template used in DeleteFlightView
+    '''
+    template_name = 'main/flight/delete.html'
+
+    '''Where to redirects to after success
+    '''
+    success_url = 'flight.list'
+
+    '''Success message to be displayed
+    '''
+    success_message = 'Flight deleted successfully.'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_success_url(self) -> str:
+        return reverse(self.success_url)
 
 def flightDetail(request, pk):
     detail = FlightDetail.objects.get(id=pk)
     context = {'detail' : detail}
     return render(request, 'main/flight/flightDetail.html', context)
-
-def flightCreate(request):
-    form = FlightForm()
-
-    if request.method == 'POST':
-        form = FlightForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/')
-    
-    context = {'form' : form}
-
-    return render(request, 'main/flight/flightForm.html', context)
 
 def flightDetailCreate(request):
     form = FlightDetailForm()
@@ -470,19 +552,6 @@ def flightDetailCreate(request):
             form.save()
             return redirect('/')
 
-    context = {'form' : form}
-    return render(request, 'main/flight/flightForm.html', context)
-
-def flightUpdate(request, pk):
-    flight = Flight.objects.get(id=pk)
-    form = FlightForm(instance=flight)
-
-    if request.method == 'POST':
-        form = FlightForm(request.POST, instance=flight)
-        if form.is_valid():
-            form.save()
-            return redirect('/flight/list')
-    
     context = {'form' : form}
     return render(request, 'main/flight/flightForm.html', context)
 

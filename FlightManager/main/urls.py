@@ -4,21 +4,6 @@ from . import views
 urlpatterns = [
     path('', views.home, name = 'home'),
 
-    # Flight list
-    path('flight/', views.ListFlightView.as_view(), name = 'flight.list'),
-    path('flight/create/', views.CreateFlightView.as_view(), name = 'flight.create'),
-    path('flight/detail/<str:pk>/', views.flightDetail, name = 'flight_detail'),
-    path('flight/update/<str:pk>', views.flightUpdate, name = 'flight_update'),
-    path('flight/detailupdate/<str:pk>/', views.flightDetailUpdate, name = 'flight_detail_update'),   #update flight detail
-    path('flight/detailcreate/', views.flightDetailCreate, name = 'flight_detail_create'),   #create detail
-    path('flight/delete/<str:pk>', views.flightDelete, name = 'flight_delete'),
-
-    # Airport
-    path('airport/', views.ListAirportView.as_view(), name = 'airport.list'),
-    path('airport/create/', views.CreateAirportView.as_view(), name = 'airport.create'),
-    path('airport/update/<str:pk>/', views.UpdateAirportView.as_view(), name = 'airport.update'),
-    path('airport/delete/<str:pk>/', views.DeleteAirportView.as_view(), name = 'airport.delete'),
-
     # Authentication
     path('register/', views.RegisterView.as_view(), name = 'auth.signup'),
     path('login/', views.LoginView.as_view(), name = 'auth.signin'),
@@ -28,6 +13,25 @@ urlpatterns = [
     path('profile/', views.profile_view, name = 'profile.view'),
     path('profile/update', views.UpdateProfileView.as_view(), name = 'profile.update_information'),
     path('profile/update/password', views.UpdatePasswordView.as_view(), name= 'profile.update_password'),
+
+    # Airport
+    path('airport/', views.ListAirportView.as_view(), name = 'airport.list'),
+    path('airport/create/', views.CreateAirportView.as_view(), name = 'airport.create'),
+    path('airport/update/<str:pk>/', views.UpdateAirportView.as_view(), name = 'airport.update'),
+    path('airport/delete/<str:pk>/', views.DeleteAirportView.as_view(), name = 'airport.delete'),
+
+    # Flight
+    path('flight/', views.ListFlightView.as_view(), name = 'flight.list'),
+    path('flight/create/', views.CreateFlightView.as_view(), name = 'flight.create'),
+    path('flight/detail/<str:pk>/', views.DetailFlightView.as_view(), name = 'flight.detail'),
+    path('flight/update/<str:pk>', views.UpdateFlightView.as_view(), name = 'flight.update'),
+    path('flight/delete/<str:pk>', views.DeleteFlightView.as_view(), name = 'flight.delete'),
+
+    # Flight Detail
+    path('flight/detail/<str:pk>/update', views.flightDetailUpdate, name = 'flight.detail.update'),   #update flight detail
+    # path('flight/detailcreate/', views.flightDetailCreate, name = 'flight.de'),   #create detail
+
+    # Transition Airport
 
     # Booking
     path('booking/', views.booking, name = 'booking'),

@@ -1,17 +1,22 @@
 {% extends 'main/main.html' %}
 
 {% block title %}
-Create a new Flight
+Update Flight
 {% endblock title %}
 
 {% block content %}
 <div class="container">
     <div class="row">
         <div class="card card-body">
-            <h5 class="page-title">Create a new Flight</h5>
+            <h5 class="page-title">Update Flight</h5>
             <a href="{% url 'flight.list' %}">Back to flight list</a>
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <p class="text-success">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
             <hr>
-            <form action="{% url 'flight.create' %}" method="POST">
+            <form action="{% url 'flight.update' flight.id %}" method="POST">
                 {% csrf_token %}
                 {% for field in form %}
                 <div class="form-group">
@@ -25,7 +30,7 @@ Create a new Flight
                 </div>
                 {% endfor %}
 
-                <button type="submit" class="btn btn-outline-success">Create</button>
+                <button type="submit" class="btn btn-outline-success">Update</button>
                 <button type="reset" class="btn btn-outline-primary">Reset</button>
             </form>
         </div>

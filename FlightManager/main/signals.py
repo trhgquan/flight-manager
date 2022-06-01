@@ -17,4 +17,13 @@ def customer_profile(sender, instance, created, **kwargs):
         customer_service = CustomerService()
         customer_service.createCustomer(new_customer)
 
+def flight_detail(sender, instance, created, **kwargs):
+    '''Create a Detail when a new Flight is created
+    '''
+    if created:
+        new_flight_detail = FlightDetail(flight = instance)
+
+        new_flight_detail.save()
+
 post_save.connect(customer_profile, sender = User)
+post_save.connect(flight_detail, sender = Flight)

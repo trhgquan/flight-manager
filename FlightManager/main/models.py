@@ -1,3 +1,4 @@
+from tkinter import CASCADE
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -37,25 +38,31 @@ class Airport(models.Model):
         in order to sort Airports correctly.
         '''
         ordering = ('-id',)
-    
-class TransitionAirport(models.Model):
-    airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL)
-    transition_time =  models.IntegerField(null = True) #minutes
-    note = models.CharField(max_length = 200, null = True)
-    date_created = models.DateTimeField(auto_now_add = True)
 
 class Flight(models.Model):
     departure_airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL, related_name = "departure_airport")
     arrival_airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL, related_name = "arrival_airport")
     date_time = models.DateTimeField()
     date_created = models.DateTimeField(auto_now_add = True)
-    transition_airports = models.ManyToManyField(TransitionAirport)
+    
+    class Meta:
+        '''Paginator requires explicitly ordering definition
+        in order to sort Airports correctly.
+        '''
+        ordering = ('date_time',)
 
 class FlightDetail(models.Model):
     flight = models.OneToOneField(Flight, null = True, blank = True, on_delete = models.CASCADE)
     flight_time =  models.IntegerField(null = True)             #minutes
     first_class_seat_size = models.IntegerField(null = True)
     second_class_seat_size = models.IntegerField(null = True)
+    date_created = models.DateTimeField(auto_now_add = True)
+
+class TransitionAirport(models.Model):
+    airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL)
+    flight = models.ForeignKey(Flight, null = True, on_delete = models.SET_NULL)
+    transition_time =  models.IntegerField(null = True) #minutes
+    note = models.CharField(max_length = 200, null = True)
     date_created = models.DateTimeField(auto_now_add = True)
 
 class TicketClass(models.Model):
