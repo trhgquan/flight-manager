@@ -16,7 +16,7 @@ Remove Airport
 
             <form action="{% url 'airport.delete' pk=airport.id  %}" method="POST">
                 {% csrf_token %}
-                <a class="btn btn-warning btn-lg" href="{% url 'home' %}">Cancel</a>
+                <a class="btn btn-warning btn-lg" href="{% url 'airport.list' %}">Cancel</a>
                 <button type='submit' class="btn btn-danger btn-lg">Delete</button>
             </form>
         </div>

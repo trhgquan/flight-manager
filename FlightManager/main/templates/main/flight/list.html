@@ -1,0 +1,46 @@
+{% extends 'main/main.html' %}
+
+{% block title %}
+Flight List
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card card-body">
+                <h5 class="page-title">Flights</h5>
+                <table class="table">
+                    <thead>
+                        <th>Item</th>
+                        <th>Departure</th>
+                        <th>Destination</th>
+                        <th>Date</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        {% for flight in flights %}
+                        <tr>
+                            <td>{{flight}}</td>
+                            <td>{{flight.departure_airport}}</td>
+                            <td>{{flight.arrival_airport}}</td>
+                            <td>{{flight.date_time}}</td>
+                            <td><a class="btn btn-sm btn-info" href="{% url 'flight_detail' flight.id %}">Detail</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% include 'main/paginator.html' %}
+            </div>
+        </div>
+        {% if user.is_authenticated %}
+            {% if perms.main.create_flight %}
+                <div class="col-md-4">
+                    <a href="{% url 'flight.create' %}" class="btn btn-primary">Create a new flight</a>
+                </div>    
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

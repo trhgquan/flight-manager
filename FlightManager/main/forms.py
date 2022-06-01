@@ -101,9 +101,39 @@ class ChangePasswordForm(PasswordChangeForm):
         })
 
 class FlightForm(ModelForm):
+    '''Flight form
+
+    Required fields:
+    - departure_airport
+    - arrival_airport
+    - date_time
+    - transition_airports (multiple)
+    '''
     class Meta:
         model = Flight
         fields = '__all__'
+
+        widgets = {
+            'departure_airport' : forms.Select(attrs = {
+                'class' : 'form-control',
+            }),
+            'arrival_airport' : forms.Select(attrs = {
+                'class' : 'form-control',
+            }),
+            'date_time' : forms.TextInput(attrs = {
+                'class' : 'form-control',
+                'type' : 'datetime-local',
+            }),
+        }
+
+    transition_airports = forms.ModelMultipleChoiceField(
+        queryset = Airport.objects.all(),
+        widget = forms.SelectMultiple(
+            attrs = {
+                'class' : 'form-control',
+            }
+        )
+    )
 
 class FlightDetailForm(ModelForm):
     class Meta:

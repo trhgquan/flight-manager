@@ -5,13 +5,13 @@ from django.http import HttpRequest, HttpResponse
 # Messages
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 # For authentication
 from django.contrib.auth import authenticate, login, logout
 
 # Decorators
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from .decorators import unauthenticated_user
@@ -173,7 +173,7 @@ def profile_view(request):
 
     return render(request, 'main/profile/view.html', context)
 
-class UpdateProfileView(View):
+class UpdateProfileView(LoginRequiredMixin, View):
     '''UpdateProfileView, expressed as an OOP class.
     '''
 
@@ -198,10 +198,8 @@ class UpdateProfileView(View):
         '''
         self.customer_service = CustomerService()
 
-    @method_decorator(login_required(login_url = 'auth.signin'))
-    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        return super().dispatch(request, *args, **kwargs)
-    
+        self.login_url = reverse('auth.signin')
+
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         '''Update Profile screen, aka what the user see when accessing Update Profile page.
         '''
@@ -232,7 +230,7 @@ class UpdateProfileView(View):
 
         return render(request, self.template_name, context)
 
-class UpdatePasswordView(View):
+class UpdatePasswordView(LoginRequiredMixin, View):
     '''UpdatePasswordView, expressed as an OOP class.
     '''
 
@@ -248,10 +246,9 @@ class UpdatePasswordView(View):
     '''
     redirect_to_success = 'home'
 
-    @method_decorator(login_required(login_url = 'auth.signin'))
-    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        return super().dispatch(request, *args, **kwargs)
-    
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         '''UpdatePassword screen aka what the user see when accessing UpdatePassword route.
         '''
@@ -282,7 +279,7 @@ class UpdatePasswordView(View):
 
         return render(request, self.template_name, context)
 
-class ListAirportView(PermissionRequiredMixin, ListView):
+class ListAirportView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     '''ListAirport view, expressed as an OOP class.
     '''
 
@@ -302,11 +299,10 @@ class ListAirportView(PermissionRequiredMixin, ListView):
     '''
     template_name = 'main/airport/list.html'
 
-    @method_decorator(login_required(login_url = 'auth.signin'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
 
-class CreateAirportView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
+class CreateAirportView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     '''CreateAirport view, expressed as an OOP class.
     '''
 
@@ -334,16 +330,15 @@ class CreateAirportView(PermissionRequiredMixin, SuccessMessageMixin, CreateView
     '''
     success_url = 'airport.update'
     
-    @method_decorator(login_required(login_url = 'auth.signin'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
 
     def get_success_url(self) -> str:
         return reverse(self.success_url, kwargs = {
             'pk' : self.object.id
         })
 
-class UpdateAirportView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+class UpdateAirportView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     '''UpdateAirportView, expressed as an OOP class.
     '''
 
@@ -371,16 +366,15 @@ class UpdateAirportView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView
     '''
     success_url = 'airport.update'
 
-    @method_decorator(login_required(login_url = 'auth.signin'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-    
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
     def get_success_url(self) -> str:
         return reverse(self.success_url, kwargs = {
             'pk' : self.object.id
         })
 
-class DeleteAirportView(SuccessMessageMixin, DeleteView):
+class DeleteAirportView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     '''DeleteAirportView, expressed as an OOP class
     '''
 
@@ -403,17 +397,51 @@ class DeleteAirportView(SuccessMessageMixin, DeleteView):
     '''Where to redirects to after success
     '''
     success_url = 'airport.list'
-
-    @method_decorator(login_required(login_url = 'auth.signin'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
     
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
     def get_success_url(self) -> str:
         return reverse(self.success_url)
 
-def flightList(request):
-    flights = Flight.objects.all()
-    return render(request, 'main/flight/flightList.html', {'flights' : flights})
+class ListFlightView(ListView):
+    '''ListFlightView, expressed as an OOP class.
+    '''
+
+    '''Model used in ListFlightView
+    '''
+    model = Flight
+
+    '''HTML template used in ListFlightView
+    '''
+    template_name = 'main/flight/list.html'
+
+    '''Maximum flights displaying on list.
+    '''
+    paginate_by = 10
+
+class CreateFlightView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    '''CreateFlightView, expressed as an OOP class.
+    '''
+
+    '''Model used in CreateFlightView
+    '''
+    model = Flight
+
+    '''Form used in CreateFlightView
+    '''
+    form_class = FlightForm
+
+    '''Permission required to access this view
+    '''
+    permission_required = 'main.create_flight'
+
+    '''HTML template used in CreateFlightView
+    '''
+    template_name = 'main/flight/create.html'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
 
 def flightDetail(request, pk):
     detail = FlightDetail.objects.get(id=pk)
