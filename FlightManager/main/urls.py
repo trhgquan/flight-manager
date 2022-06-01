@@ -24,12 +24,11 @@ urlpatterns = [
     path('flight/', views.ListFlightView.as_view(), name = 'flight.list'),
     path('flight/create/', views.CreateFlightView.as_view(), name = 'flight.create'),
     path('flight/detail/<str:pk>/', views.DetailFlightView.as_view(), name = 'flight.detail'),
-    path('flight/update/<str:pk>', views.UpdateFlightView.as_view(), name = 'flight.update'),
-    path('flight/delete/<str:pk>', views.DeleteFlightView.as_view(), name = 'flight.delete'),
+    path('flight/update/<str:pk>/', views.UpdateFlightView.as_view(), name = 'flight.update'),
+    path('flight/delete/<str:pk>/', views.DeleteFlightView.as_view(), name = 'flight.delete'),
 
     # Flight Detail
-    path('flight/detail/<str:pk>/update', views.flightDetailUpdate, name = 'flight.detail.update'),   #update flight detail
-    # path('flight/detailcreate/', views.flightDetailCreate, name = 'flight.de'),   #create detail
+    path('flight/detail/<str:pk>/update', views.UpdateFlightDetailView.as_view(), name = 'flight.detail.update'),   #update flight detail
 
     # Transition Airport
 

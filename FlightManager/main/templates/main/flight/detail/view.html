@@ -42,15 +42,18 @@ Flight Detail
                 <table>
                     <tr>
                         <td>Flight time</td>
-                        <td>{{ flight.detail.flight_time }}</td>
+                        <td>{{ flight.flightdetail.flight_time }}</td>
+                        <td>(min)</td>
                     </tr>
                     <tr>
                         <td>First class seats</td>
-                        <td>{{ flight.detail.first_class }}</td>
+                        <td>{{ flight.flightdetail.first_class_seat_size }}</td>
+                        <td>(seats)</td>
                     </tr>
                     <tr>
                         <td>Economy class seats</td>
-                        <td>{{ flight.detail.first_class }}</td>
+                        <td>{{ flight.flightdetail.second_class_seat_size }}</td>
+                        <td>(seats)</td>
                     </tr>
                 </table>
                 {% if perms.main.change_flight %}

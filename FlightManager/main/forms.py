@@ -131,19 +131,26 @@ class FlightForm(ModelForm):
             }),
         }
 
-    # transition_airports = forms.ModelMultipleChoiceField(
-    #     queryset = Airport.objects.all(),
-    #     widget = forms.SelectMultiple(
-    #         attrs = {
-    #             'class' : 'form-control',
-    #         }
-    #     )
-    # )
-
 class FlightDetailForm(ModelForm):
     class Meta:
         model = FlightDetail
         fields = '__all__'
+        exclude = ['flight']
+
+        widgets = {
+            'flight_time' : forms.TextInput(attrs = {
+                'class' : 'form-control',
+                'placeholder' : 'Flight time (in minutes)',
+            }),
+            'first_class_seat_size' : forms.TextInput(attrs = {
+                'class' : 'form-control',
+                'placeholder' : 'Total first class seats',
+            }),
+            'second_class_seat_size' : forms.TextInput(attrs = {
+                'class' : 'form-control',
+                'placeholder' : 'Total economy class seats',
+            }),
+        }
 
 class AirportForm(ModelForm):
     '''Airport Form
