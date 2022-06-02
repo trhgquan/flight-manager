@@ -298,16 +298,94 @@ class ReportService:
         return wrappers
 
 class PolicyService:
-    def __init__(self):
-        #do nothing
-        pass
 
-    def isLateToBook(self) -> bool:
+    #DAO
+    __policyDAO: PolicyDAO
+
+    #Policy attributes id
+    __minTransitionTimeId = 1
+    __maxTransitionTimeId = 2
+    __maxTransitionPerFlightId = 3
+    __minTransitionPerFlightId = 4
+    __minFlightTimeId = 5
+    __maxNumberOfAirportId = 6
+    __latestTimeToBookId = 7
+    __latestTimeToCancelId = 8
+
+    #Policy attributes index = id, value = name
+    __policies = [
+        "",                             #padding, because the first id in database is 1
+        "Min transition time",
+        "Max transition time",
+        "Max transition per flight",
+        "Min transition per flight",
+        "Min flight time",
+        "Max number of airport",
+        "Latest time to book",
+        "Latest time to cancel",
+    ]
+
+    #Return int because all the given policy is int
+    def tryToLoadAttribute(self, id: int):
+        value_as_str: str
+        
+        #Try to find the policy, if not exist, create the policy with the value of "-1"
+        try:
+            value_as_str = policyDAO.getPolicy(id)
+        except Policy.DoesNotExist:
+            policy:
+        
+
+
+
+    #load all policy attributes from DAO
+    def load(self) -> None:
+
+
+    def __init__(self):
+        self.__policyDAO = PolicyDAO()
+        self.load()
+
+
+    def minTransitionTime(self) -> int:
+
+        return 0
+
+    def maxTransitionTime(self) -> int:
+
+        return 0
+
+    def maxTransitionPerFlight(self) -> int:
+        #TODO
+
+        return 0
+
+    def minFlightTime(self) -> int:
+        #TODO:
+
+        return 0
+
+    def maxNumberOfAirport(self) -> int:
+        #TODO:
+
+        return 0
+
+    #How many minutes before flight
+    def latestTimeToBook(self) -> int:
+
+        return 0
+
+    #How many minutes before flight
+    def latestTimeToCancel(self) -> int:
+
+        return 0
+
+    def isLateToBook(self, reservation: Reservation) -> bool:
         #TODO:
 
         return False
 
-    def isLateToCancel(self) -> bool:
+    def isLateToCancel(self, reservation: Reseravation) -> bool:
         #TODO:
 
         return False
