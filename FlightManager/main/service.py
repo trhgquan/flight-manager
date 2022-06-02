@@ -365,7 +365,7 @@ class PolicyService:
     def minFlightTime(self) -> int: 
         return self.tryToLoadAttribute(1)
     def maxTransitionPerFlight(self) -> int: 
-        return return self.tryToLoadAttribute(2)
+        return self.tryToLoadAttribute(2)
     def minTransitionTime(self) -> int: 
         return self.tryToLoadAttribute(3)
     def maxTransitionTime(self) -> int: 
@@ -429,7 +429,7 @@ class PolicyService:
         #Else => not late
         return False
 
-    def isLateToCancel(self, reservation: Reseravation) -> bool:
+    def isLateToCancel(self, reservation: Reservation) -> bool:
         
         #Operand to compare
         now = datetime.now()
