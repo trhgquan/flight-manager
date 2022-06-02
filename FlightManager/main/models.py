@@ -37,19 +37,21 @@ class Airport(models.Model):
         in order to sort Airports correctly.
         '''
         ordering = ('-id',)
-    
-class TransitionAirport(models.Model):
-    airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL)
-    transition_time =  models.IntegerField(null = True) #minutes
-    note = models.CharField(max_length = 200, null = True)
-    date_created = models.DateTimeField(auto_now_add = True)
 
 class Flight(models.Model):
     departure_airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL, related_name = "departure_airport")
     arrival_airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL, related_name = "arrival_airport")
     date_time = models.DateTimeField()
     date_created = models.DateTimeField(auto_now_add = True)
-    transition_airports = models.ManyToManyField(TransitionAirport)
+    
+    def __str__(self) -> str:
+        return f'Flight {self.id}'
+
+    class Meta:
+        '''Paginator requires explicitly ordering definition
+        in order to sort Airports correctly.
+        '''
+        ordering = ('date_time',)
 
 class FlightDetail(models.Model):
     flight = models.OneToOneField(Flight, null = True, blank = True, on_delete = models.CASCADE)
@@ -57,6 +59,19 @@ class FlightDetail(models.Model):
     first_class_seat_size = models.IntegerField(null = True)
     second_class_seat_size = models.IntegerField(null = True)
     date_created = models.DateTimeField(auto_now_add = True)
+
+    def __str__(self) -> str:
+        return f'Detail of {self.flight}'
+
+class TransitionAirport(models.Model):
+    airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL)
+    flight = models.ForeignKey(Flight, null = True, on_delete = models.SET_NULL)
+    transition_time =  models.IntegerField(null = True) #minutes
+    note = models.CharField(max_length = 200, null = True)
+    date_created = models.DateTimeField(auto_now_add = True)
+
+    def __str__(self) -> str:
+        return f'Transition Airport {self.id}'
 
 class TicketClass(models.Model):
     name = models.CharField(max_length = 200, null = True)

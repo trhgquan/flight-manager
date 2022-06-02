@@ -101,14 +101,55 @@ class ChangePasswordForm(PasswordChangeForm):
         })
 
 class FlightForm(ModelForm):
+    '''Flight form
+
+    Required fields:
+    - departure_airport
+    - arrival_airport
+    - date_time
+    - transition_airports (multiple)
+    '''
     class Meta:
         model = Flight
-        fields = '__all__'
+        fields = [
+            'departure_airport',
+            'arrival_airport',
+            'date_time',
+        ]
+
+        widgets = {
+            'departure_airport' : forms.Select(attrs = {
+                'class' : 'form-control',
+            }),
+            'arrival_airport' : forms.Select(attrs = {
+                'class' : 'form-control',
+            }),
+            'date_time' : forms.TextInput(attrs = {
+                'class' : 'form-control',
+                'type' : 'datetime-local',
+            }),
+        }
 
 class FlightDetailForm(ModelForm):
     class Meta:
         model = FlightDetail
         fields = '__all__'
+        exclude = ['flight']
+
+        widgets = {
+            'flight_time' : forms.NumberInput(attrs = {
+                'class' : 'form-control',
+                'placeholder' : 'Flight time (in minutes)',
+            }),
+            'first_class_seat_size' : forms.NumberInput(attrs = {
+                'class' : 'form-control',
+                'placeholder' : 'Total first class seats',
+            }),
+            'second_class_seat_size' : forms.NumberInput(attrs = {
+                'class' : 'form-control',
+                'placeholder' : 'Total economy class seats',
+            }),
+        }
 
 class AirportForm(ModelForm):
     '''Airport Form
@@ -125,6 +166,36 @@ class AirportForm(ModelForm):
                 'class' : 'form-control',
                 'placeholder' : 'New Airport name'
             }),
+        }
+
+class TransitionAirportForm(ModelForm):
+    '''TransitionAirport Form
+
+    Required fields:
+    - airport
+    - transition_time
+    - note
+    '''
+    class Meta:
+        model = TransitionAirport
+        fields = '__all__'
+        exclude = [
+            'flight',
+        ]
+
+        widgets = {
+            'airport' : forms.Select(attrs = {
+                'class' : 'form-control',
+            }),
+            'transition_time' : forms.NumberInput(attrs = {
+                'class' : 'form-control',
+                'placeholder' : 'Transition time',
+            }),
+            'note' : forms.Textarea(attrs = {
+                'class' : 'form-control',
+                'rows' : 3,
+                'placeholder' : 'Note (optional)'
+            })
         }
 
 class CustomerForm(ModelForm):
