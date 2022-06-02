@@ -2,15 +2,13 @@
 
 <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark justify-content-between">
     <a class="navbar-brand" href="{% url 'home' %}">
-        <img src="{% static 'images/logo.png' %}" width="120" height="50" alt="Logo">
+        <img src="{% static 'images/logo.png' %}" width="126" height="27" alt="Logo">
     </a>
     <ul class='nav navbar-nav mr-auto mt-2 mt-lg-0'>
+        <li class='nav-item'>
+            <a class='nav-link' href='{% url "flight.list" %}'>Flight</a>
+        </li>
         {% if user.is_authenticated %}
-            {% if perms.main.view_flight %}
-            <li class='nav-item'>
-                <a class='nav-link' href='{% url "flight_list" %}'>Flight</a>
-            </li>
-            {% endif %}
             {% if perms.main.view_airport %}
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'airport.list' %}">Airport</a>
