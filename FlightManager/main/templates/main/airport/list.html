@@ -21,6 +21,11 @@ Airport List
                         <th>Action</th>
                     </thead>
                     <tbody>
+                        {% if not page_obj %}
+                            <tr>
+                                <td colspan="4">No airports found</td>
+                            </tr>
+                        {% endif %}
                         {% for airport in page_obj %}
                         <tr>
                             <td>{{ airport.name }}</td>

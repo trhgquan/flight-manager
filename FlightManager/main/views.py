@@ -458,7 +458,7 @@ class CreateFlightView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessa
 
     '''Where to redirects to after success.
     '''
-    success_url = 'flight.update'
+    success_url = 'flight.detail'
 
     '''Success message to be displayed
     '''
@@ -579,6 +579,58 @@ class UpdateFlightDetailView(LoginRequiredMixin, PermissionRequiredMixin, Succes
         '''
         flight = Flight.objects.get(id = self.kwargs.get('pk'))
         return FlightDetail.objects.get(flight = flight)
+
+class CreateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, CreateView):
+    '''CreateTransitionAirportView, expressed as an OOP class.
+    '''
+
+    '''Model used in CreateTransitionAirportView.
+    '''
+    model = TransitionAirport
+
+    '''Form used in CreateTransitionAirportView.
+    '''
+    form_class = TransitionAirportForm
+
+    '''HTML template used in CreateTransitionAirportView.
+    '''
+    template_name = 'main/flight/transition/create.html'
+
+    '''Permissions required to access this view.
+    '''
+    permission_required = 'main.change_flight'
+
+    '''Where to redirects to after success.
+    '''
+    success_url = 'flight.detail'
+
+    '''Message to be displayed when success.
+    '''
+    success_message = 'New transition airport added!'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_context_data(self, **kwargs):
+        '''Since current view does not have parent flight's instance,
+        this method will get parent flight's instance and parse it to the view.
+        '''
+        context = super().get_context_data(**kwargs)
+
+        context['flight'] = Flight.objects.get(id = self.kwargs.get('pk'))
+
+        return context
+
+    def form_valid(self, form) -> HttpResponse:
+        '''Automatically set Flight to the Flight requested (aka Flight ID in the URL).
+        '''
+        form.instance.flight = Flight.objects.get(id = self.kwargs.get('pk'))
+        return super().form_valid(form)
+    
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.kwargs.get('pk')
+        })
 
 def customer(request):
     return render(request, 'customer/customer_list.html')

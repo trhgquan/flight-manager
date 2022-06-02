@@ -20,9 +20,14 @@ Flight List
                     <th>Departure</th>
                     <th>Destination</th>
                     <th>Date</th>
-                    <th></th>
+                    <th>Action</th>
                 </thead>
                 <tbody>
+                    {% if not page_obj %}
+                        <tr>
+                            <td colspan="4">No flights found</td>
+                        </tr>
+                    {% endif %}
                     {% for flight in page_obj %}
                     <tr>
                         <td>{{ flight.id }}</td>
