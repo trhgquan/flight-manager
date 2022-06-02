@@ -298,18 +298,159 @@ class ReportService:
         return wrappers
 
 class PolicyService:
+
+    #DAO
+    __policyDAO: PolicyDAO
+
+    #Support service
+    __flightService: FlightService
+
+    #Default value for a non-exist policy
+    __policyDefaultValue = "-1"
+
+    #Policy attributes index = id, value = name
+    __policies = [
+        "",                             #padding, because the first id in database is 1, ignore this element
+        "Min flight time",
+        "Max transition per flight",
+        "Min transition time",
+        "Max transition time",
+        "Latest time to book",
+        "Latest time to cancel",
+    ]
+
+    #default policy in database have default value is -1
+    def createDefaultPolicy(self, id: int) -> Policy:
+
+        #Return None if the id is out of range
+        if (id <= 0 or id > len(self.__policies)):
+            return None
+
+        #Declare policy
+        policy: Policy()
+        policy.id = id
+        policy.name = self.__policies[id]
+        policy.value = self. __policyDefaultValue
+        policy.is_applied = True
+
+        #Create policy
+        self.__policyDAO.create(policy)
+
+        return policy
+
+    #Return int because all the given policy is int
+    def tryToLoadAttribute(self, id: int):
+        value_as_str: str
+        
+        #Try to find the policy
+        try:
+            value_as_str = self.__policyDAO.find(id)
+        except Policy.DoesNotExist:
+            
+            # if not exist, create the default policy with the given name and id
+            policy = self.createDefaultPolicy(id)
+
+            #After creating, the policy have the default value
+            value_as_str = self.__policyDefaultValue
+
+        #Return the value as int
+        return int(value_as_str)
+        
+
     def __init__(self):
-        #do nothing
-        pass
+        self.__policyDAO = PolicyDAO()
+        self.__flightService = FlightService()
 
-    def isLateToBook(self) -> bool:
-        #TODO:
+    #Getter for policy
+    def minFlightTime(self) -> int: 
+        return self.tryToLoadAttribute(1)
+    def maxTransitionPerFlight(self) -> int: 
+        return return self.tryToLoadAttribute(2)
+    def minTransitionTime(self) -> int: 
+        return self.tryToLoadAttribute(3)
+    def maxTransitionTime(self) -> int: 
+        return self.tryToLoadAttribute(4)
+    def latestTimeToBook(self) -> int: 
+        return self.tryToLoadAttribute(5)    #How many minutes before flight
+    def latestTimeToCancel(self) -> int: 
+        return self.tryToLoadAttribute(6)  #How many minutes before flight
 
+    #Setters for policy
+    def updateMinFlightTime(self, value: int) -> Policy:
+        policy = self.minFlightTime()
+        policy.value = str(value)
+        return self.__policyDAO.update(policy)
+
+    def updateMaxTransitionPerFlight(self, value: int) -> Policy:
+        policy = self.maxTransitionPerFlight()
+        policy.value = str(value)
+        return self.__policyDAO.update(policy)
+
+    def updateMinTransitionTime(self, value: int) -> Policy:
+        policy = self.minTransitionTime()
+        policy.value = str(value)
+        return self.__policyDAO.update(policy)
+
+    def updateMaxTransitionTime(self, value: int) -> Policy:
+        policy = self.maxTransitionTime()
+        policy.value = str(value)
+        return self.__policyDAO.update(policy)
+
+    def updateLatestTimeToBook(self, value: int) -> Policy:
+        policy = self.latestTimeToBook()
+        policy.value = str(value)
+        return self.__policyDAO.update(policy)
+
+    def updateLatestTimeToCancel(self, value: int) -> Policy:
+        policy = self.latestTimeToCancel(policy)
+        policy.value = str(value)
+        return self.__policyDAO.update(policy)
+
+    def isLateToBook(self, flight: Flight) -> bool:
+        
+        #Operand to compare
+        now = datetime.now()
+        flight_datetime = flight.date_time
+
+        #If the current time is after the flight's datetime => late
+        if now >= flight_datetime:
+            return True
+
+        #using timedelta object
+        delta = flight_datetime - now
+
+        #Get the difference with minutes
+        minutes_delta = delta.seconds / 60
+
+        #If the (minutes)(flight's datetime - now) < latestTimeToBook() => late
+        if minutes_delta < self.latestTimeToBook():
+            return True
+
+        #Else => not late
         return False
 
-    def isLateToCancel(self) -> bool:
-        #TODO:
+    def isLateToCancel(self, reservation: Reseravation) -> bool:
+        
+        #Operand to compare
+        now = datetime.now()
+        flight = self.__reservationService.findFlightById(reservation.ticket.flight_id)
+        flight_datetime = flight.date_time
 
+        #If the current time is after the flight's datetime => late
+        if now >= flight_datetime:
+            return True
+
+        #using timedelta object
+        delta = flight_datetime - now
+
+        #Get the difference with minutes
+        minutes_delta = delta.seconds / 60
+
+        #If the (minutes)(flight's datetime - now) < latestTimeToCancel() => late
+        if minutes_delta < self.latestTimeToCancel():
+            return True
+
+        #Else => not late
         return False
 
 class CustomerService:
@@ -338,7 +479,7 @@ class CustomerService:
     def book(self, customer: Customer, flight: Flight, ticketClass: TicketClass, name: str, phone: str, identity_code: str) -> Reservation:
 
         #Check if the current time is late to book the flight
-        if self.policyService.isLateToBook():
+        if self.policyService.isLateToBook(flight):
             return None
 
         #Get the all the reservations with the given ticket class in the flight 
@@ -374,7 +515,7 @@ class CustomerService:
     def cancel(self, reservation: Reservation) -> int:
 
         #Check if the current time is late to cancel the flight
-        if self.policyService.isLateToCancel():
+        if self.policyService.isLateToCancel(reservation):
             return 1
         
         #Get the ticket from the reservation

@@ -229,17 +229,21 @@ class FlightDAO:
 class PolicyDAO:
     def __init__(self):
         pass
+    
+    def create(self, policy: Policy) -> Policy:
+        policy.save()
+        return policy
 
-    def getPolicy(self, policy_name : str) -> Policy:
-        policy = Policy.objects.get(name = policy_name)
+    def find(self, id: int) -> Policy:
+        policy = Policy.objects.get(id = id)
         return policy
     
-    def updatePolicy(self, policy_name, new_policy : Policy) -> Policy:
-        policy = Policy.objects.get(name = policy_name)
-        policy.name = new_policy.name
-        policy.datatype = new_policy.datatype
-        policy.value = new_policy.value
-        policy.is_applied = new_policy.is_applied
+    def update(self, update_policy : Policy) -> Policy:
+        policy = Policy.objects.get(id = update_policy.id)
+        policy.name = update_policy.name
+        policy.datatype = update_policy.datatype
+        policy.value = update_policy.value
+        policy.is_applied = update_policy.is_applied
 
         policy.save()
         return policy
