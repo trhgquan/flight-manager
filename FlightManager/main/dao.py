@@ -234,7 +234,7 @@ class PolicyDAO:
         policy.save()
         return policy
 
-    def get(self, id: int) -> Policy:
+    def find(self, id: int) -> Policy:
         policy = Policy.objects.get(id = id)
         return policy
     

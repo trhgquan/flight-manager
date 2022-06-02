@@ -306,13 +306,11 @@ class PolicyService:
 
     #Policy attributes index = id, value = name
     __policies = [
-        "",                             #padding, because the first id in database is 1
+        "",                             #padding, because the first id in database is 1, ignore this element
+        "Min flight time",
+        "Max transition per flight",
         "Min transition time",
         "Max transition time",
-        "Max transition per flight",
-        "Min transition per flight",
-        "Min flight time",
-        "Max number of airport",
         "Latest time to book",
         "Latest time to cancel",
     ]
@@ -342,7 +340,7 @@ class PolicyService:
         
         #Try to find the policy
         try:
-            value_as_str = policyDAO.get(id)
+            value_as_str = self.__policyDAO.find(id)
         except Policy.DoesNotExist:
             
             # if not exist, create the default policy with the given name and id
@@ -354,51 +352,54 @@ class PolicyService:
         #Return the value as int
         return int(value_as_str)
         
-        
-
-
-
-    #load all policy attributes from DAO
-    def load(self) -> None:
-
 
     def __init__(self):
         self.__policyDAO = PolicyDAO()
-        self.load()
 
+    #Getter for policy
+    def minFlightTime(self) -> int: 
+        return self.tryToLoadAttribute(1)
+    def maxTransitionPerFlight(self) -> int: 
+        return return self.tryToLoadAttribute(2)
+    def minTransitionTime(self) -> int: 
+        return self.tryToLoadAttribute(3)
+    def maxTransitionTime(self) -> int: 
+        return self.tryToLoadAttribute(4)
+    def latestTimeToBook(self) -> int: 
+        return self.tryToLoadAttribute(5)    #How many minutes before flight
+    def latestTimeToCancel(self) -> int: 
+        return self.tryToLoadAttribute(6)  #How many minutes before flight
 
-    def minTransitionTime(self) -> int:
+    #Setters for policy
+    def updateMinFlightTime(self, value: int) -> Policy:
+        policy = self.minFlightTime()
+        policy.value = str(value)
+        return self.__policyDAO.update(policy)
 
-        return 0
+    def updateMaxTransitionPerFlight(self, value: int) -> Policy:
+        policy = self.maxTransitionPerFlight()
+        policy.value = str(value)
+        return self.__policyDAO.update(policy)
 
-    def maxTransitionTime(self) -> int:
+    def updateMinTransitionTime(self, value: int) -> Policy:
+        policy = self.minTransitionTime()
+        policy.value = str(value)
+        return self.__policyDAO.update(policy)
 
-        return 0
+    def updateMaxTransitionTime(self, value: int) -> Policy:
+        policy = self.maxTransitionTime()
+        policy.value = str(value)
+        return self.__policyDAO.update(policy)
 
-    def maxTransitionPerFlight(self) -> int:
-        #TODO
+    def updateLatestTimeToBook(self, value: int) -> Policy:
+        policy = self.latestTimeToBook()
+        policy.value = str(value)
+        return self.__policyDAO.update(policy)
 
-        return 0
-
-    def minFlightTime(self) -> int:
-        #TODO:
-
-        return 0
-
-    def maxNumberOfAirport(self) -> int:
-        #TODO:
-
-        return 0
-
-    #How many minutes before flight
-    def latestTimeToBook(self) -> int:
-
-        return 0
-
-    #How many minutes before flight
-    def latestTimeToCancel(self) -> int:
-
-        return 0
+    def updateLatestTimeToCancel(self, value: int) -> Policy:
+        policy = self.latestTimeToCancel(policy)
+        policy.value = str(value)
+        return self.__policyDAO.update(policy)
 
     def isLateToBook(self, reservation: Reservation) -> bool:
         #TODO:
