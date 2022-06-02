@@ -580,6 +580,8 @@ class UpdateFlightDetailView(LoginRequiredMixin, PermissionRequiredMixin, Succes
         flight = Flight.objects.get(id = self.kwargs.get('pk'))
         return FlightDetail.objects.get(flight = flight)
 
+# Transition Airport
+
 class CreateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     '''CreateTransitionAirportView, expressed as an OOP class.
     '''
@@ -630,6 +632,74 @@ class CreateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
     def get_success_url(self) -> str:
         return reverse(self.success_url, kwargs = {
             'pk' : self.kwargs.get('pk')
+        })
+
+class UpdateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+    '''UpdateTransitionAirportView, expressed as an OOP class.
+    '''
+
+    '''Model used in UpdateTransitionAirportView
+    '''
+    model = TransitionAirport
+
+    '''Form used in UpdateTransitionAirportView
+    '''
+    form_class = TransitionAirportForm
+
+    '''HTML template used in UpdateTransitionAirportView
+    '''
+    template_name = 'main/flight/transition/update.html'
+
+    '''Permission required to access this view.
+    '''
+    permission_required = 'main.change_flight'
+
+    '''Where to redirects to after success.
+    '''
+    success_url = 'flight.transition.update'
+
+    '''Message to be displayed when success.
+    '''
+    success_message = 'Transition Airport updated successfully!'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id
+        })
+
+class DeleteTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
+    '''DeleteTransitionAirportView, expressed as an OOP class.
+    '''
+
+    '''Model used in DeleteTransitionAirportView.
+    '''
+    model = TransitionAirport
+
+    '''HTML template used in DeleteTransitionAirportView.
+    '''
+    template_name = 'main/flight/transition/delete.html'
+
+    '''Permissions required to access this view.
+    '''
+    permission_required = 'main.delete_flight'
+
+    '''Message to be displayed when success.
+    '''
+    success_message = 'Transition Airport deleted!'
+
+    '''Where to redirects to when success.
+    '''
+    success_url = 'flight.detail'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+    
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.flight.id
         })
 
 def customer(request):

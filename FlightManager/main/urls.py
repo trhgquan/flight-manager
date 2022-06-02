@@ -31,7 +31,9 @@ urlpatterns = [
     path('flight/detail/<str:pk>/update', views.UpdateFlightDetailView.as_view(), name = 'flight.detail.update'),   #update flight detail
 
     # Transition Airport
-    path("flight/detail/<str:pk>/transition/create", views.CreateTransitionAirportView.as_view(), name = 'flight.detail.transition.create'),
+    path("flight/detail/<str:pk>/transition/create", views.CreateTransitionAirportView.as_view(), name = 'flight.transition.create'),
+    path("airport/transition/<str:pk>/update", views.UpdateTransitionAirportView.as_view(), name = 'flight.transition.update'),
+    path("airport/transition/<str:pk>/delete", views.DeleteTransitionAirportView.as_view(), name = 'flight.transition.delete'),
 
     # Booking
     path('booking/', views.booking, name = 'booking'),
