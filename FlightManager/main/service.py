@@ -302,15 +302,7 @@ class PolicyService:
     #DAO
     __policyDAO: PolicyDAO
 
-    #Policy attributes id
-    __minTransitionTimeId = 1
-    __maxTransitionTimeId = 2
-    __maxTransitionPerFlightId = 3
-    __minTransitionPerFlightId = 4
-    __minFlightTimeId = 5
-    __maxNumberOfAirportId = 6
-    __latestTimeToBookId = 7
-    __latestTimeToCancelId = 8
+    __policyDefaultValue = "-1"
 
     #Policy attributes index = id, value = name
     __policies = [
@@ -325,15 +317,43 @@ class PolicyService:
         "Latest time to cancel",
     ]
 
+    #default policy in database have default value is -1
+    def createDefaultPolicy(self, id: int) -> Policy:
+
+        #Return None if the id is out of range
+        if (id <= 0 or id > len(self.__policies)):
+            return None
+
+        #Declare policy
+        policy: Policy()
+        policy.id = id
+        policy.name = self.__policies[id]
+        policy.value = self. __policyDefaultValue
+        policy.is_applied = True
+
+        #Create policy
+        self.__policyDAO.create(policy)
+
+        return policy
+
     #Return int because all the given policy is int
     def tryToLoadAttribute(self, id: int):
         value_as_str: str
         
-        #Try to find the policy, if not exist, create the policy with the value of "-1"
+        #Try to find the policy
         try:
-            value_as_str = policyDAO.getPolicy(id)
+            value_as_str = policyDAO.get(id)
         except Policy.DoesNotExist:
-            policy:
+            
+            # if not exist, create the default policy with the given name and id
+            policy = self.createDefaultPolicy(id)
+
+            #After creating, the policy have the default value
+            value_as_str = self.__policyDefaultValue
+
+        #Return the value as int
+        return int(value_as_str)
+        
         
 
 
