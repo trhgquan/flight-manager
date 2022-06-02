@@ -1,7 +1,7 @@
 {% extends 'main/main.html' %}
 
 {% block title %}
-Flight Detail Update
+Update Flight Detail
 {% endblock title %}
 
 {% block content %}
@@ -33,6 +33,7 @@ Flight Detail Update
 
                 <button type="submit" class="btn btn-info">Update</button>
                 <button type="reset" class="btn btn-primary">Reset</button>
+                <a href="{% url 'flight.update' flightdetail.flight.id %}">Update Flight Basic Informations here.</a>
             </form>
         </div>
     </div>    
