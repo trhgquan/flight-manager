@@ -302,6 +302,9 @@ class PolicyService:
     #DAO
     __policyDAO: PolicyDAO
 
+    #Support service
+    __flightService: FlightService
+
     #Default value for a non-exist policy
     __policyDefaultValue = "-1"
 
@@ -356,6 +359,7 @@ class PolicyService:
 
     def __init__(self):
         self.__policyDAO = PolicyDAO()
+        self.__flightService = FlightService()
 
     #Getter for policy
     def minFlightTime(self) -> int: 
@@ -419,15 +423,34 @@ class PolicyService:
         minutes_delta = delta.seconds / 60
 
         #If the (minutes)(flight's datetime - now) < latestTimeToBook() => late
-        if minutes_delta < self. latestTimeToBook():
+        if minutes_delta < self.latestTimeToBook():
             return True
 
         #Else => not late
         return False
 
     def isLateToCancel(self, reservation: Reseravation) -> bool:
-        #
+        
+        #Operand to compare
+        now = datetime.now()
+        flight = self.__reservationService.findFlightById(reservation.ticket.flight_id)
+        flight_datetime = flight.date_time
 
+        #If the current time is after the flight's datetime => late
+        if now >= flight_datetime:
+            return True
+
+        #using timedelta object
+        delta = flight_datetime - now
+
+        #Get the difference with minutes
+        minutes_delta = delta.seconds / 60
+
+        #If the (minutes)(flight's datetime - now) < latestTimeToCancel() => late
+        if minutes_delta < self.latestTimeToCancel():
+            return True
+
+        #Else => not late
         return False
 
 class CustomerService:
