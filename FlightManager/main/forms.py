@@ -129,27 +129,80 @@ class FlightForm(ModelForm):
                 'type' : 'datetime-local',
             }),
         }
+    
+    def clean(self):
+        '''Custom form validation:
 
+        - Departure Airports cannot be the same as Arrival Airport
+        '''
+        departure_airport = self.cleaned_data.get('departure_airport')
+        arrival_airport = self.cleaned_data.get('arrival_airport')
+
+        if departure_airport == arrival_airport:
+            raise forms.ValidationError({
+                'departure_airport' : 'Departure and Arrival Airport must not be the same.',
+                'arrival_airport' : 'Departure and Arrival Airport must not be the same.'
+            })
+        
 class FlightDetailForm(ModelForm):
+    '''FlightDetailForm
+
+    Required fields:
+    - flight_time
+    - first_class_seat_size
+    - second_class_seat_size
+    '''
+
+    '''Integers defined here
+    '''
+    flight_time = forms.DecimalField(
+        widget = forms.NumberInput(attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Flight time (in minutes)',
+        })
+    )
+    first_class_seat_size = forms.DecimalField(
+        widget = forms.NumberInput(attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Total first class seats',
+        }),
+    )
+    second_class_seat_size = forms.DecimalField(
+        widget = forms.NumberInput(attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Total economy class seats',
+        }),
+    )
+
     class Meta:
         model = FlightDetail
         fields = '__all__'
         exclude = ['flight']
 
-        widgets = {
-            'flight_time' : forms.NumberInput(attrs = {
-                'class' : 'form-control',
-                'placeholder' : 'Flight time (in minutes)',
-            }),
-            'first_class_seat_size' : forms.NumberInput(attrs = {
-                'class' : 'form-control',
-                'placeholder' : 'Total first class seats',
-            }),
-            'second_class_seat_size' : forms.NumberInput(attrs = {
-                'class' : 'form-control',
-                'placeholder' : 'Total economy class seats',
-            }),
-        }
+    def clean(self):
+        '''Custom form validation:
+
+        - Flight time must be > 0
+        - First class seats & Economy class seats must be >= 0
+        '''
+        flight_time = self.cleaned_data.get('flight_time')
+        first_class_seat_size = self.cleaned_data.get('first_class_seat_size')
+        second_class_seat_size = self.cleaned_data.get('second_class_seat_size')
+
+        if flight_time <= 0:
+            raise forms.ValidationError({
+                'flight_time' : 'Flight time cannot be negative or zero minutes.'
+            })
+        
+        if first_class_seat_size < 0:
+            raise forms.ValidationError({
+                'first_class_seat_size' : 'First class seats cannot be a negative.'
+            })
+
+        if second_class_seat_size < 0:
+            raise forms.ValidationError({
+                'second_class_seat_size' : 'Economy class seats cannot be a negative.'
+            })
 
 class AirportForm(ModelForm):
     '''Airport Form
@@ -176,6 +229,16 @@ class TransitionAirportForm(ModelForm):
     - transition_time
     - note
     '''
+
+    '''Integers defined here
+    '''
+    transition_time = forms.DecimalField(
+        widget = forms.NumberInput(attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Transition time',
+        }),
+    )
+
     class Meta:
         model = TransitionAirport
         fields = '__all__'
@@ -187,16 +250,24 @@ class TransitionAirportForm(ModelForm):
             'airport' : forms.Select(attrs = {
                 'class' : 'form-control',
             }),
-            'transition_time' : forms.NumberInput(attrs = {
-                'class' : 'form-control',
-                'placeholder' : 'Transition time',
-            }),
             'note' : forms.Textarea(attrs = {
                 'class' : 'form-control',
                 'rows' : 3,
                 'placeholder' : 'Note (optional)'
-            })
+            }),
         }
+    
+    def clean(self):
+        '''Custom form validation:
+
+        - transition_time must be > 0.
+        '''
+        transition_time = self.cleaned_data.get('transition_time')
+
+        if transition_time <= 0:
+            raise forms.ValidationError({
+                'transition_time' : 'Transition time cannot be negative or zero minutes!'
+            })
 
 class CustomerForm(ModelForm):
     '''Customer Form

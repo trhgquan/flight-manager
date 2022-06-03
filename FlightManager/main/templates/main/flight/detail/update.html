@@ -24,7 +24,7 @@ Update Flight Detail
                     {{ field.label_tag }}
                     {{ field }}
                     <ul class="text-danger">
-                        {% for error in errors %}
+                        {% for error in field.errors %}
                         <li>{{ error }}</li>
                         {% endfor %}
                     </ul>
