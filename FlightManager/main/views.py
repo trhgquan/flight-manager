@@ -28,6 +28,9 @@ from .forms import *
 # Services
 from .service import *
 
+# Misc
+from django.utils.timezone import now
+
 # Create your views here.
 
 # Authentication views
@@ -423,6 +426,11 @@ class ListFlightView(ListView):
     '''Maximum flights displaying on list.
     '''
     paginate_by = 10
+
+    def get_queryset(self):
+        '''Only show flights from now to the future!
+        '''
+        return Flight.objects.filter(date_time__gt = now())
 
 class DetailFlightView(DetailView):
     '''DetailFlightView, expressed as an OOP class
