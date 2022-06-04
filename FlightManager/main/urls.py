@@ -2,7 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.home, name = 'home'),
+    # Home
+    path('', views.HomepageView.as_view(), name = 'home'),
 
     # Authentication
     path('register/', views.RegisterView.as_view(), name = 'auth.signup'),
@@ -10,7 +11,7 @@ urlpatterns = [
     path('logout/', views.auth_logout, name = 'auth.signout'),
 
     # Profile
-    path('profile/', views.profile_view, name = 'profile.view'),
+    path('profile/', views.ProfileView.as_view(), name = 'profile.view'),
     path('profile/update', views.UpdateProfileView.as_view(), name = 'profile.update_information'),
     path('profile/update/password', views.UpdatePasswordView.as_view(), name= 'profile.update_password'),
 
@@ -23,12 +24,15 @@ urlpatterns = [
     # Flight
     path('flight/', views.ListFlightView.as_view(), name = 'flight.list'),
     path('flight/create/', views.CreateFlightView.as_view(), name = 'flight.create'),
-    path('flight/detail/<str:pk>/', views.DetailFlightView.as_view(), name = 'flight.detail'),
     path('flight/update/<str:pk>/', views.UpdateFlightView.as_view(), name = 'flight.update'),
     path('flight/delete/<str:pk>/', views.DeleteFlightView.as_view(), name = 'flight.delete'),
 
     # Flight Detail
+    path('flight/detail/<str:pk>/', views.DetailFlightView.as_view(), name = 'flight.detail'),
     path('flight/detail/<str:pk>/update', views.UpdateFlightDetailView.as_view(), name = 'flight.detail.update'),   #update flight detail
+
+    # Flight search (Filter)
+    path('flight/search', views.FlightSearchView.as_view(), name = 'flight.search'),
 
     # Transition Airport
     path("flight/detail/<str:pk>/transition/create", views.CreateTransitionAirportView.as_view(), name = 'flight.transition.create'),
