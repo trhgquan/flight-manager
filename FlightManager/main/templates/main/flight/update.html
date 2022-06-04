@@ -1,20 +1,20 @@
 {% extends 'main/main.html' %}
 
 {% block title %}
-Update Flight
+Update Flight Basic Informations
 {% endblock title %}
 
 {% block content %}
 <div class="container">
     <div class="row">
         <div class="card card-body">
-            <h5 class="page-title">Update Flight</h5>
+            <h5 class="page-title">Update Flight Basic Informations</h5>
             {% for message in messages %}
                 {% if message.tags == 'success' %}
                     <p class="text-success">{{ message }}</p>
                 {% endif %}
             {% endfor %}
-            <a href="{% url 'flight.list' %}">Back to flight list</a>
+            <a href="{% url 'flight.detail' flight.id %}">Back to flight view</a>
             <hr>
             <form action="{% url 'flight.update' flight.id %}" method="POST">
                 {% csrf_token %}

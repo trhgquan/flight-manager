@@ -80,7 +80,9 @@ Flight Detail
                         <th>Airport</th>
                         <th>Transition time (mins)</th>
                         <th>Note</th>
+                        {% if perms.main.change_flight or perms.main.delete_flight %}
                         <th>Action</th>
+                        {% endif %}
                     </thead>
                     <tbody>
                         {% if not flight.transitionairport_set.all %}
