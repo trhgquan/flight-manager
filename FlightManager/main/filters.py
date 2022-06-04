@@ -43,5 +43,3 @@ class FlightFilter(FilterSet):
             'arrival_airport',
             'date_time'
         ]
-    
-    # def get_queryset

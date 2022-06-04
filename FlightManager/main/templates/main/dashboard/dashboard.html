@@ -9,5 +9,51 @@ Dashboard
 {% endblock %}
 
 {% block content %}
-{% include 'main/dashboard/search_form.html' %}
+<div class='container'>
+    <h1 class='page-title'>Let's start</h1>
+    <form action="{% url 'flight.search' %}">
+        <div class='form-group'>
+            <div class='row'>
+                <div class='col'>
+                    <label for='id_date_time_min'>Your (planned) departure date</label>
+                    <input type='date' name='date_time_min' id='id_date_time_min' class='form-control'>
+                </div>
+                <div class='col'>
+                    <label for='id_departure_airport'>Your departure airport</label>
+                    <select name="departure_airport" id="id_departure_airport" class="form-control">
+                        <option value selected>---------</option>
+                        {% for airport in airports %}
+                            <option value="{{ airport.id }}">{{ airport.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class='form-group'>
+            <div class='row'>
+                <div class='col'>
+                    <label for='id_date_time_max'>Your (planned) arrival date</label>
+                    <input type='date' name='date_time_max' id='id_date_time_max' class='form-control'>
+                </div>
+                <div class='col'>
+                    <label for='id_arrival_airport'>Your departure airport</label>
+                    <select name="arrival_airport" id="id_arrival_airport" class="form-control">
+                        <option value selected>---------</option>
+                        {% for airport in airports %}
+                            <option value="{{ airport.id }}">{{ airport.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class='form-group'>
+            <div class='row'>
+                <div class='col'>
+                    <button type='submit' class='btn btn-lg btn-info'>Search for flights</button>
+                    <a href="{% url 'flight.list' %}" class='btn btn-lg btn-primary'>All available flights</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 {% endblock %}

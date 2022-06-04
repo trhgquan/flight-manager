@@ -161,24 +161,38 @@ def auth_logout(request):
     messages.success(request, 'Successfully logged out, thanks!')
     return redirect('auth.signin')
 
-def home(request):
-    '''Home, aka Dashboard
+# Home
+class HomepageView(View):
+    '''HomepageView, expressed as an OOP class.
     '''
-    return render(request, 'main/dashboard/dashboard.html')
+    def __init__(self) -> None:
+        self.airport_service = AirportService()
 
-# Profile views
-@login_required(login_url = 'auth.signin')
-def profile_view(request):
-    '''User profile
+    def get(self, request) -> HttpResponse:
+        '''Render homepage, with (of course) airports list.
+        '''
+        context = {
+            'airports' : self.airport_service.findAllAirports(),
+        }
+
+        return render(request, 'main/dashboard/dashboard.html', context = context)
+
+class ProfileView(LoginRequiredMixin, View):
+    '''ProfileView, expressed as an OOP class.
     '''
+    def __init__(self) -> None:
+        self.login_url = 'auth.signin'
+    
+    def get(self, request):
+        '''Render Preofile with customer detail.
+        '''
+        customer = request.user.customer
 
-    customer = request.user.customer
+        context = {
+            'customer' : customer,
+        }
 
-    context = {
-        'customer' : customer,
-    }
-
-    return render(request, 'main/profile/view.html', context)
+        return render(request, 'main/profile/view.html', context)
 
 class UpdateProfileView(LoginRequiredMixin, View):
     '''UpdateProfileView, expressed as an OOP class.

@@ -8,9 +8,6 @@
         <li class='nav-item'>
             <a class='nav-link' href='{% url "flight.list" %}'>Flight</a>
         </li>
-        <li class="nav-item">
-            <a href="{% url 'flight.search' %}" class="nav-link">Search</a>
-        </li>
         {% if user.is_authenticated %}
             {% if perms.main.view_airport %}
             <li class="nav-item">
