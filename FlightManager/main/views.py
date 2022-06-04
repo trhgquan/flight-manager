@@ -21,6 +21,10 @@ from django.views.decorators.http import require_http_methods
 from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
+# For filtered view
+from django_filters.views import FilterView
+from .filters import *
+
 # For models
 from .models import *
 from .forms import *
@@ -709,6 +713,23 @@ class DeleteTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
         return reverse(self.success_url, kwargs = {
             'pk' : self.object.flight.id
         })
+
+# Search (Filter)
+class FlightSearchView(FilterView):
+    '''FlightSearchView, expressed as an OOP class.
+    '''
+
+    '''Model used in FlightSearchView
+    '''
+    model = Flight
+
+    '''Filterset used in FlightSearchView
+    '''
+    filterset_class = FlightFilter
+
+    '''HTML template used in FlightSearchView
+    '''
+    template_name = 'main/flight/search.html'
 
 def customer(request):
     return render(request, 'customer/customer_list.html')

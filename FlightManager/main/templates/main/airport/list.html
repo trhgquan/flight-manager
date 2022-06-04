@@ -7,7 +7,7 @@ Airport List
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-9">
             <div class="card card-body">
                 <h5 class="page-title">Airport list</h5>
                 {% for message in messages %}
@@ -53,8 +53,13 @@ Airport List
                 {% include 'main/paginator.html' %}
             </div>
         </div>
-        <div class="col-md-4">
-            <a class="btn btn-primary" href="{% url 'airport.create' %}">Add airport</a>
+        <div class="col-md-3">
+            <div class="card card-body">
+                <h5 class="page-title">Tips?</h5>
+                <hr>
+                <a class="btn btn-primary" href="{% url 'airport.create' %}">Add airport</a>
+            </div>
+            
         </div>
     </div>
 </div>
