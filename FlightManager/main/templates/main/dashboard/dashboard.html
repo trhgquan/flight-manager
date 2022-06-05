@@ -15,12 +15,17 @@ Dashboard
         <div class='form-group'>
             <div class='row'>
                 <div class='col'>
-                    <label for='id_date_time_min'>Your (planned) departure date</label>
-                    <input type='date' name='date_time_min' id='id_date_time_min' class='form-control'>
-                </div>
-                <div class='col'>
                     <label for='id_departure_airport'>Your departure airport</label>
                     <select name="departure_airport" id="id_departure_airport" class="form-control">
+                        <option value selected>---------</option>
+                        {% for airport in airports %}
+                            <option value="{{ airport.id }}">{{ airport.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class='col'>
+                    <label for='id_arrival_airport'>Your arrival airport</label>
+                    <select name="arrival_airport" id="id_arrival_airport" class="form-control">
                         <option value selected>---------</option>
                         {% for airport in airports %}
                             <option value="{{ airport.id }}">{{ airport.name }}</option>
@@ -32,17 +37,12 @@ Dashboard
         <div class='form-group'>
             <div class='row'>
                 <div class='col'>
-                    <label for='id_date_time_max'>Your (planned) arrival date</label>
-                    <input type='date' name='date_time_max' id='id_date_time_max' class='form-control'>
+                    <label for='id_date_time_min'>From date</label>
+                    <input type='date' name='date_time_min' id='id_date_time_min' class='form-control'>
                 </div>
                 <div class='col'>
-                    <label for='id_arrival_airport'>Your departure airport</label>
-                    <select name="arrival_airport" id="id_arrival_airport" class="form-control">
-                        <option value selected>---------</option>
-                        {% for airport in airports %}
-                            <option value="{{ airport.id }}">{{ airport.name }}</option>
-                        {% endfor %}
-                    </select>
+                    <label for='id_date_time_max'>To date</label>
+                    <input type='date' name='date_time_max' id='id_date_time_max' class='form-control'>
                 </div>
             </div>
         </div>
