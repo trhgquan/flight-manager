@@ -55,9 +55,11 @@ class Flight(models.Model):
 
 class FlightDetail(models.Model):
     flight = models.OneToOneField(Flight, null = True, blank = True, on_delete = models.CASCADE)
-    flight_time =  models.IntegerField(null = True)             #minutes
+    flight_time =  models.IntegerField(null = True)
     first_class_seat_size = models.IntegerField(null = True)
+    first_class_ticket_price = models.IntegerField(null = True)
     second_class_seat_size = models.IntegerField(null = True)
+    second_class_ticket_price = models.IntegerField(null = True)
     date_created = models.DateTimeField(auto_now_add = True)
 
     def __str__(self) -> str:

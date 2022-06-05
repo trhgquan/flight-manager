@@ -40,7 +40,7 @@ urlpatterns = [
     path("airport/transition/<str:pk>/delete", views.DeleteTransitionAirportView.as_view(), name = 'flight.transition.delete'),
 
     # Booking
-    path('booking/', views.booking, name = 'booking'),
+    path('flight/<str:pk>/reservation/create', views.CreateFlightTicketView.as_view(), name = 'flight.reservation.create'),
 
     # Report
     path('report/', views.report, name = 'report'),

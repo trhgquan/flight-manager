@@ -745,6 +745,17 @@ class FlightSearchView(FilterView):
     '''
     template_name = 'main/flight/search.html'
 
+# Booking
+class CreateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Ticket
+
+    template_name = 'main/flight/booking/create.html'
+
+    form_class = FlightTicketForm
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
 def customer(request):
     return render(request, 'customer/customer_list.html')
 

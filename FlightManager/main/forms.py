@@ -151,6 +151,8 @@ class FlightDetailForm(ModelForm):
     - flight_time
     - first_class_seat_size
     - second_class_seat_size
+    - first_class_ticket_price
+    - second_class_ticket_price
     '''
 
     '''Integers defined here
@@ -173,6 +175,18 @@ class FlightDetailForm(ModelForm):
             'placeholder' : 'Total economy class seats',
         }),
     )
+    first_class_ticket_price = forms.DecimalField(
+        widget = forms.NumberInput(attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Price for a First Class ticket',
+        }),
+    )
+    second_class_ticket_price = forms.DecimalField(
+        widget = forms.NumberInput(attrs = {
+            'class' : 'form-control',
+            'placeholder' : 'Price for a Economy Class ticket',
+        }),
+    )
 
     class Meta:
         model = FlightDetail
@@ -188,6 +202,8 @@ class FlightDetailForm(ModelForm):
         flight_time = self.cleaned_data.get('flight_time')
         first_class_seat_size = self.cleaned_data.get('first_class_seat_size')
         second_class_seat_size = self.cleaned_data.get('second_class_seat_size')
+        first_class_ticket_price = self.cleaned_data.get('first_class_ticket_price')
+        second_class_ticket_price = self.cleaned_data.get('second_class_ticket_price')
 
         if flight_time <= 0:
             raise forms.ValidationError({
@@ -202,6 +218,16 @@ class FlightDetailForm(ModelForm):
         if second_class_seat_size < 0:
             raise forms.ValidationError({
                 'second_class_seat_size' : 'Economy class seats cannot be a negative.'
+            })
+        
+        if first_class_ticket_price < 0:
+            raise forms.ValidationError({
+                'first_class_ticket_price' : 'First class ticket price cannot be negative.'
+            })
+        
+        if second_class_ticket_price < 0:
+            raise forms.ValidationError({
+                'second_class_ticket_price' : 'Economy class ticket price cannot be negative.'
             })
 
 class AirportForm(ModelForm):
@@ -268,6 +294,15 @@ class TransitionAirportForm(ModelForm):
             raise forms.ValidationError({
                 'transition_time' : 'Transition time cannot be negative or zero minutes!'
             })
+
+class FlightTicketForm(ModelForm):
+    class Meta:
+        model = Ticket
+        fields = '__all__'
+        exclude = [
+            'customer',
+            'flight'
+        ]
 
 class CustomerForm(ModelForm):
     '''Customer Form

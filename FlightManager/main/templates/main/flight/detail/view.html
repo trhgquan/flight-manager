@@ -47,21 +47,21 @@ Flight Detail
                 <h5>Flight Details</h5>
                 <hr>
                 <table>
-                    <tr>
-                        <td>Flight time</td>
-                        <td>{{ flight.flightdetail.flight_time }}</td>
-                        <td>(min)</td>
-                    </tr>
-                    <tr>
-                        <td>First class seats</td>
-                        <td>{{ flight.flightdetail.first_class_seat_size }}</td>
-                        <td>(seats)</td>
-                    </tr>
-                    <tr>
-                        <td>Economy class seats</td>
-                        <td>{{ flight.flightdetail.second_class_seat_size }}</td>
-                        <td>(seats)</td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <td>Flight time</td>
+                            <td>{{ flight.flightdetail.flight_time }} (mins)</td>
+                        </tr>
+                        <tr>
+                            <td>First class</td>
+                            <td>{{ flight.flightdetail.first_class_seat_size }} (seats) / {{ flight.flightdetail.first_class_ticket_price }}$ (per seat)</td>
+                        </tr>
+                        <tr>
+                            <td>Economy class</td>
+                            <td>{{ flight.flightdetail.second_class_seat_size }} (seats) / {{ flight.flightdetail.second_class_ticket_price }}$ (per seat)</td>
+                        </tr>
+                    </tbody>
+                    
                 </table>
                 {% if perms.main.change_flight %}
                 <hr>
