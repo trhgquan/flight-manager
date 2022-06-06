@@ -6,31 +6,19 @@ Delete Flight
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="card card-body">
-            <p>Are you sure you want to delete {{ flight }}?<p>
-            <table class='table'>
-                <tr>
-                    <td>Flight ID</td>
-                    <td>{{ flight.id }}</td>
-                </tr>
-                <tr>
-                    <td>Departure</td>
-                    <td>{{ flight.departure_airport }}</td>
-                </tr>
-                <tr>
-                    <td>Arrival</td>
-                    <td>{{ flight.arrival_airport }}</td>
-                </tr>
-                <tr>
-                    <td>Departure date</td>
-                    <td>{{ flight.date_time }}</td>
-                </tr> 
-            </table>
-            <form action="{% url 'flight.delete' flight.id %}" method="POST">
-                {% csrf_token %}
-                <a class="btn btn-warning" href="{% url 'flight.list' %}">Cancel</a>
-                <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
+        <div class="col-md-4">
+            {% include 'main/flight/sideinfo.html' %}
+        </div>
+        <div class="col-md-8">
+            <div class="card card-body">
+                <p>Are you sure you want to delete {{ flight }}?<p>
+                <p class="text-danger">Note: this action cannot be undo, so please be careful with your decision.</p>
+                <form action="{% url 'flight.delete' flight.id %}" method="POST">
+                    {% csrf_token %}
+                    <a class="btn btn-warning" href="{% url 'flight.list' %}">Cancel</a>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

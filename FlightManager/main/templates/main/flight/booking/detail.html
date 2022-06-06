@@ -1,0 +1,70 @@
+{% extends 'main/main.html' %}
+
+{% block title %}
+Booking Detail
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            {% include 'main/flight/sideinfo.html' with flight=ticket.flight %}
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <div class="card card-body">
+                    <h5 class="page-title">Customer Details</h5>
+                    <hr>
+                    <table>
+                        <tr>
+                            <td>Customer name</td>
+                            <td>{{ ticket.customer.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Customer phone</td>
+                            <td>{{ ticket.customer.phone }}</td>
+                        </tr>
+                        <tr>
+                            <td>Customer ID</td>
+                            <td>{{ ticket.customer.identity_code }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="row" style="padding-top:10px;">
+                <div class="card card-body">
+                    <h5 class="page-title">Booking Details</h5>
+                    <hr>
+                    <table>
+                        <tr>
+                            <td>Ticket class</td>
+                            <td>{{ ticket.ticket_class }}</td>
+                        </tr>
+                        <tr>
+                            <td>Ticket price</td>
+                            <td>{{ ticket.price }}$</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>
+                                {% if ticket.is_booked %}
+                                    <span class="badge badge-success">Paid</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Unpaid</span>
+
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Created at</td>
+                            <td>{{ ticket.date_created }}</td>
+                        </tr>
+                    </table>
+                    <br>
+                    <a href="#" class="btn btn-success btn-sm">Checkout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

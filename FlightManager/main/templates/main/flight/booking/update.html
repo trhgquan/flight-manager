@@ -1,7 +1,7 @@
 {% extends 'main/main.html' %}
 
 {% block title %}
-Book a Flight
+Booking Update
 {% endblock title %}
 
 {% block content %}
@@ -9,13 +9,13 @@ Book a Flight
 <div class='container'>
     <div class='row'>
         <div class='col-md-4'>
-            {% include 'main/flight/sideinfo.html' %}
+            {% include 'main/flight/sideinfo.html' with flight=ticket.flight %}
         </div>
         <div class='col-md-8'>
             <div class='card card-body'>
                 <h5 class='page-title'>Booking information</h5>
                 <hr/>
-                <form method="POST" action="{% url 'flight.reservation.create' flight.id %}">
+                <form method="POST" action="{% url 'flight.reservation.update' ticket.id %}">
                     {% csrf_token %}
                     {% for field in form %}
                         <div class="form-group">
@@ -29,7 +29,7 @@ Book a Flight
                         </div>
                     {% endfor %}
                     <div class='form-group'>
-                        <button type='submit' class='btn btn-success'>Book</button>
+                        <button type='submit' class='btn btn-success'>Update</button>
                         <button type='reset' class='btn btn-primary'>Reset</button>
                     </div>
                 </form>

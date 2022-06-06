@@ -746,6 +746,46 @@ class FlightSearchView(FilterView):
     template_name = 'main/flight/search.html'
 
 # Booking
+
+class ListFlightTicketView(LoginRequiredMixin, ListView):
+    '''ListFlightTicketView, expressed as an OOP class.
+    '''
+
+    '''Model used in ListFlightTicketView
+    '''
+    model = Ticket
+
+    '''HTML template used in ListFlightTicketView
+    '''
+    template_name = 'main/flight/booking/list.html'
+
+    '''Maximum records in a page.
+    '''
+    paginate_by = 10
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_queryset(self):
+        '''Users should only see reservations made by them.
+        '''
+        return Ticket.objects.filter(customer = self.request.user.customer)
+
+class DetailFlightTicketView(LoginRequiredMixin, DetailView):
+    '''DetailFlightTicketView, expressed as an OOP class.
+    '''
+
+    '''Model used in DetailFlightTicketView
+    '''
+    model = Ticket
+
+    '''HTMP template used in DetailFlightTicketView
+    '''
+    template_name = 'main/flight/booking/detail.html'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
 class CreateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     '''CreateFlightTicketView, expressed as an OOP class.
     '''
@@ -788,6 +828,27 @@ class CreateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, CreateView
         form.instance.flight = Flight.objects.get(id = self.kwargs.get('pk'))
         form.instance.customer = self.request.user.customer
 
+        # Hardcore ticket adding.
+        if form.instance.ticket_class.name == 'First':
+            form.instance.price = form.instance.flight.flightdetail.first_class_ticket_price
+        elif form.instance.ticket_class.name == 'Economy':
+            form.instance.price = form.instance.flight.flightdetail.second_class_ticket_price
+
+        return super().form_valid(form)
+
+class UpdateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Ticket
+
+    template_name = 'main/flight/booking/update.html'
+
+    form_class = FlightTicketForm
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def form_valid(self, form) -> HttpResponse:
+        '''Automatically add flight, customer and ticket price to form.
+        '''
         # Hardcore ticket adding.
         if form.instance.ticket_class.name == 'First':
             form.instance.price = form.instance.flight.flightdetail.first_class_ticket_price

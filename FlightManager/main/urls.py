@@ -41,6 +41,9 @@ urlpatterns = [
 
     # Booking
     path('flight/<str:pk>/reservation/create', views.CreateFlightTicketView.as_view(), name = 'flight.reservation.create'),
+    path('reservations/', views.ListFlightTicketView.as_view(), name = 'flight.reservation.list'),
+    path('reservations/detail/<str:pk>/', views.DetailFlightTicketView.as_view(), name = 'flight.reservation.detail'),
+    path('reservation/detail/<str:pk>/update', views.UpdateFlightTicketView.as_view(), name = 'flight.reservation.update'),
 
     # Report
     path('report/', views.report, name = 'report'),
