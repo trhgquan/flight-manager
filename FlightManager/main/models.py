@@ -52,7 +52,11 @@ class Flight(models.Model):
     def total_seats(self) -> int:
         '''Return total seats of this Flight.
         '''
-        return self.flightdetail.first_class_seat_size + self.flightdetail.second_class_seat_size
+        try:
+            result = self.flightdetail.first_class_seat_size + self.flightdetail.second_class_seat_size
+            return result
+        except TypeError:
+            return 0
 
     @property
     def is_departed(self) -> bool:
@@ -109,6 +113,12 @@ class Ticket(models.Model):
 
     def __str__(self) -> str:
         return f'{self.flight} ticket booked by {self.customer}'
+
+    class Meta:
+        '''Paginator requires explicitly ordering definition
+        in order to sort Tickets correctly.
+        '''
+        ordering = ('-date_created',)
 
 class Reservation(models.Model):
     ticket = models.OneToOneField(Ticket, null = True, blank = True, on_delete = models.CASCADE)

@@ -264,6 +264,14 @@ class TransitionAirportForm(ModelForm):
             'placeholder' : 'Transition time',
         }),
     )
+    note = forms.CharField(
+        widget = forms.Textarea(attrs = {
+            'class' : 'form-control',
+            'rows' : 3,
+            'placeholder' : 'Note (optional)'
+        }),
+        required = False,
+    )
 
     class Meta:
         model = TransitionAirport
@@ -275,11 +283,6 @@ class TransitionAirportForm(ModelForm):
         widgets = {
             'airport' : forms.Select(attrs = {
                 'class' : 'form-control',
-            }),
-            'note' : forms.Textarea(attrs = {
-                'class' : 'form-control',
-                'rows' : 3,
-                'placeholder' : 'Note (optional)'
             }),
         }
     

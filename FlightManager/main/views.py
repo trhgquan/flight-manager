@@ -804,7 +804,7 @@ class CreateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, CreateView
 
     '''Where to redirects to after success
     '''
-    success_url = 'flight.reservation.view'
+    success_url = 'flight.reservation.detail'
 
     '''Message to be displayed after success.
     '''
@@ -813,6 +813,11 @@ class CreateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, CreateView
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
     
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id,
+        })
+
     def get_context_data(self, **kwargs):
         '''Adding additional data to context
         '''
@@ -837,14 +842,36 @@ class CreateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, CreateView
         return super().form_valid(form)
 
 class UpdateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    '''UpdateFlightTicketView, expressed as an OOP class.
+    '''
+
+    '''Model used in UpdateFlightTicketView
+    '''
     model = Ticket
 
+    '''HTML template used in UpdateFlightTicketView
+    '''
     template_name = 'main/flight/booking/update.html'
 
+    '''Form used in UpdateFlightTicketView
+    '''
     form_class = FlightTicketForm
+
+    '''Where to redirects to after success
+    '''
+    success_url = 'flight.reservation.update'
+
+    '''Message to be displayed after success.
+    '''
+    success_message = 'Reservation updated successfully.'
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+    
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id,
+        })
 
     def form_valid(self, form) -> HttpResponse:
         '''Automatically add flight, customer and ticket price to form.

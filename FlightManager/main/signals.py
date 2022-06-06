@@ -61,6 +61,10 @@ def populate_models(sender, **kwargs):
         print('Added permissions')
     except IntegrityError:
         print('Permission groups already existed, skipping..')
+    
+    # Adding default ticket classes
+    TicketClass.objects.create(name = 'First')
+    TicketClass.objects.create(name = 'Economy')
 
 def customer_profile(sender, instance, created, **kwargs):
     '''Create a Customer profile when a new User is created.

@@ -7,11 +7,9 @@ Flight Detail
 {% block content %}
 <div class="container">
     {% for message in messages %}
-    <div class="row">
         {% if message.tags == 'success' %}
             <p class="text-success">{{ message }}</p>
         {% endif %}
-    </div>
     {% endfor %}
     <div class="row">
         <div class="col">
@@ -38,7 +36,9 @@ Flight Detail
                 </table>
                 <br>
                 {% if not flight.is_departed %}
-                    <a class='btn btn-sm btn-success' href="{% url 'flight.reservation.create' flight.id %}">Book this Flight</a>
+                    {% if perms.main.add_reservation %}
+                        <a class='btn btn-sm btn-success' href="{% url 'flight.reservation.create' flight.id %}">Book a ticket</a>
+                    {% endif %}
                 {% else %}
                     <p class="text-danger">This flight has already departed, so you can't make reservations.</p>
                 {% endif %}

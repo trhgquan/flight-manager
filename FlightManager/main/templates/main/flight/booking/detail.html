@@ -6,6 +6,11 @@ Booking Detail
 
 {% block content %}
 <div class="container">
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <p class="text-success">{{ message }}</p>
+        {% endif %}
+    {% endfor %}
     <div class="row">
         <div class="col-md-4">
             {% include 'main/flight/sideinfo.html' with flight=ticket.flight %}
@@ -18,15 +23,15 @@ Booking Detail
                     <table>
                         <tr>
                             <td>Customer name</td>
-                            <td>{{ ticket.customer.name }}</td>
+                            <td>{{ ticket.name }}</td>
                         </tr>
                         <tr>
                             <td>Customer phone</td>
-                            <td>{{ ticket.customer.phone }}</td>
+                            <td>{{ ticket.phone }}</td>
                         </tr>
                         <tr>
                             <td>Customer ID</td>
-                            <td>{{ ticket.customer.identity_code }}</td>
+                            <td>{{ ticket.identity_code }}</td>
                         </tr>
                     </table>
                 </div>
@@ -50,8 +55,7 @@ Booking Detail
                                 {% if ticket.is_booked %}
                                     <span class="badge badge-success">Paid</span>
                                 {% else %}
-                                    <span class="badge badge-danger">Unpaid</span>
-
+                                    <span class="badge badge-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Payment needed">Unpaid</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -61,7 +65,12 @@ Booking Detail
                         </tr>
                     </table>
                     <br>
-                    <a href="#" class="btn btn-success btn-sm">Checkout</a>
+                    {% if not ticket.is_booked %}
+                        <p class="text-muted">With non-checked-out tickets, you can</p>
+                        <a href="{% url 'flight.reservation.update' ticket.id %}" class="btn btn-info btn-sm">Update</a>
+                        <p class="text-muted">or,</p>
+                        <a href="#" class="btn btn-success btn-sm">Checkout</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

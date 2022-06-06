@@ -14,6 +14,11 @@ Booking Update
         <div class='col-md-8'>
             <div class='card card-body'>
                 <h5 class='page-title'>Booking information</h5>
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <p class="text-success">{{ message }}</p>
+                    {% endif %}
+                {% endfor %}
                 <hr/>
                 <form method="POST" action="{% url 'flight.reservation.update' ticket.id %}">
                     {% csrf_token %}
