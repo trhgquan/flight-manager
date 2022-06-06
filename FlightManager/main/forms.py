@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelChoiceField, ModelForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django import forms
@@ -296,13 +296,59 @@ class TransitionAirportForm(ModelForm):
             })
 
 class FlightTicketForm(ModelForm):
+    '''FlightTicketForm
+
+    Required fields:
+    - name
+    - phone
+    - identity_code
+    - ticket_class
+    '''
+
+    '''Change default order of fields
+    '''
+    field_order = (
+        'name',
+        'phone',
+        'identity_code',
+        'ticket_class',
+    )
+
     class Meta:
         model = Ticket
         fields = '__all__'
         exclude = [
             'customer',
-            'flight'
+            'flight',
+            'is_booked',
+            'price'
         ]
+
+        widgets = {
+            'ticket_class' : forms.Select(
+                attrs = {
+                    'class' : 'form-control'
+                }
+            ),
+            'name' : forms.TextInput(
+                attrs = {
+                    'class' : 'form-control',
+                    'placeholder' : 'Your name',
+                }
+            ),
+            'phone' : forms.TextInput(
+                attrs = {
+                    'class' : 'form-control',
+                    'placeholder' : 'Your phone',
+                }
+            ),
+            'identity_code' : forms.TextInput(
+                attrs = {
+                    'class' : 'form-control',
+                    'placeholder' : 'Your Identity Code',
+                }
+            ),
+        }
 
 class CustomerForm(ModelForm):
     '''Customer Form

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 
 # Create your models here.
 
@@ -46,6 +47,16 @@ class Flight(models.Model):
     
     def __str__(self) -> str:
         return f'Flight {self.id}'
+    
+    @property
+    def total_seats(self) -> int:
+        '''Return total seats of this Flight.
+        '''
+        return self.flightdetail.first_class_seat_size + self.flightdetail.second_class_seat_size
+
+    @property
+    def is_departed(self) -> bool:
+        return self.date_time <= now()
 
     class Meta:
         '''Paginator requires explicitly ordering definition
@@ -95,6 +106,9 @@ class Ticket(models.Model):
     is_booked = models.BooleanField(null = True, default = False)
     price = models.IntegerField(null = True)
     date_created = models.DateTimeField(auto_now_add = True)
+
+    def __str__(self) -> str:
+        return f'{self.flight} ticket booked by {self.customer}'
 
 class Reservation(models.Model):
     ticket = models.OneToOneField(Ticket, null = True, blank = True, on_delete = models.CASCADE)

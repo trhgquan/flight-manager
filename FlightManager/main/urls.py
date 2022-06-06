@@ -46,9 +46,9 @@ urlpatterns = [
     path('report/', views.report, name = 'report'),
 
     #customer
-    #path('customer_list/', views.customer, name = "customer_list"),
-    path('customer_per/',views.customerPer, name = "customer_per"),
-    path('create_customer/', views.createCustomer, name = "create_customer"),
-    path('update_customer/', views.updateCustomer, name = "update_customer"),
-    path('delete_customer/', views.deleteCustomer, name = "delete_customer"),
+    # path('customer_list/', views.customer, name = "customer_list"),
+    # path('customer_per/',views.customerPer, name = "customer_per"),
+    # path('create_customer/', views.createCustomer, name = "create_customer"),
+    # path('update_customer/', views.updateCustomer, name = "update_customer"),
+    # path('delete_customer/', views.deleteCustomer, name = "delete_customer"),
 ]

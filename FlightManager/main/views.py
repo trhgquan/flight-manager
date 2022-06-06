@@ -747,44 +747,56 @@ class FlightSearchView(FilterView):
 
 # Booking
 class CreateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    '''CreateFlightTicketView, expressed as an OOP class.
+    '''
+
+    '''Model used in CreateFlightTicketView
+    '''
     model = Ticket
 
+    '''HTML template used in CreateFlightTicketView
+    '''
     template_name = 'main/flight/booking/create.html'
 
+    '''Form used in CreateFlightTicketView
+    '''
     form_class = FlightTicketForm
+
+    '''Where to redirects to after success
+    '''
+    success_url = 'flight.reservation.view'
+
+    '''Message to be displayed after success.
+    '''
+    success_message = 'Successfully booked this flight!'
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+    
+    def get_context_data(self, **kwargs):
+        '''Adding additional data to context
+        '''
+        context = super().get_context_data(**kwargs)
 
-def customer(request):
-    return render(request, 'customer/customer_list.html')
+        context["flight"] = Flight.objects.get(id = self.kwargs.get('pk'))
 
-def booking(request):
-    return render(request, 'main/booking.html')
+        return context
+
+    def form_valid(self, form) -> HttpResponse:
+        '''Automatically add flight, customer and ticket price to form.
+        '''
+        form.instance.flight = Flight.objects.get(id = self.kwargs.get('pk'))
+        form.instance.customer = self.request.user.customer
+
+        # Hardcore ticket adding.
+        if form.instance.ticket_class.name == 'First':
+            form.instance.price = form.instance.flight.flightdetail.first_class_ticket_price
+        elif form.instance.ticket_class.name == 'Economy':
+            form.instance.price = form.instance.flight.flightdetail.second_class_ticket_price
+
+        return super().form_valid(form)
 
 def report(request):
     # More HTTP POST processing here
 
     return render(request, 'main/report.html')
-
-#customer
-def customerPer(request):
-    return render(request, 'customer/customer_per.html')
-
-def createCustomer(request):
-    form= CustomerForm()
-    if request.method=='POST':
-        form=CustomerForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/')
-
-    context = {'form':form}
-
-    return render(request,'customer/customer_form.html', context)
-
-def updateCustomer(request):
-    return render(request,'customer/customer_update.html')
-
-def deleteCustomer(request):
-    return render(request,'customer/customer_delete.html')

@@ -28,7 +28,7 @@ Flight Detail
                         <td>{{ flight.departure_airport }}</td>
                     </tr>
                     <tr>
-                        <td>Arrival</td>
+                        <td>Destination</td>
                         <td>{{ flight.arrival_airport }}</td>
                     </tr>
                     <tr>
@@ -36,6 +36,13 @@ Flight Detail
                         <td>{{ flight.date_time }}</td>
                     </tr> 
                 </table>
+                <br>
+                {% if not flight.is_departed %}
+                    <a class='btn btn-sm btn-success' href="{% url 'flight.reservation.create' flight.id %}">Book this Flight</a>
+                {% else %}
+                    <p class="text-danger">This flight has already departed, so you can't make reservations.</p>
+                {% endif %}
+
                 {% if perms.main.change_flight %}
                 <hr>
                 <a href="{% url 'flight.update' flight.id %}">Update Flight basic informations</a>
@@ -61,7 +68,6 @@ Flight Detail
                             <td>{{ flight.flightdetail.second_class_seat_size }} (seats) / {{ flight.flightdetail.second_class_ticket_price }}$ (per seat)</td>
                         </tr>
                     </tbody>
-                    
                 </table>
                 {% if perms.main.change_flight %}
                 <hr>

@@ -1,5 +1,9 @@
 {% extends 'main/main.html' %}
 
+{% block title %}
+Book a Flight
+{% endblock title %}
+
 {% block content %}
 <br/>
 <div class='container'>
@@ -10,76 +14,56 @@
                 <table class='table'>
                     <tr>
                         <td>Flight number</td>
-                        <td>SU1152</td>
+                        <td>{{ flight.id }}</td>
+                    </tr>
+                    <tr>
+                        <td>Route</td>
+                        <td>{{ flight.departure_airport }} (Dep.) - {{ flight.arrival_airport }} (Dest.)</td>
                     </tr>
                     <tr>
                         <td>Departure</td>
-                        <td>08:10 22/05/2022 <br/> (SVO) Moscow, Russia</td>
+                        <td>{{ flight.date_time }}</td>
                     </tr>
                     <tr>
-                        <td>Arrival</td>
-                        <td>10:40 22/05/2022 <br/> (GDZ) Gelendzik, Russia</td>
+                        <td>Total seats</td>
+                        <td>{{ flight.total_seats }}</td>
                     </tr>
                     <tr>
-                        <td>Total seats (av. / to.)</td>
-                        <td>112 / 250</td>
+                        <td>First class</td>
+                        <td>{{ flight.flightdetail.first_class_seat_size }} seats</td>
                     </tr>
                     <tr>
-                        <td>First class (av. / to.)</td>
-                        <td>10 / 80</td>
+                        <td>Economy class</td>
+                        <td>{{ flight.flightdetail.second_class_seat_size }} seats</td>
                     </tr>
                     <tr>
-                        <td>Ticket price (first / eco)</td>
-                        <td>$120 / $80</td>
+                        <td>Ticket price (first - economy)</td>
+                        <td>{{ flight.flightdetail.first_class_ticket_price }}$ - {{ flight.flightdetail.second_class_ticket_price }}$</td>
                     </tr>
                 </table>
-                <a href='#' class='btn btn-warning btn-block'>View flight detail</a>
+                <a href='{% url "flight.detail" flight.id %}' class='btn btn-warning btn-block'>View flight detail</a>
             </div>
         </div>
         <div class='col-md-8'>
             <div class='card card-body'>
                 <h5 class='page-title'>Booking information</h5>
                 <hr/>
-                <form>
+                <form method="POST" action="{% url 'flight.reservation.create' flight.id %}">
                     {% csrf_token %}
-                    <div class='form-group'>
-                        <div class='row'>
-                            <div class='col'>
-                                <label for='customerName'>Booking name</label>
-                                <input type='text' class='form-control' name='customerName' id='customerName' placeholder='Your name (e.g Anya Forger)'/>
-                            </div>
-                            <div class='col'>
-                                <label for='customerID'>ID</label>
-                                <input type='text' class='form-control' name='customerID' id='customerID' placeholder='Your ID'/>
-                            </div>
+                    {% for field in form %}
+                        <div class="form-group">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            <ul class="text-danger">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                            </ul>
                         </div>
-                    </div>
+                    {% endfor %}
                     <div class='form-group'>
-                        <div class='row'>
-                            <div class='col'>
-                                <label for='customerPhone'>Phone</label>
-                                <input type='phone' class='form-control' name='customerPhone' id='customerPhone' placeholder='Your phone'/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class='form-group'>
-                        <div class='row'>
-                            <div class='col'>
-                                <label for='firstClassTickets'>Ticket class </label>
-                                <div class='form-check form-check-inline'>
-                                    <input class='form-check-input' type='radio' name='ticketClass' id='first_class' checked>
-                                    <label class='form-check-label' for='first_class'>First</label>
-                                </div>
-                                <div class='form-check form-check-inline'>
-                                    <input class='form-check-input' type='radio' name='ticketClass' id='economy_class' checked>
-                                    <label class='form-check-label' for='economy_class'>Economy</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class='form-group'>
-                        <button type='submit' class='btn btn-lg btn-outline-success'>Book</button>
-                        <button type='reset' class='btn btn-lg btn-outline-primary'>Reset</button>
+                        <button type='submit' class='btn btn-success'>Book</button>
+                        <button type='reset' class='btn btn-primary'>Reset</button>
                     </div>
                 </form>
             </div>
