@@ -5,7 +5,7 @@ from django.http import HttpRequest, HttpResponse
 # Messages
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMixin
 
 # For authentication
 from django.contrib.auth import authenticate, login, logout
@@ -771,7 +771,7 @@ class ListFlightTicketView(LoginRequiredMixin, ListView):
         '''
         return Ticket.objects.filter(customer = self.request.user.customer)
 
-class DetailFlightTicketView(LoginRequiredMixin, DetailView):
+class DetailFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     '''DetailFlightTicketView, expressed as an OOP class.
     '''
 
@@ -782,6 +782,18 @@ class DetailFlightTicketView(LoginRequiredMixin, DetailView):
     '''HTMP template used in DetailFlightTicketView
     '''
     template_name = 'main/flight/booking/detail.html'
+
+    def test_func(self) -> bool:
+        '''User can only view his own tickets, except managers.
+        '''
+        current_customer = self.request.user.customer
+        ticket_customer = self.get_object().customer
+
+        if current_customer == ticket_customer:
+            return True
+        if current_customer.is_in_group('Manager'):
+            return True
+        return False
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')

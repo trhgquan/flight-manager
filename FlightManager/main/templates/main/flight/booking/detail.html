@@ -54,8 +54,10 @@ Booking Detail
                             <td>
                                 {% if ticket.is_booked %}
                                     <span class="badge badge-success">Paid</span>
+                                {% elif ticket.is_canceled %}
+                                    <span class="badge badge-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Canceled since the flight has taken off and no payment made.">Canceled</span>
                                 {% else %}
-                                    <span class="badge badge-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Payment needed">Unpaid</span>
+                                    <span class="badge badge-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Payment needed">Unpaid</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -65,11 +67,16 @@ Booking Detail
                         </tr>
                     </table>
                     <br>
-                    {% if not ticket.is_booked %}
+                    {% if ticket.can_update %}
+                        <a href="#" class="btn btn-success btn-sm">Checkout</a>
+                        <hr>
                         <p class="text-muted">With non-checked-out tickets, you can</p>
                         <a href="{% url 'flight.reservation.update' ticket.id %}" class="btn btn-info btn-sm">Update</a>
                         <p class="text-muted">or,</p>
-                        <a href="#" class="btn btn-success btn-sm">Checkout</a>
+                        <a href="#" class="btn btn-danger btn-sm">Cancel booking</a>
+                    {% else %}
+                        <p class="text-info">This ticket information cannot be changed since payment has been made.</p>
+                        <p class="text-primary">To cancel paid ticket and other refund problems, please contact Admin (+84) 0123456789 for further details.</p>
                     {% endif %}
                 </div>
             </div>

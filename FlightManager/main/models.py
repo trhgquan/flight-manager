@@ -17,6 +17,9 @@ class Customer(models.Model):
         if self.name is not None:
             return self.name
         return 'Unamed Customer'
+    
+    def is_in_group(self, group_name : str) -> bool:
+        return self.user.groups.filter(name = group_name).exists()
 
 class Manager(Customer):
     def __str__(self):
@@ -113,6 +116,18 @@ class Ticket(models.Model):
 
     def __str__(self) -> str:
         return f'{self.flight} ticket booked by {self.customer}'
+
+    @property
+    def can_update(self) -> bool:
+        '''Can only update Tickets with Flight non-departed and unpaid.
+        '''
+        return not self.flight.is_departed and not self.is_booked
+
+    @property
+    def is_canceled(self) -> bool:
+        '''Tickets are canceled automatically when flight taken off and still unpaid.
+        '''
+        return self.flight.is_departed and not self.is_booked
 
     class Meta:
         '''Paginator requires explicitly ordering definition
