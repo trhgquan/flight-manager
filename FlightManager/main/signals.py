@@ -63,8 +63,11 @@ def populate_models(sender, **kwargs):
         print('Permission groups already existed, skipping..')
     
     # Adding default ticket classes
-    TicketClass.objects.create(name = 'First')
-    TicketClass.objects.create(name = 'Economy')
+    first_class_object = TicketClass.objects.get_or_create(name = 'First')
+    print(f'Created {first_class_object}')
+
+    second_class_object = TicketClass.objects.get_or_create(name = 'Economy')
+    print(f'Created {second_class_object}')
 
 def customer_profile(sender, instance, created, **kwargs):
     '''Create a Customer profile when a new User is created.
