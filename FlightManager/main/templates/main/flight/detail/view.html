@@ -35,8 +35,8 @@ Flight Detail
                     </tr> 
                 </table>
                 <br>
-                {% if not flight.is_departed %}
-                    {% if perms.main.add_reservation %}
+                {% if perms.main.add_reservation %}
+                    {% if flight.is_bookable %}
                         <a class='btn btn-sm btn-success' href="{% url 'flight.reservation.create' flight.id %}">Book a ticket</a>
                     {% endif %}
                 {% else %}

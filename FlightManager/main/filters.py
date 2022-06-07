@@ -44,3 +44,4 @@ class FlightFilter(FilterSet):
             'arrival_airport',
             'date_time'
         ]
+        order_by = 'date_time',

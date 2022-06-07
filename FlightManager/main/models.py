@@ -64,6 +64,10 @@ class Flight(models.Model):
     @property
     def is_departed(self) -> bool:
         return self.date_time <= now()
+    
+    @property
+    def is_bookable(self) -> bool:
+        return not self.is_departed and self.ticket_set.count() < self.total_seats
 
     class Meta:
         '''Paginator requires explicitly ordering definition

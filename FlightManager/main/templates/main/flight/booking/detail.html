@@ -75,7 +75,9 @@ Booking Detail
                         <p class="text-muted">or,</p>
                         <a href="#" class="btn btn-danger btn-sm">Cancel booking</a>
                     {% else %}
+                        {% if ticket.is_booked %}
                         <p class="text-info">This ticket information cannot be changed since payment has been made.</p>
+                        {% endif %}
                         <p class="text-primary">To cancel paid ticket and other refund problems, please contact Admin (+84) 0123456789 for further details.</p>
                     {% endif %}
                 </div>

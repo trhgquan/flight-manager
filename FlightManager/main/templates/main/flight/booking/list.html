@@ -32,7 +32,7 @@ Your Reservations
                             {% if ticket.is_booked %}
                             <td><span class="badge badge-success">Paid</span></td>
                             {% elif ticket.is_canceled %}
-                            <span class="badge badge-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Canceled since the flight has taken off and no payment made.">Canceled</span>
+                            <td><span class="badge badge-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Canceled since the flight has taken off and no payment made.">Canceled</span></td>
                             {% else %}
                             <td><span class="badge badge-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Payment needed">Unpaid</span></td>
                             {% endif %}
@@ -45,7 +45,7 @@ Your Reservations
                                             <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                                         </svg>
                                     </a>
-                                    {% if not ticket.is_booked %}
+                                    {% if not ticket.is_booked and ticket.can_update %}
                                     <a data-bs-toggle="tooltip" data-bs-placement="top" title="Pay" href="#" class='btn btn-sm btn-primary'>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
                                             <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>

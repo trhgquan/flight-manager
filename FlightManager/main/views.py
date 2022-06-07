@@ -265,7 +265,7 @@ class UpdatePasswordView(LoginRequiredMixin, View):
 
     '''Where to redirects to after something went wrong.
     '''
-    redirect_to_success = 'home'
+    redirect_to_success = 'auth.signin'
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
@@ -798,7 +798,7 @@ class DetailFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, DetailView
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
 
-class CreateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class CreateFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
     '''CreateFlightTicketView, expressed as an OOP class.
     '''
 
@@ -838,6 +838,10 @@ class CreateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, CreateView
         context["flight"] = Flight.objects.get(id = self.kwargs.get('pk'))
 
         return context
+    
+    def test_func(self) -> bool:
+        flight = Flight.objects.get(id = self.kwargs.get('pk'))
+        return flight.is_bookable
 
     def form_valid(self, form) -> HttpResponse:
         '''Automatically add flight, customer and ticket price to form.
