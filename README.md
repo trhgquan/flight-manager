@@ -108,7 +108,7 @@ heroku login
 ```
 heroku git:remote -a app_name
 ```
-với app_name chính là tên của app được tạo ở bước 1, trong trường hợp này là tutorial-for-deploying
+với app_name chính là tên của app được tạo ở bước 1, trong trường hợp này là __tutorial-for-deploying__
 
 - Cuối cùng, dùng câu lệnh bên dưới để migrate database trên remote repository
 ```
