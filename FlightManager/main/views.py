@@ -857,7 +857,7 @@ class CreateFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
 
         return super().form_valid(form)
 
-class UpdateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class UpdateFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     '''UpdateFlightTicketView, expressed as an OOP class.
     '''
 
@@ -888,6 +888,22 @@ class UpdateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, UpdateView
         return reverse(self.success_url, kwargs = {
             'pk' : self.object.id,
         })
+    
+    def test_func(self) -> bool:
+        '''User can only update his own unpaid tickets, except managers.
+        '''
+        if not self.get_object().flight.is_bookable:
+            return False
+
+        current_customer = self.request.user.customer
+        ticket_customer = self.get_object().customer
+
+        if current_customer == ticket_customer:
+            return True
+        if current_customer.is_in_group('Manager'):
+            return True
+
+        return False
 
     def form_valid(self, form) -> HttpResponse:
         '''Automatically add flight, customer and ticket price to form.
@@ -899,6 +915,48 @@ class UpdateFlightTicketView(LoginRequiredMixin, SuccessMessageMixin, UpdateView
             form.instance.price = form.instance.flight.flightdetail.second_class_ticket_price
 
         return super().form_valid(form)
+
+class DeleteFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):
+    '''DeleteFlightTicketView, expressed as an OOP class.
+    '''
+
+    '''Model used in DeleteFlightTicketView
+    '''
+    model = Ticket
+
+    '''HTML template used in DeleteFlightTicketView.
+    '''
+    template_name = 'main/flight/booking/delete.html'
+
+    '''Where to redirects to after success.
+    '''
+    success_url = 'flight.reservation.list'
+
+    '''Message to be displayed when success.
+    '''
+    success_message = 'Cancel reservation successfully.'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_success_url(self) -> str:
+        return reverse(self.success_url)
+
+    def test_func(self) -> bool:
+        '''User can only delete his own unpaid tickets, except managers.
+        '''
+        if not self.get_object().flight.is_bookable:
+            return False
+
+        current_customer = self.request.user.customer
+        ticket_customer = self.get_object().customer
+
+        if current_customer == ticket_customer:
+            return True
+        if current_customer.is_in_group('Manager'):
+            return True
+
+        return False
 
 def report(request):
     # More HTTP POST processing here

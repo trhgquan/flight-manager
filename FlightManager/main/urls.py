@@ -44,14 +44,8 @@ urlpatterns = [
     path('reservation/list', views.ListFlightTicketView.as_view(), name = 'flight.reservation.list'),
     path('reservation/detail/<str:pk>/', views.DetailFlightTicketView.as_view(), name = 'flight.reservation.detail'),
     path('reservation/detail/<str:pk>/update', views.UpdateFlightTicketView.as_view(), name = 'flight.reservation.update'),
+    path('reservation/detail/<str:pk>/delete', views.DeleteFlightTicketView.as_view(), name = 'flight.reservation.delete'),
 
     # Report
     path('report/', views.report, name = 'report'),
-
-    #customer
-    # path('customer_list/', views.customer, name = "customer_list"),
-    # path('customer_per/',views.customerPer, name = "customer_per"),
-    # path('create_customer/', views.createCustomer, name = "create_customer"),
-    # path('update_customer/', views.updateCustomer, name = "update_customer"),
-    # path('delete_customer/', views.deleteCustomer, name = "delete_customer"),
 ]
