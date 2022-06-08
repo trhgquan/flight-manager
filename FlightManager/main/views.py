@@ -839,6 +839,11 @@ class CreateFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
 
         return context
     
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['flight'] = Flight.objects.get(id = self.kwargs.get('pk'))
+        return kwargs
+
     def test_func(self) -> bool:
         flight = Flight.objects.get(id = self.kwargs.get('pk'))
         return flight.is_bookable

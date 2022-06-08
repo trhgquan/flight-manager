@@ -1,4 +1,4 @@
-from django.forms import ModelChoiceField, ModelForm
+from django.forms import ModelForm, ValidationError
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django import forms
@@ -139,7 +139,7 @@ class FlightForm(ModelForm):
         arrival_airport = self.cleaned_data.get('arrival_airport')
 
         if departure_airport == arrival_airport:
-            raise forms.ValidationError({
+            raise ValidationError({
                 'departure_airport' : 'Departure and Arrival Airport must not be the same.',
                 'arrival_airport' : 'Departure and Arrival Airport must not be the same.'
             })
@@ -206,27 +206,27 @@ class FlightDetailForm(ModelForm):
         second_class_ticket_price = self.cleaned_data.get('second_class_ticket_price')
 
         if flight_time <= 0:
-            raise forms.ValidationError({
+            raise ValidationError({
                 'flight_time' : 'Flight time cannot be negative or zero minutes.'
             })
         
         if first_class_seat_size < 0:
-            raise forms.ValidationError({
+            raise ValidationError({
                 'first_class_seat_size' : 'First class seats cannot be a negative.'
             })
 
         if second_class_seat_size < 0:
-            raise forms.ValidationError({
+            raise ValidationError({
                 'second_class_seat_size' : 'Economy class seats cannot be a negative.'
             })
         
         if first_class_ticket_price < 0:
-            raise forms.ValidationError({
+            raise ValidationError({
                 'first_class_ticket_price' : 'First class ticket price cannot be negative.'
             })
         
         if second_class_ticket_price < 0:
-            raise forms.ValidationError({
+            raise ValidationError({
                 'second_class_ticket_price' : 'Economy class ticket price cannot be negative.'
             })
 
@@ -294,7 +294,7 @@ class TransitionAirportForm(ModelForm):
         transition_time = self.cleaned_data.get('transition_time')
 
         if transition_time <= 0:
-            raise forms.ValidationError({
+            raise ValidationError({
                 'transition_time' : 'Transition time cannot be negative or zero minutes!'
             })
 
@@ -316,6 +316,29 @@ class FlightTicketForm(ModelForm):
         'identity_code',
         'ticket_class',
     )
+
+    def __init__(self, *args, **kwargs) -> None:
+        self.flight = kwargs.pop('flight', None)
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        ticket_class = self.cleaned_data.get('ticket_class')
+
+        condition_check = True
+
+        '''This is a complete hell, but we don't have time to make a dynamically loaded ticket-class validation.
+        '''
+
+        if ticket_class.name == "First":
+            condition_check = self.flight.flightdetail.first_class_seat_size > self.flight.ticket_set.filter(ticket_class = ticket_class).count()
+
+        elif ticket_class.name == "Economy":
+            condition_check = self.flight.flightdetail.second_class_seat_size > self.flight.ticket_set.filter(ticket_class = ticket_class).count()
+
+        if not condition_check:
+            raise ValidationError({
+                'ticket_class' : 'This class is out of seats, please choose another class.'
+            })
 
     class Meta:
         model = Ticket
