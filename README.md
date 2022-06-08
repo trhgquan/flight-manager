@@ -47,12 +47,37 @@ python runserver.py runserver
 
 ### Hướng dẫn deploy
 #### Yêu cầu
+- Người deploy đã cài đặt Heroku CLI
 - Người deploy phải có một tài khoản [Github](https://www.github.com)
+- Người deploy phải có một tài khoản [Heroku](https://www.heroku.com/)
 - Tài khoản github này phải có 1 repository đã được push mã nguồn từ branch _staging_ ở repo này
-- Yêu cầu phải có một tài khoản [Heroku](https://www.heroku.com/)
 
 #### Hướng dẫn
-##### Bước 1:
+##### Bước 1: Tạo app
 - Truy cập vào [Heroku](https://www.heroku.com/) và đăng nhập vào tài khoản đã tạo sẵn
 - Nhấn vào nút _new_ để tạo một app mới trên __Heroku__
 ![markdown](deploy_tutorial/step_1.png)
+
+- Chọn _Create new app_
+![markdown](deploy_tutorial/step_2.png)
+
+- Đặt tên, chọn region cho app, sau đấy nhấn nút _Create_
+![markdown](deploy_tutorial/step_3.png)
+
+- Ta được chuyển đến màn hình quản lý app
+![markdown](deploy_tutorial/step_4.png)
+
+##### Bước 2: Tạo Heroku PostgreSQL để sử dụng PostgreSQL
+- Trên màn hình quản lý app, chọn _Resource_
+![markdown](deploy_tutorial/step_5.png)
+
+- Trên thanh tìm kiếm, hãy tìm keyword _Heroku Postgres_
+![markdown](deploy_tutorial/step_6.png)
+
+- Chọn phiên bản _Hobby Dev - Free_ và nhấn __Submit Order Form__
+![markdown](deploy_tutorial/step_7.png)
+
+##### Bước 3: Tiến hành deploy
+
+- Trên navbar, chọn _Deploy_, kéo xuống phần __Deployment Method__ và chọn _Connect to GitHub_
+![markdown](deploy_tutorial/step_8.png)
