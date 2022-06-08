@@ -68,7 +68,7 @@ Booking Detail
                     </table>
                     <br>
                     {% if ticket.can_update %}
-                        <a href="#" class="btn btn-success btn-sm">Checkout</a>
+                        <a href="{% url 'flight.reservation.payment' ticket.id %}" class="btn btn-success btn-sm">Checkout</a>
                         <hr>
                         <p class="text-muted">With non-checked-out tickets, you can</p>
                         <a href="{% url 'flight.reservation.update' ticket.id %}" class="btn btn-info btn-sm">Update</a>

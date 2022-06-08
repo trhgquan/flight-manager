@@ -640,6 +640,8 @@ class CreateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
         self.login_url = reverse('auth.signin')
 
     def get_form_kwargs(self):
+        '''Parsing list of airports for form validation
+        '''
         kwargs = super().get_form_kwargs()
         
         flight = Flight.objects.get(id = self.kwargs.get('pk'))
@@ -703,6 +705,8 @@ class UpdateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
         self.login_url = reverse('auth.signin')
 
     def get_form_kwargs(self):
+        '''Parsing list of airports for form validation.
+        '''
         kwargs = super().get_form_kwargs()
         
         flight = self.get_object().flight
@@ -862,6 +866,8 @@ class CreateFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
         return context
     
     def get_form_kwargs(self):
+        '''Parsing this flight for form validation
+        '''
         kwargs = super().get_form_kwargs()
         kwargs['flight'] = Flight.objects.get(id = self.kwargs.get('pk'))
         return kwargs
@@ -911,6 +917,13 @@ class UpdateFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
     
+    def get_form_kwargs(self):
+        '''Parsing this flight for form validation
+        '''
+        kwargs = super().get_form_kwargs()
+        kwargs['flight'] = Ticket.objects.get(id = self.kwargs.get('pk')).flight
+        return kwargs
+
     def get_success_url(self) -> str:
         return reverse(self.success_url, kwargs = {
             'pk' : self.object.id,
@@ -984,6 +997,44 @@ class DeleteFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
             return True
 
         return False
+
+# Payment
+class PayFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
+    model = Ticket
+
+    fields = []
+
+    template_name = 'main/flight/booking/payment.html'
+
+    success_url = 'flight.reservation.detail'
+
+    success_message = 'Payment created successfully!'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id,
+        })
+
+    def test_func(self) -> bool:
+        if not self.get_object().can_update:
+            return False
+        
+        current_customer = self.request.user.customer
+        ticket_customer = self.get_object().customer
+
+        if current_customer == ticket_customer:
+            return True
+        if current_customer.is_in_group('Manager'):
+            return True
+        
+        return False
+
+    def form_valid(self, form) -> HttpResponse:
+        form.instance.is_booked = True
+        return super().form_valid(form)
 
 def report(request):
     # More HTTP POST processing here
