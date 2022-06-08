@@ -44,3 +44,15 @@ Browse vào thư mục FlightManager,
 ```
 python runserver.py runserver
 ```
+
+### Hướng dẫn deploy
+#### Yêu cầu
+- Người deploy phải có một tài khoản [Github](https://www.github.com)
+- Tài khoản github này phải có 1 repository đã được push mã nguồn từ branch _staging_ ở repo này
+- Yêu cầu phải có một tài khoản [Heroku](https://www.heroku.com/)
+
+#### Hướng dẫn
+##### Bước 1:
+- Truy cập vào [Heroku](https://www.heroku.com/) và đăng nhập vào tài khoản đã tạo sẵn
+- Nhấn vào nút _new_ để tạo một app mới trên __Heroku__
+![markdown](deploy_tutorial/step_1.png)
