@@ -1000,14 +1000,27 @@ class DeleteFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
 
 # Payment
 class PayFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
+    '''PayFlightTicketView, expressed as an OOP class.
+    '''
+
+    '''Model to be used in PayFlightTicketView
+    '''
     model = Ticket
 
+    '''Fields are binded, all operations are in form_valid method.
+    '''
     fields = []
 
+    '''HTML template to be used in PayFlightTicketView
+    '''
     template_name = 'main/flight/booking/payment.html'
 
+    '''Where to redirects to after success.
+    '''
     success_url = 'flight.reservation.detail'
 
+    '''Message to be displayed after success.
+    '''
     success_message = 'Payment created successfully!'
 
     def __init__(self) -> None:
@@ -1019,6 +1032,10 @@ class PayFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessag
         })
 
     def test_func(self) -> bool:
+        '''Ticket owner can pay for non-taken-off tickets.
+
+        Manager can pay for non-taken-off tickets, too.
+        '''
         if not self.get_object().can_update:
             return False
         
@@ -1033,6 +1050,8 @@ class PayFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessag
         return False
 
     def form_valid(self, form) -> HttpResponse:
+        '''Only update one field - is_booked.
+        '''
         form.instance.is_booked = True
         return super().form_valid(form)
 
