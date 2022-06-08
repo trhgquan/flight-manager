@@ -639,6 +639,17 @@ class CreateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        
+        flight = Flight.objects.get(id = self.kwargs.get('pk'))
+
+        kwargs['route_airports'] = [flight.departure_airport, flight.arrival_airport]
+        for transition_airport in flight.transitionairport_set.all():
+            kwargs['route_airports'].append(transition_airport.airport)
+
+        return kwargs
+
     def get_context_data(self, **kwargs):
         '''Since current view does not have parent flight's instance,
         this method will get parent flight's instance and parse it to the view.
@@ -690,6 +701,17 @@ class UpdateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        
+        flight = self.get_object().flight
+
+        kwargs['route_airports'] = [flight.departure_airport, flight.arrival_airport]
+        for transition_airport in flight.transitionairport_set.all():
+            kwargs['route_airports'].append(transition_airport.airport)
+
+        return kwargs
 
     def get_success_url(self) -> str:
         return reverse(self.success_url, kwargs = {

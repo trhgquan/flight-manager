@@ -100,6 +100,7 @@ class ChangePasswordForm(PasswordChangeForm):
             'placeholder' : 'Confirm your new password',
         })
 
+# Flight forms
 class FlightForm(ModelForm):
     '''Flight form
 
@@ -230,6 +231,7 @@ class FlightDetailForm(ModelForm):
                 'second_class_ticket_price' : 'Economy class ticket price cannot be negative.'
             })
 
+# Airport forms
 class AirportForm(ModelForm):
     '''Airport Form
 
@@ -273,6 +275,10 @@ class TransitionAirportForm(ModelForm):
         required = False,
     )
 
+    def __init__(self, *args, **kwargs) -> None:
+        self.route_airports = kwargs.pop('route_airports')
+        super().__init__(*args, **kwargs)
+
     class Meta:
         model = TransitionAirport
         fields = '__all__'
@@ -292,12 +298,19 @@ class TransitionAirportForm(ModelForm):
         - transition_time must be > 0.
         '''
         transition_time = self.cleaned_data.get('transition_time')
+        airport = self.cleaned_data.get('airport')
 
         if transition_time <= 0:
             raise ValidationError({
                 'transition_time' : 'Transition time cannot be negative or zero minutes!'
             })
 
+        if airport in self.route_airports:
+            raise ValidationError({
+                'airport' : 'This airport existed in flight route, please double-check.'
+            })
+
+# Ticket forms
 class FlightTicketForm(ModelForm):
     '''FlightTicketForm
 
