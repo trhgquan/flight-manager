@@ -103,3 +103,17 @@ python runserver.py runserver
 ```
 heroku login
 ```
+
+- Dùng câu lệnh bên dưới để kết nối Heroku remote repository đã tạo sẵn (do deploy thành công ở bước 3) trên Heroku với local repository.
+```
+heroku git:remote -a app_name
+```
+với app_name chính là tên của app được tạo ở bước 1, trong trường hợp này là tutorial-for-deploying
+
+- Cuối cùng, dùng câu lệnh bên dưới để migrate database trên remote repository
+```
+heroku run python FlightManager/manage.py migrate
+```
+
+- Tới đây, ta đã có thể vào được app đã tạo mà không bị lỗi
+![markdown](deploy_tutorial/step_14.png)
