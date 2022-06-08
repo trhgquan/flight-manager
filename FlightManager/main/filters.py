@@ -1,5 +1,4 @@
 from django import forms
-from django.utils.timezone import now
 from django_filters import DateFromToRangeFilter, ModelChoiceFilter
 from django_filters import FilterSet, widgets
 
@@ -15,16 +14,18 @@ class FlightFilter(FilterSet):
         widget = forms.Select(
             attrs = {
                 'class' : 'form-control',
-            }
-        )
+            },
+        ),
+        label = 'Departure'
     )
     arrival_airport = ModelChoiceFilter(
         queryset = Airport.objects,
         widget = forms.Select(
             attrs = {
                 'class' : 'form-control',
-            }
-        )
+            },
+        ),
+        label = 'Destination'
     )
     date_time = DateFromToRangeFilter(
         widget = widgets.RangeWidget(
@@ -43,3 +44,4 @@ class FlightFilter(FilterSet):
             'arrival_airport',
             'date_time'
         ]
+        order_by = 'date_time',

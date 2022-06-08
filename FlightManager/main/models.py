@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 
 # Create your models here.
 
@@ -16,6 +17,9 @@ class Customer(models.Model):
         if self.name is not None:
             return self.name
         return 'Unamed Customer'
+    
+    def is_in_group(self, group_name : str) -> bool:
+        return self.user.groups.filter(name = group_name).exists()
 
 class Manager(Customer):
     def __str__(self):
@@ -46,6 +50,24 @@ class Flight(models.Model):
     
     def __str__(self) -> str:
         return f'Flight {self.id}'
+    
+    @property
+    def total_seats(self) -> int:
+        '''Return total seats of this Flight.
+        '''
+        try:
+            result = self.flightdetail.first_class_seat_size + self.flightdetail.second_class_seat_size
+            return result
+        except TypeError:
+            return 0
+
+    @property
+    def is_departed(self) -> bool:
+        return self.date_time <= now()
+    
+    @property
+    def is_bookable(self) -> bool:
+        return not self.is_departed and self.ticket_set.count() < self.total_seats
 
     class Meta:
         '''Paginator requires explicitly ordering definition
@@ -55,9 +77,11 @@ class Flight(models.Model):
 
 class FlightDetail(models.Model):
     flight = models.OneToOneField(Flight, null = True, blank = True, on_delete = models.CASCADE)
-    flight_time =  models.IntegerField(null = True)             #minutes
+    flight_time =  models.IntegerField(null = True)
     first_class_seat_size = models.IntegerField(null = True)
+    first_class_ticket_price = models.IntegerField(null = True)
     second_class_seat_size = models.IntegerField(null = True)
+    second_class_ticket_price = models.IntegerField(null = True)
     date_created = models.DateTimeField(auto_now_add = True)
 
     def __str__(self) -> str:
@@ -93,6 +117,27 @@ class Ticket(models.Model):
     is_booked = models.BooleanField(null = True, default = False)
     price = models.IntegerField(null = True)
     date_created = models.DateTimeField(auto_now_add = True)
+
+    def __str__(self) -> str:
+        return f'{self.flight} ticket booked by {self.customer}'
+
+    @property
+    def can_update(self) -> bool:
+        '''Can only update Tickets with Flight non-departed and unpaid.
+        '''
+        return not self.flight.is_departed and not self.is_booked
+
+    @property
+    def is_canceled(self) -> bool:
+        '''Tickets are canceled automatically when flight taken off and still unpaid.
+        '''
+        return self.flight.is_departed and not self.is_booked
+
+    class Meta:
+        '''Paginator requires explicitly ordering definition
+        in order to sort Tickets correctly.
+        '''
+        ordering = ('-date_created',)
 
 class Reservation(models.Model):
     ticket = models.OneToOneField(Ticket, null = True, blank = True, on_delete = models.CASCADE)

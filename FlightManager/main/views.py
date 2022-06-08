@@ -5,7 +5,7 @@ from django.http import HttpRequest, HttpResponse
 # Messages
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMixin
 
 # For authentication
 from django.contrib.auth import authenticate, login, logout
@@ -265,7 +265,7 @@ class UpdatePasswordView(LoginRequiredMixin, View):
 
     '''Where to redirects to after something went wrong.
     '''
-    redirect_to_success = 'home'
+    redirect_to_success = 'auth.signin'
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
@@ -639,6 +639,19 @@ class CreateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
 
+    def get_form_kwargs(self):
+        '''Parsing list of airports for form validation
+        '''
+        kwargs = super().get_form_kwargs()
+        
+        flight = Flight.objects.get(id = self.kwargs.get('pk'))
+
+        kwargs['route_airports'] = [flight.departure_airport, flight.arrival_airport]
+        for transition_airport in flight.transitionairport_set.all():
+            kwargs['route_airports'].append(transition_airport.airport)
+
+        return kwargs
+
     def get_context_data(self, **kwargs):
         '''Since current view does not have parent flight's instance,
         this method will get parent flight's instance and parse it to the view.
@@ -690,6 +703,19 @@ class UpdateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+
+    def get_form_kwargs(self):
+        '''Parsing list of airports for form validation.
+        '''
+        kwargs = super().get_form_kwargs()
+        
+        flight = self.get_object().flight
+
+        kwargs['route_airports'] = [flight.departure_airport, flight.arrival_airport]
+        for transition_airport in flight.transitionairport_set.all():
+            kwargs['route_airports'].append(transition_airport.airport)
+
+        return kwargs
 
     def get_success_url(self) -> str:
         return reverse(self.success_url, kwargs = {
@@ -745,35 +771,291 @@ class FlightSearchView(FilterView):
     '''
     template_name = 'main/flight/search.html'
 
-def customer(request):
-    return render(request, 'customer/customer_list.html')
+# Booking
 
-def booking(request):
-    return render(request, 'main/booking.html')
+class ListFlightTicketView(LoginRequiredMixin, ListView):
+    '''ListFlightTicketView, expressed as an OOP class.
+    '''
+
+    '''Model used in ListFlightTicketView
+    '''
+    model = Ticket
+
+    '''HTML template used in ListFlightTicketView
+    '''
+    template_name = 'main/flight/booking/list.html'
+
+    '''Maximum records in a page.
+    '''
+    paginate_by = 10
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_queryset(self):
+        '''Users should only see reservations made by them.
+        '''
+        return Ticket.objects.filter(customer = self.request.user.customer)
+
+class DetailFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    '''DetailFlightTicketView, expressed as an OOP class.
+    '''
+
+    '''Model used in DetailFlightTicketView
+    '''
+    model = Ticket
+
+    '''HTMP template used in DetailFlightTicketView
+    '''
+    template_name = 'main/flight/booking/detail.html'
+
+    def test_func(self) -> bool:
+        '''User can only view his own tickets, except managers.
+        '''
+        current_customer = self.request.user.customer
+        ticket_customer = self.get_object().customer
+
+        if current_customer == ticket_customer:
+            return True
+        if current_customer.is_in_group('Manager'):
+            return True
+        return False
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+class CreateFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
+    '''CreateFlightTicketView, expressed as an OOP class.
+    '''
+
+    '''Model used in CreateFlightTicketView
+    '''
+    model = Ticket
+
+    '''HTML template used in CreateFlightTicketView
+    '''
+    template_name = 'main/flight/booking/create.html'
+
+    '''Form used in CreateFlightTicketView
+    '''
+    form_class = FlightTicketForm
+
+    '''Where to redirects to after success
+    '''
+    success_url = 'flight.reservation.detail'
+
+    '''Message to be displayed after success.
+    '''
+    success_message = 'Successfully booked this flight!'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+    
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id,
+        })
+
+    def get_context_data(self, **kwargs):
+        '''Adding additional data to context
+        '''
+        context = super().get_context_data(**kwargs)
+
+        context["flight"] = Flight.objects.get(id = self.kwargs.get('pk'))
+
+        return context
+    
+    def get_form_kwargs(self):
+        '''Parsing this flight for form validation
+        '''
+        kwargs = super().get_form_kwargs()
+        kwargs['flight'] = Flight.objects.get(id = self.kwargs.get('pk'))
+        return kwargs
+
+    def test_func(self) -> bool:
+        flight = Flight.objects.get(id = self.kwargs.get('pk'))
+        return flight.is_bookable
+
+    def form_valid(self, form) -> HttpResponse:
+        '''Automatically add flight, customer and ticket price to form.
+        '''
+        form.instance.flight = Flight.objects.get(id = self.kwargs.get('pk'))
+        form.instance.customer = self.request.user.customer
+
+        # Hardcore ticket adding.
+        if form.instance.ticket_class.name == 'First':
+            form.instance.price = form.instance.flight.flightdetail.first_class_ticket_price
+        elif form.instance.ticket_class.name == 'Economy':
+            form.instance.price = form.instance.flight.flightdetail.second_class_ticket_price
+
+        return super().form_valid(form)
+
+class UpdateFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
+    '''UpdateFlightTicketView, expressed as an OOP class.
+    '''
+
+    '''Model used in UpdateFlightTicketView
+    '''
+    model = Ticket
+
+    '''HTML template used in UpdateFlightTicketView
+    '''
+    template_name = 'main/flight/booking/update.html'
+
+    '''Form used in UpdateFlightTicketView
+    '''
+    form_class = FlightTicketForm
+
+    '''Where to redirects to after success
+    '''
+    success_url = 'flight.reservation.update'
+
+    '''Message to be displayed after success.
+    '''
+    success_message = 'Reservation updated successfully.'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+    
+    def get_form_kwargs(self):
+        '''Parsing this flight for form validation
+        '''
+        kwargs = super().get_form_kwargs()
+        kwargs['flight'] = Ticket.objects.get(id = self.kwargs.get('pk')).flight
+        return kwargs
+
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id,
+        })
+    
+    def test_func(self) -> bool:
+        '''User can only update his own unpaid tickets, except managers.
+        '''
+        if not self.get_object().flight.is_bookable:
+            return False
+
+        current_customer = self.request.user.customer
+        ticket_customer = self.get_object().customer
+
+        if current_customer == ticket_customer:
+            return True
+        if current_customer.is_in_group('Manager'):
+            return True
+
+        return False
+
+    def form_valid(self, form) -> HttpResponse:
+        '''Automatically add flight, customer and ticket price to form.
+        '''
+        # Hardcore ticket adding.
+        if form.instance.ticket_class.name == 'First':
+            form.instance.price = form.instance.flight.flightdetail.first_class_ticket_price
+        elif form.instance.ticket_class.name == 'Economy':
+            form.instance.price = form.instance.flight.flightdetail.second_class_ticket_price
+
+        return super().form_valid(form)
+
+class DeleteFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):
+    '''DeleteFlightTicketView, expressed as an OOP class.
+    '''
+
+    '''Model used in DeleteFlightTicketView
+    '''
+    model = Ticket
+
+    '''HTML template used in DeleteFlightTicketView.
+    '''
+    template_name = 'main/flight/booking/delete.html'
+
+    '''Where to redirects to after success.
+    '''
+    success_url = 'flight.reservation.list'
+
+    '''Message to be displayed when success.
+    '''
+    success_message = 'Cancel reservation successfully.'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_success_url(self) -> str:
+        return reverse(self.success_url)
+
+    def test_func(self) -> bool:
+        '''User can only delete his own unpaid tickets, except managers.
+        '''
+        if not self.get_object().flight.is_bookable:
+            return False
+
+        current_customer = self.request.user.customer
+        ticket_customer = self.get_object().customer
+
+        if current_customer == ticket_customer:
+            return True
+        if current_customer.is_in_group('Manager'):
+            return True
+
+        return False
+
+# Payment
+class PayFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
+    '''PayFlightTicketView, expressed as an OOP class.
+    '''
+
+    '''Model to be used in PayFlightTicketView
+    '''
+    model = Ticket
+
+    '''Fields are binded, all operations are in form_valid method.
+    '''
+    fields = []
+
+    '''HTML template to be used in PayFlightTicketView
+    '''
+    template_name = 'main/flight/booking/payment.html'
+
+    '''Where to redirects to after success.
+    '''
+    success_url = 'flight.reservation.detail'
+
+    '''Message to be displayed after success.
+    '''
+    success_message = 'Payment created successfully!'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_success_url(self) -> str:
+        return reverse(self.success_url, kwargs = {
+            'pk' : self.object.id,
+        })
+
+    def test_func(self) -> bool:
+        '''Ticket owner can pay for non-taken-off tickets.
+
+        Manager can pay for non-taken-off tickets, too.
+        '''
+        if not self.get_object().can_update:
+            return False
+        
+        current_customer = self.request.user.customer
+        ticket_customer = self.get_object().customer
+
+        if current_customer == ticket_customer:
+            return True
+        if current_customer.is_in_group('Manager'):
+            return True
+        
+        return False
+
+    def form_valid(self, form) -> HttpResponse:
+        '''Only update one field - is_booked.
+        '''
+        form.instance.is_booked = True
+        return super().form_valid(form)
 
 def report(request):
     # More HTTP POST processing here
 
     return render(request, 'main/report.html')
-
-#customer
-def customerPer(request):
-    return render(request, 'customer/customer_per.html')
-
-def createCustomer(request):
-    form= CustomerForm()
-    if request.method=='POST':
-        form=CustomerForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/')
-
-    context = {'form':form}
-
-    return render(request,'customer/customer_form.html', context)
-
-def updateCustomer(request):
-    return render(request,'customer/customer_update.html')
-
-def deleteCustomer(request):
-    return render(request,'customer/customer_delete.html')
