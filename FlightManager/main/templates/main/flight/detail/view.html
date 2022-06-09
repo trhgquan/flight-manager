@@ -97,7 +97,7 @@ Flight Detail
                         </tr>
                         {% endif %}
                         
-                        {% for transition_airport in flight.transitionairport_set.all %}
+                        {% for transition_airport in transition_airport_list %}
                         <tr>
                             <td>{{ transition_airport.airport }}</td>
                             <td>{{ transition_airport.transition_time }}</td>

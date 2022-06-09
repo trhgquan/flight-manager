@@ -462,6 +462,13 @@ class DetailFlightView(DetailView):
     '''
     template_name = 'main/flight/detail/view.html'
 
+    def get_context_data(self, **kwargs):
+        '''Preventing n + 1 query on transition_airport
+        '''
+        context = super().get_context_data(**kwargs)
+        context['transition_airport_list'] = self.get_object().transitionairport_set.all().select_related('airport')
+        return context
+
 class CreateFlightView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     '''CreateFlightView, expressed as an OOP class.
     '''
@@ -771,6 +778,13 @@ class FlightSearchView(FilterView):
     '''
     template_name = 'main/flight/search.html'
 
+    def get_queryset(self):
+        '''Prevent n + 1 and not including took-off flights in search result.
+        '''
+        queryset = super().get_queryset()
+        queryset = queryset.filter(date_time__gt = now()).prefetch_related('departure_airport').prefetch_related('arrival_airport').prefetch_related('flightdetail')
+        return queryset
+
 # Booking
 
 class ListFlightTicketView(LoginRequiredMixin, ListView):
@@ -795,7 +809,7 @@ class ListFlightTicketView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         '''Users should only see reservations made by them.
         '''
-        return Ticket.objects.filter(customer = self.request.user.customer)
+        return Ticket.objects.filter(customer = self.request.user.customer).prefetch_related('flight').prefetch_related('ticket_class')
 
 class DetailFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     '''DetailFlightTicketView, expressed as an OOP class.
