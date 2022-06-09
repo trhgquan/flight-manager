@@ -38,9 +38,9 @@ Flight Detail
                 {% if perms.main.add_reservation %}
                     {% if flight.is_bookable %}
                         <a class='btn btn-sm btn-success' href="{% url 'flight.reservation.create' flight.id %}">Book a ticket</a>
+                    {% else %}
+                        <p class="text-danger">This flight has already departed, so you can't make reservations.</p>
                     {% endif %}
-                {% else %}
-                    <p class="text-danger">This flight has already departed, so you can't make reservations.</p>
                 {% endif %}
 
                 {% if perms.main.change_flight %}
