@@ -15,7 +15,7 @@ Delete Flight
                 <p class="text-danger">Note: this action cannot be undo, so please be careful with your decision.</p>
                 <form action="{% url 'flight.reservation.delete' ticket.id %}" method="POST">
                     {% csrf_token %}
-                    <a class="btn btn-warning" href="{% url 'flight.reservation.list' %}">Cancel</a>
+                    <a class="btn btn-warning" href="{% url 'flight.reservation.detail' ticket.id %}">Cancel</a>
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
             </div>

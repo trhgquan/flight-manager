@@ -24,6 +24,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 # For filtered view
 from django_filters.views import FilterView
 from .filters import *
+from .utils import PaginatedFilterView
 
 # For models
 from .models import *
@@ -762,7 +763,7 @@ class DeleteTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
         })
 
 # Search (Filter)
-class FlightSearchView(FilterView):
+class FlightSearchView(PaginatedFilterView, FilterView):
     '''FlightSearchView, expressed as an OOP class.
     '''
 
@@ -777,6 +778,10 @@ class FlightSearchView(FilterView):
     '''HTML template used in FlightSearchView
     '''
     template_name = 'main/flight/search.html'
+
+    '''Maximum results to be displayed
+    '''
+    paginate_by = 10
 
     def get_queryset(self):
         '''Prevent n + 1 and not including took-off flights in search result.

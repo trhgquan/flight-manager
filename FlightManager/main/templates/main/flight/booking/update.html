@@ -19,6 +19,7 @@ Booking Update
                         <p class="text-success">{{ message }}</p>
                     {% endif %}
                 {% endfor %}
+                <a href="{% url 'flight.reservation.detail' ticket.id %}">Back to Booking Detail.</a>
                 <hr/>
                 <form method="POST" action="{% url 'flight.reservation.update' ticket.id %}">
                     {% csrf_token %}
