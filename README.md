@@ -1,8 +1,10 @@
-# Quản lý chuyến bay
+<center>
+<img src="FlightManager/static/images/logo.png">
+</center>
+
+Đồ án Nhập môn Công nghệ phần mềm - Nhóm 13.
 
 ## Giới thiệu
-### Đồ án Nhập môn Công nghệ phần mềm - Nhóm 13.
-### Tên đề tài: Phần mềm quản lý chuyến bay
 ### Nội dung
 Đề tài của nhóm là một trang web chuyên dùng để tìm kiếm và đặt vé chuyến bay cho khách hàng, đồng thời cung cấp cho doanh nghiệp khả năng quản lý hệ thống bán vé chuyến bay
 
@@ -17,6 +19,8 @@
 
 ## Tham khảo
 ### Backend
+- [Django documentation v4.0](https://docs.djangoproject.com/en/4.0/)
+- [django_filter documentation (stable version)](https://django-filter.readthedocs.io/en/stable/)
 ### Frontend
 - [Trang chủ của Traveloka](https://www.traveloka.com)
 
@@ -56,46 +60,59 @@ python runserver.py runserver
 ##### Bước 1: Tạo app
 - Truy cập vào [Heroku](https://www.heroku.com/) và đăng nhập vào tài khoản đã tạo sẵn
 - Nhấn vào nút _new_ để tạo một app mới trên __Heroku__
-![markdown](deploy_tutorial/step_1.png)
+
+    ![markdown](deploy_tutorial/step_1.png)
 
 - Chọn _Create new app_
-![markdown](deploy_tutorial/step_2.png)
+
+    ![markdown](deploy_tutorial/step_2.png)
 
 - Đặt tên, chọn region cho app, sau đấy nhấn nút _Create_
-![markdown](deploy_tutorial/step_3.png)
+
+    ![markdown](deploy_tutorial/step_3.png)
 
 - Ta được chuyển đến màn hình quản lý app
-![markdown](deploy_tutorial/step_4.png)
+
+    ![markdown](deploy_tutorial/step_4.png)
 
 ##### Bước 2: Tạo Heroku PostgreSQL để sử dụng PostgreSQL
 - Trên màn hình quản lý app, chọn _Resource_
-![markdown](deploy_tutorial/step_5.png)
+
+    ![markdown](deploy_tutorial/step_5.png)
 
 - Trên thanh tìm kiếm, hãy tìm keyword _Heroku Postgres_
-![markdown](deploy_tutorial/step_6.png)
+
+    ![markdown](deploy_tutorial/step_6.png)
 
 - Chọn phiên bản _Hobby Dev - Free_ và nhấn __Submit Order Form__
-![markdown](deploy_tutorial/step_7.png)
+
+    ![markdown](deploy_tutorial/step_7.png)
 
 ##### Bước 3: Tiến hành deploy
 
 - Trên navbar, chọn _Deploy_, kéo xuống phần __Deployment Method__ và chọn _Connect to GitHub_
-![markdown](deploy_tutorial/step_8.png)
+
+    ![markdown](deploy_tutorial/step_8.png)
 
 - Đăng nhập vào tài khoản [GitHub](https://www.github.com) đã chứa repository có source code để deploy, sau khi thành công, tài khoản sẽ xuất hiện trên [Heroku](https://www.heroku.com/)
-![markdown](deploy_tutorial/step_9.png)
+
+    ![markdown](deploy_tutorial/step_9.png)
 
 - Trên thanh tìm kiếm repository, tìm kiếm repository chứa source code để deploy, sau đấy nhấn _Connect_ vào kết quả repository
-![markdown](deploy_tutorial/step_10.png)
+
+    ![markdown](deploy_tutorial/step_10.png)
 
 - Ở phần __Manual Deploy__, chọn branch có chứa source code để deploy của repository đã tìm kiếm được, sau đây nhấn _Deploy Branch_
-![markdown](deploy_tutorial/step_11.png)
+
+    ![markdown](deploy_tutorial/step_11.png)
 
 - Chờ đến khi hiện ra kết quả deploy thành công, ta nhấn vào nút _View_ để mở app
-![markdown](deploy_tutorial/step_12.png)
+
+    ![markdown](deploy_tutorial/step_12.png)
 
 - Lúc này, ta sẽ bị lỗi, vì ta chưa migrate database từ dbsqlite mặc định của Django với Heroku Postgresql, ta sẽ chuyển sang bước tiếp theo
-![markdown](deploy_tutorial/step_13.png)
+
+    ![markdown](deploy_tutorial/step_13.png)
 
 ##### Bước 4: Migrate database
 
@@ -116,4 +133,5 @@ heroku run python FlightManager/manage.py migrate
 ```
 
 - Tới đây, ta đã có thể vào được app đã tạo mà không bị lỗi
-![markdown](deploy_tutorial/step_14.png)
+
+    ![markdown](deploy_tutorial/step_14.png)

@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django import forms
 
 from .models import *
+import re
 
 # Authentication forms
 class LoginForm(AuthenticationForm):
@@ -337,20 +338,35 @@ class FlightTicketForm(ModelForm):
     def clean(self):
         ticket_class = self.cleaned_data.get('ticket_class')
 
-        condition_check = True
+        ticket_class_condition_check = True
 
         '''This is a complete hell, but we don't have time to make a dynamically loaded ticket-class validation.
         '''
 
         if ticket_class.name == "First":
-            condition_check = self.flight.flightdetail.first_class_seat_size > self.flight.ticket_set.filter(ticket_class = ticket_class).count()
+            ticket_class_condition_check = self.flight.flightdetail.first_class_seat_size > self.flight.ticket_set.filter(ticket_class = ticket_class).count()
 
         elif ticket_class.name == "Economy":
-            condition_check = self.flight.flightdetail.second_class_seat_size > self.flight.ticket_set.filter(ticket_class = ticket_class).count()
+            ticket_class_condition_check = self.flight.flightdetail.second_class_seat_size > self.flight.ticket_set.filter(ticket_class = ticket_class).count()
 
-        if not condition_check:
+        if not ticket_class_condition_check:
             raise ValidationError({
                 'ticket_class' : 'This class is out of seats, please choose another class.'
+            })
+        
+        '''Phone and Identity Code should be numeric only.
+        '''
+        phone = self.cleaned_data.get('phone')
+        identity_code = self.cleaned_data.get('identity_code')
+
+        if not re.match(r'\d', phone):
+            raise ValidationError({
+                'phone' : 'Phone should contains numeric characters only.'
+            })
+        
+        if not re.match(r'\d', identity_code):
+            raise ValidationError({
+                'identity_code' : 'Identity Code should contains numeric characters only.'
             })
 
     class Meta:
@@ -389,6 +405,7 @@ class FlightTicketForm(ModelForm):
             ),
         }
 
+# Customer forms
 class CustomerForm(ModelForm):
     '''Customer Form
 
@@ -418,3 +435,22 @@ class CustomerForm(ModelForm):
                 'placeholder' : 'Your ID',
             }),
         }
+    
+    def clean(self):
+        '''Data validation.
+        '''
+
+        '''Phone and Identity Code should be numeric only.
+        '''
+        phone = self.cleaned_data.get('phone')
+        identity_code = self.cleaned_data.get('identity_code')
+
+        if not re.match(r'\d', phone):
+            raise ValidationError({
+                'phone' : 'Phone should contains numeric characters only.'
+            })
+        
+        if not re.match(r'\d', identity_code):
+            raise ValidationError({
+                'identity_code' : 'Identity Code should contains numeric characters only.'
+            })
