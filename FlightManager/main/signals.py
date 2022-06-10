@@ -47,6 +47,7 @@ def populate_models(sender, **kwargs):
             'change_reservation',
             'delete_reservation',
             'view_reservation',
+            'view_report',
         ]
 
         # Assign permissions to groups

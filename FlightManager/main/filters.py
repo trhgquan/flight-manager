@@ -45,3 +45,20 @@ class FlightFilter(FilterSet):
             'date_time'
         ]
         order_by = 'date_time',
+
+class FlightReportFilter(FilterSet):
+    date_time = DateFromToRangeFilter(
+        widget = widgets.RangeWidget(
+            attrs = {
+                'class' : 'form-control',
+                'type' : 'date',
+            }
+        ),
+        label = 'Data range',
+    )
+
+    class Meta:
+        model = Flight
+        fields = [
+            'date_time'
+        ]

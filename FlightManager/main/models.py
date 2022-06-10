@@ -67,7 +67,22 @@ class Flight(models.Model):
     
     @property
     def is_bookable(self) -> bool:
-        return not self.is_departed and self.ticket_set.count() < self.total_seats
+        return not self.is_departed and self.total_tickets < self.total_seats
+    
+    @property
+    def total_profit(self) -> int:
+        total_profit = 0
+        for ticket in self.ticket_set.filter(is_booked = True):
+            total_profit += ticket.price
+        return total_profit
+    
+    @property
+    def total_tickets_sold(self) -> int:
+        return self.ticket_set.filter(is_booked = True).count()
+    
+    @property
+    def ticket_sold_percentage(self) -> float:
+        return self.total_tickets_sold * 100 / self.total_seats
 
     class Meta:
         '''Paginator requires explicitly ordering definition

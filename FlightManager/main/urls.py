@@ -48,5 +48,5 @@ urlpatterns = [
     path('reservation/payment/<str:pk>/', views.PayFlightTicketView.as_view(), name = 'flight.reservation.payment'),
 
     # Report
-    path('report/', views.report, name = 'report'),
+    path('report/general', views.ListFlightReportView.as_view(), name = 'report'),
 ]

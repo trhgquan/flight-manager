@@ -84,15 +84,13 @@ Flight List
                 <hr>
                 <p>
                     <a href="{% url 'flight.search' %}" class="btn btn-warning btn-block">Find your Flight?</a>
-                </p>
-                <p>
                     {% if user.is_authenticated %}
                         {% if perms.main.create_flight %}
-                            <a href="{% url 'flight.create' %}" class="btn btn-primary  btn-block">Create a new flight</a>
+                            <a href="{% url 'flight.create' %}" class="btn btn-primary btn-block">Create a new Flight</a>
+                            <a href="{% url 'report' %}" class="btn btn-info btn-block">View Flight reports</a>
                         {% endif %}
                     {% endif %}
                 </p>
-                
             </div>
         </div>
     </div>

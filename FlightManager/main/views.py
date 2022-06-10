@@ -1074,7 +1074,35 @@ class PayFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessag
         form.instance.is_booked = True
         return super().form_valid(form)
 
-def report(request):
-    # More HTTP POST processing here
+# Report
+class ListFlightReportView(LoginRequiredMixin, PermissionRequiredMixin, PaginatedFilterView, FilterView):
+    '''ListFlightReportView, expressed as an OOP class.
+    '''
 
-    return render(request, 'main/report.html')
+    '''Model used in ListFlightReportView
+    '''
+    model = Flight
+
+    '''Filterset used in ListFlightReportView 
+    '''
+    filterset_class = FlightReportFilter
+
+    '''HTML template used in ListFlightReportView
+    '''
+    template_name = 'main/flight/report/general.html'
+
+    '''Permission required to access this page.
+    '''
+    permission_required = 'main.create_flight'
+
+    '''Maximum records per page.
+    '''
+    paginate_by = 10
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(date_time__lt = now())
+        return queryset
