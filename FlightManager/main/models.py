@@ -71,10 +71,8 @@ class Flight(models.Model):
     
     @property
     def total_profit(self) -> int:
-        total_profit = 0
-        for ticket in self.ticket_set.filter(is_booked = True):
-            total_profit += ticket.price
-        return total_profit
+        sold_tickets = Ticket.objects.filter(flight = self, is_booked = True).values_list('price', flat = True)
+        return sum(sold_tickets)
     
     @property
     def total_tickets_sold(self) -> int:

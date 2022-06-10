@@ -1104,5 +1104,5 @@ class ListFlightReportView(LoginRequiredMixin, PermissionRequiredMixin, Paginate
     
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(date_time__lt = now())
+        queryset = queryset.filter(date_time__lt = now()).prefetch_related('flightdetail')
         return queryset
