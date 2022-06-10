@@ -1,4 +1,4 @@
-<p style="text-align: center;">
+<p align="center">
 <img src="FlightManager/static/images/logo.png">
 <br/>
 Đồ án Nhập môn Công nghệ phần mềm - Nhóm 13.
