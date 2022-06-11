@@ -1,9 +1,12 @@
 # Typical imports inside views.py
+from itertools import count
+from typing import Type
 from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse
 
 # Database interaction
-from django.db.models import Sum, Q
+from django.db.models import Sum, Count, Q
+from django.db.models.functions import TruncMonth
 
 # Messages
 from django.contrib import messages
@@ -1078,7 +1081,7 @@ class PayFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessag
         return super().form_valid(form)
 
 # Report
-class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, PaginatedFilterView, FilterView):
+class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, FilterView):
     '''ListFlightReportGeneralView, expressed as an OOP class.
     '''
 
@@ -1098,14 +1101,9 @@ class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, P
     '''
     permission_required = 'main.create_flight'
 
-    '''Maximum records per page.
-    '''
-    paginate_by = 10
-
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
-        self.flight_service = FlightService()
-    
+
     def get_queryset(self):
         queryset = super().get_queryset()
 
@@ -1122,7 +1120,7 @@ class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, P
 
         return queryset
 
-class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, FilterView):
     '''ListFlightReportYearlyView, expressed as an OOP class.
     '''
 
@@ -1134,6 +1132,8 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Li
     '''
     template_name = 'main/flight/report/yearly.html'
 
+    filterset_class = FlightReportYearlyFilter
+
     '''Permission required to access this page.
     '''
     permission_required = 'main.create_flight'
@@ -1144,9 +1144,61 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Li
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        try:
+            year = datetime.strptime(self.request.GET.get('date_time'), "%Y").year
+        except TypeError:
+            year = datetime.now().year
+
+        context['total_flights'] = Flight.objects.filter(
+            date_time__year = year,
+        ).count()
+
+        context['total_tickets_sold'] = sum(Flight.objects.filter(
+            date_time__year = year,
+        ).annotate(
+            tickets_sold = Count(
+                'ticket__id',
+                filter = Q(ticket__is_booked = True),
+            )
+        ).values_list('tickets_sold', flat = True))
+
+        context['total_revenue'] = sum(Flight.objects.filter(
+            date_time__year = year
+        ).annotate(
+            revenue = Sum(
+                'ticket__price',
+                filter = Q(ticket__is_booked = True),
+            )
+        ).values_list('revenue', flat = True))
+
         return context
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(date_time__lt = now()).prefetch_related('flightdetail')
+
+        try:
+            year = datetime.strptime(self.request.GET.get('date_time'), "%Y").year
+        except TypeError:
+            year = datetime.now().year
+
+        queryset = queryset.filter(
+            date_time__year = year,
+        ).annotate(
+            month = TruncMonth('date_time')
+        ).values(
+            'month'
+        ).annotate(
+            total_flights = Count('id', distinct = True)
+        ).annotate(
+            total_tickets_sold = Count(
+                'ticket__id',
+                filter = Q(ticket__is_booked = True),
+            )
+        ).annotate(
+            total_revenue = Sum(
+                'ticket__price',
+                filter = Q(ticket__is_booked = True),
+            )
+        ).order_by('month')
+
         return queryset

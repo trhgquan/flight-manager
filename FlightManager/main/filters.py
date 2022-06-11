@@ -1,6 +1,7 @@
 from django import forms
-from django_filters import DateFromToRangeFilter, ModelChoiceFilter
+from django_filters import DateFromToRangeFilter, ModelChoiceFilter, DateFilter
 from django_filters import FilterSet, widgets
+import datetime
 
 # Models
 from .models import *
@@ -55,6 +56,24 @@ class FlightReportFilter(FilterSet):
             }
         ),
         label = 'Data range',
+    )
+
+    class Meta:
+        model = Flight
+        fields = [
+            'date_time'
+        ]
+
+class FlightReportYearlyFilter(FilterSet):
+    date_time = DateFilter(
+        widget = forms.DateInput(
+            attrs = {
+                'class' : 'form-control',
+                'id' : 'datepicker',
+                'value' : datetime.datetime.now().year
+            }
+        ),
+        label = 'Year',
     )
 
     class Meta:
