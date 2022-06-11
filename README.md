@@ -1,5 +1,5 @@
 <p align="center">
-<img src="FlightManager/static/images/logo.png">
+<img src="FlightManager/static/images/logo-background.png">
 <br/>
 Đồ án Nhập môn Công nghệ phần mềm - Nhóm 13.
 </p>
