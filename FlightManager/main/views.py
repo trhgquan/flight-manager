@@ -1091,7 +1091,7 @@ class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, F
 
     '''Filterset used in ListFlightReportGeneralView 
     '''
-    filterset_class = FlightReportFilter
+    filterset_class = FlightReportGeneralFilter
 
     '''HTML template used in ListFlightReportGeneralView
     '''
@@ -1132,6 +1132,8 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
     '''
     template_name = 'main/flight/report/yearly.html'
 
+    '''Filterset used in ListFlightReportYearlyView
+    '''
     filterset_class = FlightReportYearlyFilter
 
     '''Permission required to access this page.

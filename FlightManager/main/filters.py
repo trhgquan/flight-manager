@@ -47,7 +47,7 @@ class FlightFilter(FilterSet):
         ]
         order_by = 'date_time',
 
-class FlightReportFilter(FilterSet):
+class FlightReportGeneralFilter(FilterSet):
     date_time = DateFromToRangeFilter(
         widget = widgets.RangeWidget(
             attrs = {
