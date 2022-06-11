@@ -87,7 +87,15 @@ Flight List
                     {% if user.is_authenticated %}
                         {% if perms.main.create_flight %}
                             <a href="{% url 'flight.create' %}" class="btn btn-primary btn-block">Create a new Flight</a>
-                            <a href="{% url 'report' %}" class="btn btn-info btn-block">View Flight reports</a>
+                            <div class="dropdown">
+                                <button class="btn btn-info btn-block dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                                    View Flight reports
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a href="{% url 'report.general' %}" class="dropdown-item">General report</a>
+                                    <a href="{% url 'report.yearly' %}" class="dropdown-item">Year report</a>
+                                </div>
+                            </div>
                         {% endif %}
                     {% endif %}
                 </p>

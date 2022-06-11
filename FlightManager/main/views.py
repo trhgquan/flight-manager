@@ -2,6 +2,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse
 
+# Database interaction
+from django.db.models import Sum, Q
+
 # Messages
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -1075,19 +1078,19 @@ class PayFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessag
         return super().form_valid(form)
 
 # Report
-class ListFlightReportView(LoginRequiredMixin, PermissionRequiredMixin, PaginatedFilterView, FilterView):
-    '''ListFlightReportView, expressed as an OOP class.
+class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, PaginatedFilterView, FilterView):
+    '''ListFlightReportGeneralView, expressed as an OOP class.
     '''
 
-    '''Model used in ListFlightReportView
+    '''Model used in ListFlightReportGeneralView
     '''
     model = Flight
 
-    '''Filterset used in ListFlightReportView 
+    '''Filterset used in ListFlightReportGeneralView 
     '''
     filterset_class = FlightReportFilter
 
-    '''HTML template used in ListFlightReportView
+    '''HTML template used in ListFlightReportGeneralView
     '''
     template_name = 'main/flight/report/general.html'
 
@@ -1101,7 +1104,48 @@ class ListFlightReportView(LoginRequiredMixin, PermissionRequiredMixin, Paginate
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+        self.flight_service = FlightService()
     
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        queryset = queryset.filter(
+            date_time__lt = now()
+        ).prefetch_related(
+            'flightdetail'
+        ).annotate(
+            revenue = Sum(
+                'ticket__price',
+                filter = Q(ticket__is_booked = True),
+            )
+        ).order_by('date_time')
+
+        return queryset
+
+class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    '''ListFlightReportYearlyView, expressed as an OOP class.
+    '''
+
+    '''Model used in ListFlightReportYearlyView
+    '''
+    model = Flight
+
+    '''HTML template used in ListFlightReportYearlyView
+    '''
+    template_name = 'main/flight/report/yearly.html'
+
+    '''Permission required to access this page.
+    '''
+    permission_required = 'main.create_flight'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context
+
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(date_time__lt = now()).prefetch_related('flightdetail')
