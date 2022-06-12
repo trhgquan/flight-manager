@@ -79,7 +79,10 @@ class Flight(models.Model):
     
     @property
     def ticket_sold_percentage(self) -> float:
-        return self.total_tickets_sold * 100 / self.total_seats
+        try:
+            return self.total_tickets_sold * 100 / self.total_seats
+        except ZeroDivisionError:
+            return 0
 
     class Meta:
         '''Paginator requires explicitly ordering definition

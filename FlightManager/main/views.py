@@ -4,7 +4,7 @@ from django.http import HttpRequest, HttpResponse
 
 # Database interaction
 from django.db.models import Sum, Count, Q
-from django.db.models.functions import TruncMonth
+from django.db.models.functions import Coalesce, TruncMonth
 
 # Messages
 from django.contrib import messages
@@ -1132,10 +1132,10 @@ class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, P
         ).prefetch_related(
             'flightdetail'
         ).annotate(
-            revenue = Sum(
+            revenue = Coalesce(Sum(
                 'ticket__price',
                 filter = Q(ticket__is_booked = True),
-            )
+            ), 0)
         ).order_by('date_time')
 
         return queryset
@@ -1203,15 +1203,21 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
             date_time__year = year,
             date_time__lt = now(),
         ).annotate(
-            revenue = Sum(
+            revenue = Coalesce(Sum(
                 'ticket__price',
                 filter = Q(ticket__is_booked = True),
-            )
+            ), 0)
         ).values_list('revenue', flat = True))
+        
+        # Total ratio = 0 if no revenue made, 100 otherwise.
+        context['total_ratio'] = (context['total_revenue'] > 0) * 100
 
         # Adding ratio (revenue / total_revenue)
         for month in self.object_list:
-            month['ratio'] = month['revenue'] * 100 / context['total_revenue']
+            if context['total_revenue'] == 0:
+                month['ratio'] = 0
+            else:
+                month['ratio'] = month['revenue'] * 100 / context['total_revenue']
 
         # Get formatted month label from list of months extracted from database's records.
         month_list = [record.strftime('%B') for record in self.object_list.values_list('month', flat = True)]
@@ -1255,10 +1261,12 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
                 filter = Q(ticket__is_booked = True),
             )
         ).annotate(
-            revenue = Sum(
+            revenue = Coalesce(Sum(
                 'ticket__price',
                 filter = Q(ticket__is_booked = True),
-            )
+            ), 0)
         ).order_by('month')
+
+        print(queryset)
 
         return queryset
