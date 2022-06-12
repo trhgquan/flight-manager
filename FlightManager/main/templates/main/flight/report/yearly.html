@@ -27,11 +27,9 @@ Flight Yearly Report
                             </ul>
                         </div>
                     {% endfor %}
-
                     <button type="submit" class="btn btn-info btn-block">Generate report</button>
                 </form>
             </div>
-            
         </div>
         <div class='col-md-9'>
             <div class="card card-body">
@@ -42,11 +40,12 @@ Flight Yearly Report
                         <th>Total Flights</th>
                         <th>Total tickets sold</th>
                         <th>Total revenue</th>
+                        <th>Ratio (%)</th>
                     </thead>
                     <tbody>
                         {% if not filter.qs %}
                             <tr>
-                                <td colspan="4">No records found. Try changing the criteria, maybe?</td>
+                                <td colspan="5">No records found. Try changing the criteria, maybe?</td>
                             </tr>
                         {% else %}
                             {% for record in filter.qs %}
@@ -69,6 +68,15 @@ Flight Yearly Report
                     {% endif %}
                 </table>
             </div>
+            {% if filter.qs %}
+            <div class="card card-body" style="margin-top: 10px;">
+                <h5 class="page-title">Graph</h5>
+                <hr>
+                <img class='img-responsive' src="data:image/png;base64, {{ flight_graph }}" alt="">
+                <img class='img-responsive' src="data:image/png;base64, {{ revenue_graph }}" alt="">
+            </div>
+            {% endif %}
+            
         </div>
     </div>
 </div>

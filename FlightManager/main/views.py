@@ -1,6 +1,4 @@
 # Typical imports inside views.py
-from itertools import count
-from typing import Type
 from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse
 
@@ -30,7 +28,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 # For filtered view
 from django_filters.views import FilterView
 from .filters import *
-from .utils import PaginatedFilterView
+from .utils import PaginatedFilterView, GraphPlotting
 
 # For models
 from .models import *
@@ -1122,8 +1120,6 @@ class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, P
             )
         ).order_by('date_time')
 
-        print(queryset)
-
         return queryset
 
 class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, FilterView):
@@ -1133,6 +1129,10 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
     '''Model used in ListFlightReportYearlyView
     '''
     model = Flight
+
+    '''Idk why, but this allows get_queryset passing data to get_context_data.
+    '''
+    strict = False
 
     '''HTML template used in ListFlightReportYearlyView
     '''
@@ -1178,6 +1178,20 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
                 filter = Q(ticket__is_booked = True),
             )
         ).values_list('revenue', flat = True))
+
+        month_list = [record.strftime('%B') for record in self.object_list.values_list('month', flat = True)]
+
+        context['flight_graph'] = GraphPlotting(
+            month_list, 
+            self.object_list.values_list('total_flights', flat = True), 
+            'Flight Graph'
+        ).get_bar_plot('Month', 'Flights')
+
+        context['revenue_graph'] = GraphPlotting(
+            month_list, 
+            self.object_list.values_list('total_revenue', flat = True), 
+            'Revenue Graph'
+        ).get_bar_plot('Month', 'Revenue')
 
         return context
 
