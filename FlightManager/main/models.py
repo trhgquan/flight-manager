@@ -43,8 +43,8 @@ class Airport(models.Model):
         ordering = ('-id',)
 
 class Flight(models.Model):
-    departure_airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL, related_name = "departure_airport")
-    arrival_airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL, related_name = "arrival_airport")
+    departure_airport = models.ForeignKey(Airport, null = True, on_delete = models.CASCADE, related_name = "departure_airport")
+    arrival_airport = models.ForeignKey(Airport, null = True, on_delete = models.CASCADE, related_name = "arrival_airport")
     date_time = models.DateTimeField()
     date_created = models.DateTimeField(auto_now_add = True)
     
@@ -100,8 +100,8 @@ class FlightDetail(models.Model):
         return f'Detail of {self.flight}'
 
 class TransitionAirport(models.Model):
-    airport = models.ForeignKey(Airport, null = True, on_delete = models.SET_NULL)
-    flight = models.ForeignKey(Flight, null = True, on_delete = models.SET_NULL)
+    airport = models.ForeignKey(Airport, null = True, on_delete = models.CASCADE)
+    flight = models.ForeignKey(Flight, null = True, on_delete = models.CASCADE)
     transition_time =  models.IntegerField(null = True) #minutes
     note = models.CharField(max_length = 200, null = True)
     date_created = models.DateTimeField(auto_now_add = True)
@@ -117,9 +117,9 @@ class TicketClass(models.Model):
         return self.name
 
 class Ticket(models.Model):
-    customer = models.ForeignKey(Customer, null = True, on_delete = models.SET_NULL)
-    flight = models.ForeignKey(Flight, null = True, on_delete = models.SET_NULL)
-    ticket_class = models.ForeignKey(TicketClass, null = True, on_delete = models.SET_NULL)
+    customer = models.ForeignKey(Customer, null = True, on_delete = models.CASCADE)
+    flight = models.ForeignKey(Flight, null = True, on_delete = models.CASCADE)
+    ticket_class = models.ForeignKey(TicketClass, null = True, on_delete = models.CASCADE)
 
     #name of the person own the ticket
     name = models.CharField(max_length = 200, null = True)

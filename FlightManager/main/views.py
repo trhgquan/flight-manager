@@ -453,7 +453,16 @@ class ListFlightView(ListView):
     def get_queryset(self):
         '''Only show flights from now to the future!
         '''
-        return Flight.objects.filter(date_time__gt = now())
+        return Flight.objects.filter(
+            date_time__gt = now()
+        ).prefetch_related(
+            'flightdetail'
+        ).prefetch_related(
+            'departure_airport'
+        ).prefetch_related(
+            'arrival_airport'
+        )
+        
 
 class DetailFlightView(DetailView):
     '''DetailFlightView, expressed as an OOP class
@@ -818,7 +827,16 @@ class ListFlightTicketView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         '''Users should only see reservations made by them.
         '''
-        return Ticket.objects.filter(customer = self.request.user.customer).prefetch_related('flight').prefetch_related('ticket_class')
+        queryset = Ticket.objects.filter(
+            customer = self.request.user.customer
+        ).prefetch_related(
+            'flight'
+        ).prefetch_related(
+            'ticket_class'
+        ).prefetch_related(
+            'customer'
+        )
+        return queryset
 
 class DetailFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     '''DetailFlightTicketView, expressed as an OOP class.
