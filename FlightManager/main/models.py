@@ -70,6 +70,10 @@ class Flight(models.Model):
         return not self.is_departed and self.total_tickets < self.total_seats
     
     @property
+    def total_tickets(self) -> bool:
+        return self.ticket_set.count()
+
+    @property
     def total_tickets_sold(self) -> int:
         return self.ticket_set.filter(is_booked = True).count()
     
