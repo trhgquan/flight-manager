@@ -1154,13 +1154,19 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
 
         try:
             year = datetime.strptime(self.request.GET.get('date_time'), "%Y").year
-        except TypeError:
+        except Exception:
             year = datetime.now().year
 
+        '''We've already get queryset inside self.object_list,
+        Now we just adding some summarise.
+        '''
+
+        # Count total flights
         context['total_flights'] = Flight.objects.filter(
             date_time__year = year,
         ).count()
 
+        # Calculate total tickets sold
         context['total_tickets_sold'] = sum(Flight.objects.filter(
             date_time__year = year,
         ).annotate(
@@ -1170,6 +1176,7 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
             )
         ).values_list('tickets_sold', flat = True))
 
+        # Calculate total revenue
         context['total_revenue'] = sum(Flight.objects.filter(
             date_time__year = year
         ).annotate(
@@ -1179,17 +1186,24 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
             )
         ).values_list('revenue', flat = True))
 
+        # Adding ratio (revenue / total_revenue)
+        for month in self.object_list:
+            month['ratio'] = month['revenue'] * 100 / context['total_revenue']
+
+        # Get formatted month label from list of months extracted from database's records.
         month_list = [record.strftime('%B') for record in self.object_list.values_list('month', flat = True)]
 
+        # Adding flight graph
         context['flight_graph'] = GraphPlotting(
             month_list, 
             self.object_list.values_list('total_flights', flat = True), 
             'Flight Graph'
         ).get_bar_plot('Month', 'Flights')
 
+        # Adding revenue graph
         context['revenue_graph'] = GraphPlotting(
             month_list, 
-            self.object_list.values_list('total_revenue', flat = True), 
+            self.object_list.values_list('revenue', flat = True), 
             'Revenue Graph'
         ).get_bar_plot('Month', 'Revenue')
 
@@ -1200,7 +1214,7 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
 
         try:
             year = datetime.strptime(self.request.GET.get('date_time'), "%Y").year
-        except TypeError:
+        except Exception:
             year = datetime.now().year
 
         queryset = queryset.filter(
@@ -1217,7 +1231,7 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
                 filter = Q(ticket__is_booked = True),
             )
         ).annotate(
-            total_revenue = Sum(
+            revenue = Sum(
                 'ticket__price',
                 filter = Q(ticket__is_booked = True),
             )
