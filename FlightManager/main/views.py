@@ -1166,11 +1166,13 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
         # Count total flights
         context['total_flights'] = Flight.objects.filter(
             date_time__year = year,
+            date_time__lt = now(),
         ).count()
 
         # Calculate total tickets sold
         context['total_tickets_sold'] = sum(Flight.objects.filter(
             date_time__year = year,
+            date_time__lt = now(),
         ).annotate(
             tickets_sold = Count(
                 'ticket__id',
@@ -1180,7 +1182,8 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
 
         # Calculate total revenue
         context['total_revenue'] = sum(Flight.objects.filter(
-            date_time__year = year
+            date_time__year = year,
+            date_time__lt = now(),
         ).annotate(
             revenue = Sum(
                 'ticket__price',
@@ -1221,6 +1224,7 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
 
         queryset = queryset.filter(
             date_time__year = year,
+            date_time__lt = now(),
         ).annotate(
             month = TruncMonth('date_time')
         ).values(
