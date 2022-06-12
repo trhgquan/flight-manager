@@ -1,8 +1,8 @@
-<center>
-<img src="FlightManager/static/images/logo.png">
-</center>
-
+<p align="center">
+<img src="FlightManager/static/images/logo-background.png">
+<br/>
 Đồ án Nhập môn Công nghệ phần mềm - Nhóm 13.
+</p>
 
 ## Giới thiệu
 ### Nội dung
@@ -61,77 +61,77 @@ python runserver.py runserver
 - Truy cập vào [Heroku](https://www.heroku.com/) và đăng nhập vào tài khoản đã tạo sẵn
 - Nhấn vào nút _new_ để tạo một app mới trên __Heroku__
 
-    ![markdown](deploy_tutorial/step_1.png)
+    ![markdown](docs/step_1.png)
 
 - Chọn _Create new app_
 
-    ![markdown](deploy_tutorial/step_2.png)
+    ![markdown](docs/step_2.png)
 
 - Đặt tên, chọn region cho app, sau đấy nhấn nút _Create_
 
-    ![markdown](deploy_tutorial/step_3.png)
+    ![markdown](docs/step_3.png)
 
 - Ta được chuyển đến màn hình quản lý app
 
-    ![markdown](deploy_tutorial/step_4.png)
+    ![markdown](docs/step_4.png)
 
 ##### Bước 2: Tạo Heroku PostgreSQL để sử dụng PostgreSQL
 - Trên màn hình quản lý app, chọn _Resource_
 
-    ![markdown](deploy_tutorial/step_5.png)
+    ![markdown](docs/step_5.png)
 
 - Trên thanh tìm kiếm, hãy tìm keyword _Heroku Postgres_
 
-    ![markdown](deploy_tutorial/step_6.png)
+    ![markdown](docs/step_6.png)
 
 - Chọn phiên bản _Hobby Dev - Free_ và nhấn __Submit Order Form__
 
-    ![markdown](deploy_tutorial/step_7.png)
+    ![markdown](docs/step_7.png)
 
 ##### Bước 3: Tiến hành deploy
 
 - Trên navbar, chọn _Deploy_, kéo xuống phần __Deployment Method__ và chọn _Connect to GitHub_
 
-    ![markdown](deploy_tutorial/step_8.png)
+    ![markdown](docs/step_8.png)
 
 - Đăng nhập vào tài khoản [GitHub](https://www.github.com) đã chứa repository có source code để deploy, sau khi thành công, tài khoản sẽ xuất hiện trên [Heroku](https://www.heroku.com/)
 
-    ![markdown](deploy_tutorial/step_9.png)
+    ![markdown](docs/step_9.png)
 
 - Trên thanh tìm kiếm repository, tìm kiếm repository chứa source code để deploy, sau đấy nhấn _Connect_ vào kết quả repository
 
-    ![markdown](deploy_tutorial/step_10.png)
+    ![markdown](docs/step_10.png)
 
 - Ở phần __Manual Deploy__, chọn branch có chứa source code để deploy của repository đã tìm kiếm được, sau đây nhấn _Deploy Branch_
 
-    ![markdown](deploy_tutorial/step_11.png)
+    ![markdown](docs/step_11.png)
 
 - Chờ đến khi hiện ra kết quả deploy thành công, ta nhấn vào nút _View_ để mở app
 
-    ![markdown](deploy_tutorial/step_12.png)
+    ![markdown](docs/step_12.png)
 
 - Lúc này, ta sẽ bị lỗi, vì ta chưa migrate database từ dbsqlite mặc định của Django với Heroku Postgresql, ta sẽ chuyển sang bước tiếp theo
 
-    ![markdown](deploy_tutorial/step_13.png)
+    ![markdown](docs/step_13.png)
 
 ##### Bước 4: Migrate database
 
 - Mở __Command Prompt__ và sử dụng lệnh bên dưới để đăng nhập vào [Heroku](https://www.heroku.com/)
-```
-heroku login
-```
+    ```
+    heroku login
+    ```
 
 - Dùng câu lệnh bên dưới để kết nối Heroku remote repository đã tạo sẵn (do deploy thành công ở bước 3) trên Heroku với local repository.
-```
-heroku git:remote -a app_name
-```
+    ```
+    heroku git:remote -a app_name
+    ```
 với app_name chính là tên của app được tạo ở bước 1, trong trường hợp này là __tutorial-for-deploying__
 
 - Cuối cùng, dùng câu lệnh bên dưới để migrate database trên remote repository
-```
-heroku run python FlightManager/manage.py migrate
-```
+    ```
+    heroku run python FlightManager/manage.py migrate
+    ```
 
 - Tới đây, ta đã có thể vào được app đã tạo mà không bị lỗi
 
-    ![markdown](deploy_tutorial/step_14.png)
+    ![markdown](docs/step_14.png)

@@ -42,7 +42,7 @@ Payment Gate
                 <form action="{% url 'flight.reservation.payment' ticket.id %}" method="POST">
                     {% csrf_token %}
                     <p class="text-info">Press Checkout to proceed to payment provider, Cancel to decline. Note that this action cannot be reversed.</p>
-                    <a href="{% url 'flight.reservation.list' %}" class="btn btn-warning">Cancel</a>
+                    <a href="{% url 'flight.reservation.detail' ticket.id %}" class="btn btn-warning">Cancel</a>
                     <button type="submit" class="btn btn-primary">Checkout</button>
                 </form>
             </div>

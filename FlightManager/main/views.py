@@ -2,6 +2,10 @@
 from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse
 
+# Database interaction
+from django.db.models import Sum, Count, Q
+from django.db.models.functions import TruncMonth
+
 # Messages
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -24,6 +28,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 # For filtered view
 from django_filters.views import FilterView
 from .filters import *
+from .utils import PaginatedFilterView, GraphPlotting
 
 # For models
 from .models import *
@@ -762,7 +767,7 @@ class DeleteTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
         })
 
 # Search (Filter)
-class FlightSearchView(FilterView):
+class FlightSearchView(PaginatedFilterView, FilterView):
     '''FlightSearchView, expressed as an OOP class.
     '''
 
@@ -777,6 +782,10 @@ class FlightSearchView(FilterView):
     '''HTML template used in FlightSearchView
     '''
     template_name = 'main/flight/search.html'
+
+    '''Maximum results to be displayed
+    '''
+    paginate_by = 10
 
     def get_queryset(self):
         '''Prevent n + 1 and not including took-off flights in search result.
@@ -1069,7 +1078,169 @@ class PayFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessag
         form.instance.is_booked = True
         return super().form_valid(form)
 
-def report(request):
-    # More HTTP POST processing here
+# Report
+class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, PaginatedFilterView, FilterView):
+    '''ListFlightReportGeneralView, expressed as an OOP class.
+    '''
 
-    return render(request, 'main/report.html')
+    '''Model used in ListFlightReportGeneralView
+    '''
+    model = Flight
+
+    '''Filterset used in ListFlightReportGeneralView 
+    '''
+    filterset_class = FlightReportGeneralFilter
+
+    '''HTML template used in ListFlightReportGeneralView
+    '''
+    template_name = 'main/flight/report/general.html'
+
+    '''Permission required to access this page.
+    '''
+    permission_required = 'main.create_flight'
+
+    '''Maximum results per page.
+    '''
+    paginate_by = 10
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        queryset = queryset.filter(
+            date_time__lt = now()
+        ).prefetch_related(
+            'flightdetail'
+        ).annotate(
+            revenue = Sum(
+                'ticket__price',
+                filter = Q(ticket__is_booked = True),
+            )
+        ).order_by('date_time')
+
+        return queryset
+
+class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, FilterView):
+    '''ListFlightReportYearlyView, expressed as an OOP class.
+    '''
+
+    '''Model used in ListFlightReportYearlyView
+    '''
+    model = Flight
+
+    '''Idk why, but this allows get_queryset passing data to get_context_data.
+    '''
+    strict = False
+
+    '''HTML template used in ListFlightReportYearlyView
+    '''
+    template_name = 'main/flight/report/yearly.html'
+
+    '''Filterset used in ListFlightReportYearlyView
+    '''
+    filterset_class = FlightReportYearlyFilter
+
+    '''Permission required to access this page.
+    '''
+    permission_required = 'main.create_flight'
+
+    def __init__(self) -> None:
+        self.login_url = reverse('auth.signin')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        try:
+            year = datetime.strptime(self.request.GET.get('date_time'), "%Y").year
+        except Exception:
+            year = datetime.now().year
+
+        context['date_time'] = year
+
+        '''We've already get queryset inside self.object_list,
+        Now we just adding some summarise.
+        '''
+
+        # Count total flights
+        context['total_flights'] = Flight.objects.filter(
+            date_time__year = year,
+            date_time__lt = now(),
+        ).count()
+
+        # Calculate total tickets sold
+        context['total_tickets_sold'] = sum(Flight.objects.filter(
+            date_time__year = year,
+            date_time__lt = now(),
+        ).annotate(
+            tickets_sold = Count(
+                'ticket__id',
+                filter = Q(ticket__is_booked = True),
+            )
+        ).values_list('tickets_sold', flat = True))
+
+        # Calculate total revenue
+        context['total_revenue'] = sum(Flight.objects.filter(
+            date_time__year = year,
+            date_time__lt = now(),
+        ).annotate(
+            revenue = Sum(
+                'ticket__price',
+                filter = Q(ticket__is_booked = True),
+            )
+        ).values_list('revenue', flat = True))
+
+        # Adding ratio (revenue / total_revenue)
+        for month in self.object_list:
+            month['ratio'] = month['revenue'] * 100 / context['total_revenue']
+
+        # Get formatted month label from list of months extracted from database's records.
+        month_list = [record.strftime('%B') for record in self.object_list.values_list('month', flat = True)]
+
+        # Adding flight graph
+        context['flight_graph'] = GraphPlotting(
+            month_list, 
+            self.object_list.values_list('total_flights', flat = True), 
+            'Flight Graph'
+        ).get_bar_plot('Month', 'Flights')
+
+        # Adding revenue graph
+        context['revenue_graph'] = GraphPlotting(
+            month_list, 
+            self.object_list.values_list('revenue', flat = True), 
+            'Revenue Graph'
+        ).get_bar_plot('Month', 'Revenue')
+
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        try:
+            year = datetime.strptime(self.request.GET.get('date_time'), "%Y").year
+        except Exception:
+            year = datetime.now().year
+
+        queryset = queryset.filter(
+            date_time__year = year,
+            date_time__lt = now(),
+        ).annotate(
+            month = TruncMonth('date_time')
+        ).values(
+            'month'
+        ).annotate(
+            total_flights = Count('id', distinct = True)
+        ).annotate(
+            total_tickets_sold = Count(
+                'ticket__id',
+                filter = Q(ticket__is_booked = True),
+            )
+        ).annotate(
+            revenue = Sum(
+                'ticket__price',
+                filter = Q(ticket__is_booked = True),
+            )
+        ).order_by('month')
+
+        return queryset

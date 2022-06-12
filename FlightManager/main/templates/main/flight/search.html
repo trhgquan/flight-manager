@@ -31,7 +31,7 @@ Find your Flight
             <div class="card card-body">
                 <h5 class="page-title">Your ideal Flights</h5>
                 <table class='table'>
-                    <thead>
+                    <thead class="thead-dark">
                         <th>ID</th>
                         <th>Departure</th>
                         <th>Destination</th>
@@ -39,10 +39,10 @@ Find your Flight
                         <th>Action</th>
                     </thead>
                     <tbody>
-                        {% if not filter.qs %}
+                        {% if not page_obj %}
                         <tr><td colspan="5">No flight found, try change the search criteria!</td></tr>
                         {% endif %}
-                        {% for flight in filter.qs  %}
+                        {% for flight in page_obj  %}
                             <tr>
                                 <td>{{ flight.id }}</td>
                                 <td>{{ flight.departure_airport }}</td>
@@ -85,8 +85,8 @@ Find your Flight
                         {% endfor %}
                     </tbody>
                 </table>
+                {% include 'main/paginator.html' %}
             </div>
-            
         </div>
     </div>
 </div>
