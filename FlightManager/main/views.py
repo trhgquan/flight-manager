@@ -1081,7 +1081,7 @@ class PayFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessag
         return super().form_valid(form)
 
 # Report
-class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, FilterView):
+class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, PaginatedFilterView, FilterView):
     '''ListFlightReportGeneralView, expressed as an OOP class.
     '''
 
@@ -1101,6 +1101,10 @@ class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, F
     '''
     permission_required = 'main.create_flight'
 
+    '''Maximum results per page.
+    '''
+    paginate_by = 10
+
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
 
@@ -1117,6 +1121,8 @@ class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, F
                 filter = Q(ticket__is_booked = True),
             )
         ).order_by('date_time')
+
+        print(queryset)
 
         return queryset
 

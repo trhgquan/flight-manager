@@ -37,7 +37,7 @@ Flight Yearly Report
             <div class="card card-body">
                 <h5 class="page-title">Report detail</h5>
                 <table class='table'>
-                    <thead>
+                    <thead class="thead-dark">
                         <th>Month</th>
                         <th>Total Flights</th>
                         <th>Total tickets sold</th>
@@ -51,7 +51,7 @@ Flight Yearly Report
                         {% else %}
                             {% for record in filter.qs %}
                                 <tr>
-                                    <td>{{ record.month|date:"M" }}</td>
+                                    <td>{{ record.month|date:"M Y" }}</td>
                                     <td>{{ record.total_flights }}</td>
                                     <td>{{ record.total_tickets_sold }}</td>
                                     <td>{{ record.total_revenue }}$</td>
