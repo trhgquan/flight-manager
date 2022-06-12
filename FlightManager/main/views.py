@@ -1157,6 +1157,8 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
         except Exception:
             year = datetime.now().year
 
+        context['date_time'] = year
+
         '''We've already get queryset inside self.object_list,
         Now we just adding some summarise.
         '''

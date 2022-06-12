@@ -16,17 +16,10 @@ Flight Yearly Report
                 <h5 class="page-title">Report criteria</h5>
                 <hr>
                 <form action="{% url 'report.yearly' %}" method="GET">
-                    {% for field in filter.form %}
-                        <div class="form-group">
-                            {{ field.label_tag }}
-                            {{ field }}
-                            <ul class="text-danger">
-                                {% for error in field.error %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endfor %}
+                    <div class="form-group">
+                        <label for="date_time">Data range</label>
+                        <input type="text" name="date_time" value="{{ date_time }}" id="date_time" class="form-control" />
+                    </div>
                     <button type="submit" class="btn btn-info btn-block">Generate report</button>
                 </form>
             </div>
@@ -95,7 +88,7 @@ Flight Yearly Report
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.js"></script>
 
 <script type="text/javascript">
-    $("#datepicker").datepicker({
+    $("#date_time").datepicker({
         format: "yyyy",
         viewMode: "years", 
         minViewMode: "years",

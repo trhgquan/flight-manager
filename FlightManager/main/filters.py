@@ -65,17 +65,6 @@ class FlightReportGeneralFilter(FilterSet):
         ]
 
 class FlightReportYearlyFilter(FilterSet):
-    date_time = DateTimeFilter(
-        widget = forms.DateInput(
-            attrs = {
-                'class' : 'form-control',
-                'id' : 'datepicker',
-                'value' : datetime.datetime.now().year
-            }
-        ),
-        label = 'Year',
-    )
-
     class Meta:
         model = Flight
         fields = [
