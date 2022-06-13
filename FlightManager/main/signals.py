@@ -83,7 +83,7 @@ def customer_profile(sender, instance, created, **kwargs):
 
         # Using Service (wth?) to create.
         customer_service = CustomerService()
-        customer_service.createCustomer(new_customer)
+        customer_service.create_customer(new_customer)
 
 def flight_detail(sender, instance, created, **kwargs):
     '''Create a Detail when a new Flight is created
