@@ -33,6 +33,9 @@ from .forms import *
 # Services
 from .service import *
 
+# Misc
+from datetime import datetime
+
 # Create your views here.
 
 # Authentication views
@@ -1137,7 +1140,7 @@ class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, P
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        queryset = self.flight_service.get_general_queryset(queryset)
+        queryset = self.flight_service.get_general_report_queryset(queryset)
 
         return queryset
 
@@ -1229,6 +1232,6 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
         except Exception:
             year = datetime.now().year
 
-        queryset = self.flight_service.get_general_queryset(queryset, year)
+        queryset = self.flight_service.get_yearly_report_queryset(queryset, year)
 
         return queryset

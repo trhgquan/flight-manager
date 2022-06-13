@@ -41,12 +41,16 @@ class FlightService:
         self.flight_detail_dao = FlightDetail.objects
 
     def total_flights(self, year : int) -> int:
+        '''Get total flights in a year.
+        '''
         return self.flight_dao.filter(
             date_time__year = year,
             date_time__lt = now(),
         ).count()
 
     def total_tickets_sold(self, year : int) -> int:
+        '''Get total tickets sold in a year.
+        '''
         return sum(self.flight_dao.filter(
             date_time__year = year,
             date_time__lt = now(),
@@ -58,6 +62,8 @@ class FlightService:
         ).values_list('tickets_sold', flat = True))
 
     def total_revenue(self, year : int) -> int:
+        '''Get total revenue of a year.
+        '''
         return sum(self.flight_dao.filter(
             date_time__year = year,
             date_time__lt = now(),
@@ -69,13 +75,19 @@ class FlightService:
         ).values_list('revenue', flat = True))
 
     def get_flight(self, flight_id : int) -> Flight:
+        '''Get flight and return 404 if not found.
+        '''
         return get_object_or_404(self.flight_dao, id = flight_id)
     
     def get_flight_detail(self, flight_id : int) -> FlightDetail:
+        '''Get flight detail.
+        '''
         flight = get_object_or_404(self.flight_dao, id = flight_id)
         return get_object_or_404(self.flight_dao, flight = flight)
 
     def get_flight_list_queryset(self) -> QuerySet:
+        '''Get flight list queryset.
+        '''
         related_fields = [
             'flightdetail',
             'departure_airport',
@@ -87,6 +99,8 @@ class FlightService:
         ).prefetch_related(*related_fields)
 
     def get_search_queryset(self, queryset : QuerySet) -> QuerySet:
+        '''Get search queryset
+        '''
         related_fields = [
             'departure_airport',
             'arrival_airport',
@@ -97,7 +111,9 @@ class FlightService:
             date_time__gt = now()
         ).prefetch_related(*related_fields)
 
-    def get_general_queryset(self, queryset : QuerySet) -> QuerySet:
+    def get_general_report_queryset(self, queryset : QuerySet) -> QuerySet:
+        '''Get general report queryset.
+        '''
         return queryset.filter(
             date_time__lt = now()
         ).prefetch_related(
@@ -109,7 +125,9 @@ class FlightService:
             ), 0)
         ).order_by('date_time')
 
-    def get_yearly_queryset(self, queryset : QuerySet, year : int) -> QuerySet:
+    def get_yearly_report_queryset(self, queryset : QuerySet, year : int) -> QuerySet:
+        '''Get yearly report queryset.
+        '''
         return queryset.filter(
             date_time__year = year,
             date_time__lt = now(),
@@ -136,7 +154,11 @@ class CustomerService:
         self.customer_dao = CustomerDAO()
 
     def create_customer(self, customer: Customer) -> Customer:
+        '''Create a new customer
+        '''
         return self.customer_dao.create(customer)
     
     def update_customer(self, customer: Customer) -> Customer:
+        '''Update customer
+        '''
         return self.customer_dao.update(customer)
