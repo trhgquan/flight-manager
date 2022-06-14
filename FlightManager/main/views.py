@@ -665,7 +665,7 @@ class CreateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
         )
 
         kwargs['route_airports'] = [flight.departure_airport, flight.arrival_airport]
-        for transition_airport in flight.transitionairport_set.all():
+        for transition_airport in flight.transitionairport_set.all().prefetch_related('airport'):
             kwargs['route_airports'].append(transition_airport.airport)
 
         return kwargs
