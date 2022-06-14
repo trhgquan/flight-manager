@@ -135,3 +135,14 @@ với app_name chính là tên của app được tạo ở bước 1, trong tr�
 - Tới đây, ta đã có thể vào được app đã tạo mà không bị lỗi
 
     ![markdown](docs/step_14.png)
+
+## Current status
+- We implemented all features mentioned in the Official Documentation (aka Project Report). Until we submit the final version, all of them are working fine.
+
+## Future work
+We consider adding these features / optimisations in the future:
+- Email verification: send email to user's registered email address to confirm.
+- Password recovery: send an email with recovery password link.
+- Apply AJAX to the system.
+- Connect with a Payment Service Provider (PSP), applying promo code.
+- Build cache for optimisation

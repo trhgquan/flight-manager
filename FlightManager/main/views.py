@@ -2,10 +2,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse
 
-# Database interaction
-from django.db.models import Sum, Count, Q
-from django.db.models.functions import Coalesce, TruncMonth
-
 # Messages
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -38,7 +34,7 @@ from .forms import *
 from .service import *
 
 # Misc
-from django.utils.timezone import now
+from datetime import datetime
 
 # Create your views here.
 
@@ -177,7 +173,7 @@ class HomepageView(View):
         '''Render homepage, with (of course) airports list.
         '''
         context = {
-            'airports' : self.airport_service.findAllAirports(),
+            'airports' : self.airport_service.get_airport_list_queryset(),
         }
 
         return render(request, 'main/dashboard/dashboard.html', context = context)
@@ -243,7 +239,7 @@ class UpdateProfileView(LoginRequiredMixin, View):
         form = self.form_class(request.POST, request.FILES, instance = request.user.customer)
 
         if form.is_valid():
-            self.customer_service.updateCustomer(form.instance)
+            self.customer_service.update_customer(form.instance)
 
             messages.success(request, 'Your changes are saved!')
 
@@ -450,18 +446,13 @@ class ListFlightView(ListView):
     '''
     paginate_by = 10
 
+    def __init__(self) -> None:
+        self.flight_service = FlightService()
+
     def get_queryset(self):
         '''Only show flights from now to the future!
         '''
-        return Flight.objects.filter(
-            date_time__gt = now()
-        ).prefetch_related(
-            'flightdetail'
-        ).prefetch_related(
-            'departure_airport'
-        ).prefetch_related(
-            'arrival_airport'
-        )
+        return self.flight_service.get_flight_list_queryset()
         
 
 class DetailFlightView(DetailView):
@@ -615,6 +606,7 @@ class UpdateFlightDetailView(LoginRequiredMixin, PermissionRequiredMixin, Succes
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+        self.flight_service = FlightService()
 
     def get_success_url(self) -> str:
         return reverse(self.success_url, kwargs = {
@@ -624,8 +616,10 @@ class UpdateFlightDetailView(LoginRequiredMixin, PermissionRequiredMixin, Succes
     def get_object(self, *args, **kwargs):
         '''This method to load a specific FlightDetail, based on Flight id.
         '''
-        flight = Flight.objects.get(id = self.kwargs.get('pk'))
-        return FlightDetail.objects.get(flight = flight)
+        flight_detail = self.flight_service.get_flight_detail(
+            flight_id = self.kwargs.get('pk')
+        )
+        return flight_detail
 
 # Transition Airport
 
@@ -659,13 +653,16 @@ class CreateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+        self.flight_service = FlightService()
 
     def get_form_kwargs(self):
         '''Parsing list of airports for form validation
         '''
         kwargs = super().get_form_kwargs()
         
-        flight = Flight.objects.get(id = self.kwargs.get('pk'))
+        flight = self.flight_service.get_flight(
+            flight_id = self.kwargs.get('pk')
+        )
 
         kwargs['route_airports'] = [flight.departure_airport, flight.arrival_airport]
         for transition_airport in flight.transitionairport_set.all():
@@ -679,14 +676,19 @@ class CreateTransitionAirportView(LoginRequiredMixin, PermissionRequiredMixin, S
         '''
         context = super().get_context_data(**kwargs)
 
-        context['flight'] = Flight.objects.get(id = self.kwargs.get('pk'))
+        context['flight'] = self.flight_service.get_flight(
+            flight_id = self.kwargs.get('pk')
+        )
 
         return context
 
     def form_valid(self, form) -> HttpResponse:
         '''Automatically set Flight to the Flight requested (aka Flight ID in the URL).
         '''
-        form.instance.flight = Flight.objects.get(id = self.kwargs.get('pk'))
+        form.instance.flight = self.flight_service.get_flight(
+            flight_id = self.kwargs.get('pk')
+        )
+
         return super().form_valid(form)
     
     def get_success_url(self) -> str:
@@ -796,11 +798,14 @@ class FlightSearchView(PaginatedFilterView, FilterView):
     '''
     paginate_by = 10
 
+    def __init__(self):
+        self.flight_service = FlightService()
+
     def get_queryset(self):
         '''Prevent n + 1 and not including took-off flights in search result.
         '''
         queryset = super().get_queryset()
-        queryset = queryset.filter(date_time__gt = now()).prefetch_related('departure_airport').prefetch_related('arrival_airport').prefetch_related('flightdetail')
+        queryset = self.flight_service.get_search_queryset(queryset)
         return queryset
 
 # Booking
@@ -823,18 +828,13 @@ class ListFlightTicketView(LoginRequiredMixin, ListView):
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+        self.ticket_service = TicketService()
 
     def get_queryset(self):
         '''Users should only see reservations made by them.
         '''
-        queryset = Ticket.objects.filter(
+        queryset = self.ticket_service.get_ticket_list_queryset(
             customer = self.request.user.customer
-        ).prefetch_related(
-            'flight'
-        ).prefetch_related(
-            'ticket_class'
-        ).prefetch_related(
-            'customer'
         )
         return queryset
 
@@ -891,6 +891,7 @@ class CreateFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+        self.flight_service = FlightService()
     
     def get_success_url(self) -> str:
         return reverse(self.success_url, kwargs = {
@@ -902,7 +903,9 @@ class CreateFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
         '''
         context = super().get_context_data(**kwargs)
 
-        context["flight"] = Flight.objects.get(id = self.kwargs.get('pk'))
+        context["flight"] = self.flight_service.get_flight(
+            flight_id = self.kwargs.get('pk')
+        )
 
         return context
     
@@ -910,17 +913,23 @@ class CreateFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
         '''Parsing this flight for form validation
         '''
         kwargs = super().get_form_kwargs()
-        kwargs['flight'] = Flight.objects.get(id = self.kwargs.get('pk'))
+        kwargs['flight'] = self.flight_service.get_flight(
+            flight_id = self.kwargs.get('pk')
+        )
         return kwargs
 
     def test_func(self) -> bool:
-        flight = Flight.objects.get(id = self.kwargs.get('pk'))
+        flight = self.flight_service.get_flight(
+            flight_id = self.kwargs.get('pk')
+        )
         return flight.is_bookable
 
     def form_valid(self, form) -> HttpResponse:
         '''Automatically add flight, customer and ticket price to form.
         '''
-        form.instance.flight = Flight.objects.get(id = self.kwargs.get('pk'))
+        form.instance.flight = self.flight_service.get_flight(
+            flight_id = self.kwargs.get('pk')
+        )
         form.instance.customer = self.request.user.customer
 
         # Hardcore ticket adding.
@@ -957,12 +966,15 @@ class UpdateFlightTicketView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+        self.ticket_service = TicketService()
     
     def get_form_kwargs(self):
         '''Parsing this flight for form validation
         '''
         kwargs = super().get_form_kwargs()
-        kwargs['flight'] = Ticket.objects.get(id = self.kwargs.get('pk')).flight
+        kwargs['flight'] = self.ticket_service.get_ticket(
+            ticket_id = self.kwargs.get('pk')
+        ).flight
         return kwargs
 
     def get_success_url(self) -> str:
@@ -1123,20 +1135,12 @@ class ListFlightReportGeneralView(LoginRequiredMixin, PermissionRequiredMixin, P
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+        self.flight_service = FlightService()
 
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        queryset = queryset.filter(
-            date_time__lt = now()
-        ).prefetch_related(
-            'flightdetail'
-        ).annotate(
-            revenue = Coalesce(Sum(
-                'ticket__price',
-                filter = Q(ticket__is_booked = True),
-            ), 0)
-        ).order_by('date_time')
+        queryset = self.flight_service.get_general_report_queryset(queryset)
 
         return queryset
 
@@ -1166,6 +1170,7 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
 
     def __init__(self) -> None:
         self.login_url = reverse('auth.signin')
+        self.flight_service = FlightService()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1182,32 +1187,13 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
         '''
 
         # Count total flights
-        context['total_flights'] = Flight.objects.filter(
-            date_time__year = year,
-            date_time__lt = now(),
-        ).count()
+        context['total_flights'] = self.flight_service.total_flights(year)
 
         # Calculate total tickets sold
-        context['total_tickets_sold'] = sum(Flight.objects.filter(
-            date_time__year = year,
-            date_time__lt = now(),
-        ).annotate(
-            tickets_sold = Count(
-                'ticket__id',
-                filter = Q(ticket__is_booked = True),
-            )
-        ).values_list('tickets_sold', flat = True))
+        context['total_tickets_sold'] = self.flight_service.total_tickets_sold(year)
 
         # Calculate total revenue
-        context['total_revenue'] = sum(Flight.objects.filter(
-            date_time__year = year,
-            date_time__lt = now(),
-        ).annotate(
-            revenue = Coalesce(Sum(
-                'ticket__price',
-                filter = Q(ticket__is_booked = True),
-            ), 0)
-        ).values_list('revenue', flat = True))
+        context['total_revenue'] = self.flight_service.total_revenue(year)
         
         # Total ratio = 0 if no revenue made, 100 otherwise.
         context['total_ratio'] = (context['total_revenue'] > 0) * 100
@@ -1246,27 +1232,6 @@ class ListFlightReportYearlyView(LoginRequiredMixin, PermissionRequiredMixin, Fi
         except Exception:
             year = datetime.now().year
 
-        queryset = queryset.filter(
-            date_time__year = year,
-            date_time__lt = now(),
-        ).annotate(
-            month = TruncMonth('date_time')
-        ).values(
-            'month'
-        ).annotate(
-            total_flights = Count('id', distinct = True)
-        ).annotate(
-            total_tickets_sold = Count(
-                'ticket__id',
-                filter = Q(ticket__is_booked = True),
-            )
-        ).annotate(
-            revenue = Coalesce(Sum(
-                'ticket__price',
-                filter = Q(ticket__is_booked = True),
-            ), 0)
-        ).order_by('month')
-
-        print(queryset)
+        queryset = self.flight_service.get_yearly_report_queryset(queryset, year)
 
         return queryset
