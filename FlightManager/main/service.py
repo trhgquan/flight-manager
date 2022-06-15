@@ -83,7 +83,7 @@ class FlightService:
         '''Get flight detail.
         '''
         flight = get_object_or_404(self.flight_dao, id = flight_id)
-        return get_object_or_404(self.flight_dao, flight = flight)
+        return get_object_or_404(self.flight_detail_dao, flight = flight)
 
     def get_flight_list_queryset(self) -> QuerySet:
         '''Get flight list queryset.
