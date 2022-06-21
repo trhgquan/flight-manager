@@ -146,3 +146,6 @@ We consider adding these features / optimisations in the future:
 - Apply AJAX to the system.
 - Connect with a Payment Service Provider (PSP), applying promo code.
 - Build cache for optimisation
+
+## License
+This project is licensed under the terms of [The MIT License](LICENSE)
